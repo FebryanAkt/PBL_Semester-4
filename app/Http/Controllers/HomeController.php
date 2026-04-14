@@ -12,7 +12,7 @@ class HomeController extends Controller
         // Ambil semua data barang dari database
         $items = Item::latest()->get(); 
         
-        // Kirim data ke file welcome.blade.php
-        return view('welcome', compact('items')); 
+        // Kirim data ke file home.blade.php
+        return view('home', compact('items')); 
     }
 }
