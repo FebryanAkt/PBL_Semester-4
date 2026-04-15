@@ -10,13 +10,19 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
+
+            //Relasi dengan users
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            
             $table->string('name');
             $table->text('description')->nullable();
             $table->integer('price');
             $table->string('location');
             $table->string('image')->nullable();
             $table->string('condition')->default('Bekas');
-            $table->string('status')->default('tersedia');
+
+            //STATUS: tersedia, terjual, atau disewa
+            $table->enum('status', ['tersedia', 'booking', 'terjual'])->default('tersedia');
             $table->timestamps();
         });
     }
