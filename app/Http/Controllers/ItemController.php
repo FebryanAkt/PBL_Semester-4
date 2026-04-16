@@ -67,4 +67,11 @@ class ItemController extends Controller
 
         return redirect()->route('barang.saya')->with('success', 'Barang berhasil diupdate!');
     }
+
+    public function jual()
+    {
+        
+        return view('barang_jual'); 
+    }
+
 }

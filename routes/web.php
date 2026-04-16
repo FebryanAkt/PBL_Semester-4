@@ -25,3 +25,6 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 // Route::post('/barang/tambah', [ItemController::class, 'store'])
 //     //->middleware('auth')
 //     ->name('barang.store');
+
+//JUAL BARANG
+Route::get('/barang/jual', [ItemController::class, 'jual'])->name('barang.jual');

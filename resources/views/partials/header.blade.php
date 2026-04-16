@@ -19,7 +19,7 @@
     <div class="flex items-center gap-4 md:gap-6 text-sm font-medium">
         <div class="hidden md:flex items-center gap-6">
             <a href="{{ route('home') }}" class="hover:text-bekas-green transition">Home</a>
-            <a href="#" class="hover:text-bekas-green transition">Jual Barang</a>
+            <a href="{{ route('barang.jual') }}" class="hover:text-bekas-green transition">Jual Barang</a>
             <a href="{{ route('barang.saya') }}" class="hover:text-bekas-green transition">Barang Saya</a>
         </div>
         <div class="w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center cursor-pointer hover:bg-white transition">
