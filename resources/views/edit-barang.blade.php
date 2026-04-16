@@ -5,31 +5,60 @@
 @section('content')
 <div class="max-w-4xl mx-auto px-6 py-10">
 
-    <h1 class="text-3xl font-bold mb-6">Edit Produk</h1>
+    <h1 class="text-3xl font-bold mb-6 text-bekas-dark">Edit Produk</h1>
 
     <form action="{{ route('barang.update', $item->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
-        <div class="bg-gray-100 p-6 rounded-xl space-y-4">
+        <div class="bg-blue-50 p-8 rounded-xl shadow-md space-y-6">
 
-            <input type="text" name="name" value="{{ $item->name }}" class="w-full p-3 rounded-lg">
+            {{-- Nama Produk --}}
+            <div>
+                <label class="block text-sm font-semibold mb-2">Produk</label>
+                <input type="text" name="name" value="{{ $item->name }}" 
+                       class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">
+            </div>
 
-            <input type="text" name="category" value="{{ $item->category }}" class="w-full p-3 rounded-lg">
+            {{-- Kategori --}}
+            <div>
+                <label class="block text-sm font-semibold mb-2">Kategori</label>
+                <select name="category" 
+                        class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">
+                    <option value="Elektronik" {{ $item->category == 'Elektronik' ? 'selected' : '' }}>💻Elektronik</option>
+                    <option value="Furniture" {{ $item->category == 'Furniture' ? 'selected' : '' }}>🪑Furniture</option>
+                    <option value="Fashion" {{ $item->category == 'Fashion' ? 'selected' : '' }}>👕Fashion</option>
+                    <option value="Hobi" {{ $item->category == 'Hobi' ? 'selected' : '' }}>🎸Hobi</option>
+                </select>
+            </div>
 
-            <textarea name="description" class="w-full p-3 rounded-lg">
-                {{ $item->description }}
-            </textarea>
+            {{-- Deskripsi --}}
+            <div>
+                <label class="block text-sm font-semibold mb-2">Deskripsi</label>
+                <textarea name="description" rows="5" 
+                          class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">{{ $item->description }}</textarea>
+            </div>
 
-            <input type="text" name="tags" value="{{ $item->tags }}" class="w-full p-3 rounded-lg">
+            {{-- Upload Gambar --}}
+            <div>
+                <label class="block text-sm font-semibold mb-2">Unggah Gambar</label>
+                <input type="file" name="image" 
+                       class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">
+            </div>
 
-            <input type="file" name="image">
+            {{-- Harga --}}
+            <div>
+                <label class="block text-sm font-semibold mb-2">Harga</label>
+                <input type="number" name="price" value="{{ $item->price }}" 
+                       class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">
+            </div>
 
-            <input type="number" name="price" value="{{ $item->price }}" class="w-full p-3 rounded-lg">
-
-            <button class="bg-bekas-dark text-white px-6 py-3 rounded-lg">
-                Update Barang
-            </button>
+            {{-- Tombol Update --}}
+            <div class="text-right">
+                <button class="bg-bekas-dark text-white px-6 py-3 rounded-lg hover:bg-bekas-light transition">
+                    Update Barang
+                </button>
+            </div>
 
         </div>
     </form>
