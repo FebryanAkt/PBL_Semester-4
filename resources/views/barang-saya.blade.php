@@ -82,7 +82,7 @@
 </div>
 
 {{-- FLOAT BUTTON --}}
-<a href="#"
+<a href="/edit-barang"
    class="fixed bottom-6 right-6 bg-yellow-300 w-14 h-14 flex items-center justify-center rounded-full shadow-lg text-2xl font-bold">
     +
 </a>
