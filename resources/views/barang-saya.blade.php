@@ -59,6 +59,12 @@
                         <p class="text-sm font-bold">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                         <p class="text-xs text-gray-500">📍 {{ $item->location }}</p>
 
+                        {{-- TOMBOL EDIT --}}
+                        <a href="{{ route('barang.edit', $item->id) }}"
+                        class="text-blue-500 text-xs mt-2 block">
+                        Edit
+                        </a>
+
                         <a href="https://wa.me/6281234567890"
                            class="block mt-3 bg-bekas-dark text-white text-xs py-2 text-center rounded-lg">
                            Hubungi Penjual

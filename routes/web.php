@@ -14,6 +14,9 @@ Route::get('/barang-saya', [ItemController::class, 'myItems'])
     //->middleware('auth')
     ->name('barang.saya');
 
+// EDIT BARANG
+Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->name('barang.edit');
+Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.update');
 // // TAMBAH BARANG
 // Route::get('/barang/tambah', [ItemController::class, 'create'])
 //     //->middleware('auth')
@@ -22,3 +25,6 @@ Route::get('/barang-saya', [ItemController::class, 'myItems'])
 // Route::post('/barang/tambah', [ItemController::class, 'store'])
 //     //->middleware('auth')
 //     ->name('barang.store');
+
+//JUAL BARANG
+Route::get('/barang/jual', [ItemController::class, 'jual'])->name('barang.jual');
