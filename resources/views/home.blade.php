@@ -23,7 +23,7 @@
             
             @php
                 $filters = [
-                    ['label' => 'Kategori', 'options' => ['📱 📦 🏷️ 👕 Semua Kategori', '💻 Elektronik', '🪑 Furniture', '👕 Fashion', '🎸 Hobi']],
+                    ['label' => 'Kategori', 'options' => ['Semua Kategori', '💻 Elektronik', '🪑 Furniture', '👕 Fashion', '🎸 Hobi']],
                     ['label' => 'Kecamatan', 'options' => ['Lowokwaru, Klojen', 'Blimbing']],
                     ['label' => 'Kondisi', 'options' => ['Sangat baik', 'Minus pemakaian']],
                     ['label' => 'Harga', 'options' => ['Termurah', 'Termahal']],

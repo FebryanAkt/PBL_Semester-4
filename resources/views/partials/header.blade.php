@@ -5,7 +5,7 @@
         </div>
         <div class="leading-tight">
             <h1 class="font-bold text-xl tracking-wide">BEKASWIT</h1>
-            <p class="text-[10px] text-gray-300 tracking-wider">Bekas Jadi Duit</p>
+            <p class="text-[10px] text-gray-300 tracking-wider">Bekas Jadi Duwit</p>
         </div>
     </div>
 
