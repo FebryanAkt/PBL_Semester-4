@@ -52,9 +52,15 @@
                             {{ $item->status == 'terjual' ? 'bg-red-500 text-white' : 'bg-green-600 text-white' }}">
                             {{ ucfirst($item->status) }}
                         </span>
+
+                        {{-- Tag Kategori (kiri bawah) --}}
+                        <span class="absolute bottom-2 left-2 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
+                            {{ $item->category }}
+                        </span>
                     </div>
 
                     <div class="mt-3">
+                        {{-- Nama Barang --}}
                         <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
                         <p class="text-sm font-bold">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                         <p class="text-xs text-gray-500">📍 {{ $item->location }}</p>
