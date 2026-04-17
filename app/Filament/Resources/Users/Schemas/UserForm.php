@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Schemas\Schema;
-use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Toggle;
+use Filament\Schemas\Components\TextInput;
+use Filament\Schemas\Components\Select;
+use Filament\Schemas\Components\Toggle;
 
 class UserForm
 {
@@ -36,9 +36,8 @@ class UserForm
                     ->label('Role')
                     ->options([
                         'admin' => 'Admin',
-                        'user' => 'User',
+                        'user'  => 'User',
                     ])
-                    ->default('user')
                     ->required(),
 
                 Toggle::make('is_active')
