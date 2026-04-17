@@ -2,9 +2,22 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\AuthController;
 
-// Pastikan method di controller mengarah ke view 'home' (sesuai kodemu sebelumnya)
-Route::get('/', [ItemController::class, 'index'])->name('home');
+// Route Auth (Login / Register / Logout)
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+// Route Halaman Guest (Landing Page sebelum login)
+Route::get('/', [ItemController::class, 'landing'])->name('landing');
+
+// Route Halaman Home (Setelah Login)
+Route::get('/home', [ItemController::class, 'index'])
+    //->middleware('auth')
+    ->name('home');
 
 // Route Detail Produk
 Route::get('/produk/{id}', [ItemController::class, 'show'])->name('produk.detail');
