@@ -27,8 +27,8 @@
         <div class="hidden md:flex items-center gap-6">
             <a href="{{ route('barang.jual') }}" class="hover:text-bekas-green transition">Jual Barang</a>
             <a href="{{ route('barang.saya') }}" class="hover:text-bekas-green transition">Barang Saya</a>
-            <a href="#" class="hover:text-bekas-green transition">Wishlist</a>
-            <a href="#" class="hover:text-bekas-green transition">History</a>
+            {{-- <a href="#" class="hover:text-bekas-green transition">Wishlist</a>
+            <a href="#" class="hover:text-bekas-green transition">History</a> --}}
         </div>
 
         <!-- Menu User & Tombol Keluar (Sudah Login) -->
