@@ -31,32 +31,76 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::hex('#1F3A5F'),
                 'success' => Color::hex('#2E7D32'), 
-                'gray' => Color::hex('#1F3A5F'),
+                //'gray' => Color::hex('#1F3A5F'),
             ])
-            ->brandName('BEKASWIT')
-            ->brandLogo(asset('images/logo.png'))
+            ->brandName('') //
+            ->renderHook(
+                'panels::topbar.start',
+                fn () => '
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="/images/logo.png" style="height:35px;">
+                    <div>
+                        <div style="color:white; font-weight:bold;">
+                            BEKASWIT
+                        </div>
+                        <div style="color:#cbd5e1; font-size:11px;">
+                            Bekas Jadi Duwit
+                        </div>
+                    </div>
+                </div>
+            '
+            )
             ->renderHook(
                 'panels::body.start',
                 fn () => '
                 <style>
-                    aside {
+
+                    // header {
+                    //     background-color: #1F3A5F !important;
+                    // }
+                        
+                    .fi-topbar {
                         background-color: #1F3A5F !important;
                     }
 
-                    header {
+                    .fi-page-heading {
+                        color: white !important;
+                    }
+                    
+                    fi-topbar * { 
+                        color: white !important; 
+                    }
+                   
+                    .dark .fi-topbar {
                         background-color: #1F3A5F !important;
                     }
-                    header * {
+
+                    .dark .fi-topbar-heading {
                         color: white !important;
                     }
 
-                    .fi-sidebar-item-label {
-                        color: #1F3A5F !important;
+                    .dark .fi-page-heading {
+                        color: white !important;
+                    }
+                    
+                    .dark .fi-sidebar-item {
+                        background-color: white !important;
+                        border-radius: 7px !important;
+                    }
+                        
+
+                    .fi-sidebar {
+                        background-color: #1F3A5F !important;
+                    }
+                    
+                    .fi-sidebar-item-active .fi-sidebar-item-label {
+                        color: black !important;
                     }
 
-                    // .fi-topbar-heading {
-                    //     color: white !important;
-                    // }
+                    .fi-sidebar-item-active .fi-sidebar-item-icon {
+                        color: black !important;
+                    }
+
                 </style>
             '
             )
