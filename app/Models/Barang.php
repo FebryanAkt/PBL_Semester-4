@@ -13,7 +13,6 @@ class Barang extends Model
         'name',
         'category',
         'description',
-        'tags',
         'image',
         'price',
         'status',
