@@ -34,6 +34,15 @@ class AdminPanelProvider extends PanelProvider
                 //'gray' => Color::hex('#1F3A5F'),
             ])
             ->brandName('') //
+            ->brandLogoHeight('40px')
+            ->renderHook(
+                'panels::auth.login.form.before',
+                fn () => '
+                    <div style="display:flex; justify-content:center; margin-bottom:20px;">
+                        <img src="/images/logo.png" style="height:60px;">
+                    </div>
+                '
+            )
             ->renderHook(
                 'panels::topbar.start',
                 fn () => '
@@ -99,6 +108,25 @@ class AdminPanelProvider extends PanelProvider
 
                     .fi-sidebar-item-active .fi-sidebar-item-icon {
                         color: black !important;
+                    }
+
+                     /* Background halaman login */
+                    .fi-simple-layout {
+                        background-color: #1F3A5F !important;
+                    }
+
+                    /* Card login */
+                    .fi-simple-main {
+                        border-radius: 12px !important;
+                    }
+
+                    /* Tombol login */
+                    .fi-btn-primary {
+                        background-color: #1F3A5F !important;
+                    }
+
+                    .fi-btn-primary:hover {
+                        background-color: #16324d !important;
                     }
 
                 </style>
