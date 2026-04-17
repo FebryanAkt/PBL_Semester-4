@@ -17,7 +17,7 @@ class ItemSeeder extends Seeder
             'price' => 3200000,
             'location' => 'Lowokwaru',
             'status' => 'tersedia',
-            'image' => null,
+            'image' => 'laptop_axio.png',
             'condition' => 'Bekas',
             'description' => 'Dijual cepat laptop Axioo Hype 5 X5...'
         ],
@@ -27,7 +27,7 @@ class ItemSeeder extends Seeder
             'price' => 185000,
             'location' => 'Klojen',
             'status' => 'tersedia',
-            'image' => null,
+            'image' => 'jacket_bomber.png',
             'condition' => 'Bekas',
             'description' => 'Jaket gaya techwear bahan American Canvas tebal...'
         ],
@@ -37,7 +37,7 @@ class ItemSeeder extends Seeder
             'price' => 125000,
             'location' => 'Blimbing',
             'status' => 'terjual', 
-            'image' => null,
+            'image' => 'bracket_monitor.png',
             'condition' => 'Bekas',
             'description' => 'Bracket monitor kokoh merk Oximus...'
         ],

@@ -22,10 +22,10 @@ class ItemController extends Controller
     public function show($id)
     {
         $item = Item::findOrFail($id);
-        return view('detail', compact('item'));
+        return view('item.show', compact('item'));
     }
 
-     // BARANG SAYA
+
     public function myItems()
     {
         $items = Item::latest()->get();
@@ -35,14 +35,14 @@ class ItemController extends Controller
         $booking = $items->where('status', 'booking')->count();
         $terjual = $items->where('status', 'terjual')->count();
 
-        return view('barang-saya', compact('items', 'total', 'tersedia', 'booking', 'terjual'));
+        return view('item.index', compact('items', 'total', 'tersedia', 'booking', 'terjual'));
     }
 
     // EDIT BARANG
     public function edit($id)
     {
         $item = Item::findOrFail($id);
-        return view('edit-barang', compact('item'));
+        return view('item.edit', compact('item'));
     }
 
     public function update(Request $request, $id)
@@ -71,13 +71,13 @@ class ItemController extends Controller
             'tags' => $request->tags,
         ]);
 
-        return redirect()->route('barang.saya')->with('success', 'Barang berhasil diupdate!');
+        return redirect()->route('item.index')->with('success', 'Barang berhasil diupdate!');
     }
 
     public function jual()
     {
         
-        return view('barang_jual'); 
+        return view('item.sell'); 
     }
 
 }
