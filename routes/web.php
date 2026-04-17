@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ProfileController;
 
 // Route Auth (Login / Register / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -41,3 +42,8 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 
 //JUAL BARANG
 Route::get('/barang/jual', [ItemController::class, 'jual'])->name('barang.jual');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
+});
