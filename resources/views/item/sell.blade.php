@@ -79,7 +79,7 @@
 
         <div class="flex justify-end gap-4 mt-8 pb-10">
             <button type="button" onclick="history.back()" class="px-8 py-2 border-2 border-bekas-green text-bekas-green font-bold rounded-full hover:bg-bekas-green hover:text-white transition">BATAL</button>
-            <button type="submit" class="px-8 py-2 bg-[#E6C68D] text-gray-800 font-bold rounded-full shadow-md hover:brightness-95 transition">Posting Barang</button>
+            <button type="submit" class="px-8 py-2 bg-bekas-dark text-white font-bold rounded-full shadow-md hover:brightness-95 transition">Posting Barang</button>
         </div>
     </form>
 </div>
