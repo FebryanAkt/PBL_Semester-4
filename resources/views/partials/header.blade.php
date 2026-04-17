@@ -1,12 +1,14 @@
 <nav class="bg-bekas-dark text-white py-4 px-6 md:px-12 flex justify-between items-center shadow-md sticky top-0 z-50">
     <div class="flex items-center gap-3">
-        <div class="w-11 h-11 flex items-center justify-center">
-            <img src="{{ asset('images/logo.png') }}" alt="Logo Bekaswit" class="w-full h-full object-contain">
-        </div>
-        <div class="leading-tight">
-            <h1 class="font-bold text-xl tracking-wide">BEKASWIT</h1>
-            <p class="text-[10px] text-gray-300 tracking-wider">Bekas Jadi Duwit</p>
-        </div>
+        <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
+            <div class="w-11 h-11 flex items-center justify-center">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo Bekaswit" class="w-full h-full object-contain">
+            </div>
+            <div class="leading-tight">
+                <h1 class="font-bold text-xl tracking-wide">BEKASWIT</h1>
+                <p class="text-[10px] text-gray-300 tracking-wider">Bekas Jadi Duwit</p>
+            </div>
+        </a>
     </div>
 
     <div class="hidden md:flex flex-1 max-w-xl mx-8 relative">
@@ -23,9 +25,10 @@
 
     <div class="flex items-center gap-4 md:gap-6 text-sm font-medium">
         <div class="hidden md:flex items-center gap-6">
-            <a href="{{ route('home') }}" class="hover:text-bekas-green transition">Home</a>
             <a href="{{ route('barang.jual') }}" class="hover:text-bekas-green transition">Jual Barang</a>
             <a href="{{ route('barang.saya') }}" class="hover:text-bekas-green transition">Barang Saya</a>
+            <a href="#" class="hover:text-bekas-green transition">Wishlist</a>
+            <a href="#" class="hover:text-bekas-green transition">History</a>
         </div>
 
         <!-- Menu User & Tombol Keluar (Sudah Login) -->
