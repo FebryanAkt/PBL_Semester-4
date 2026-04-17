@@ -45,7 +45,9 @@
 
                     <div class="bg-gray-200 h-32 rounded-lg relative flex items-center justify-center">
                         @if($item->image)
-                            <img src="{{ asset('storage/' . $item->image) }}" class="h-full object-cover rounded-lg">
+                            <img src="{{ asset('images/' . $item->image) }}" 
+                            alt="{{ $item->name }}" 
+                            class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
                         @endif
 
                         <span class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full 
