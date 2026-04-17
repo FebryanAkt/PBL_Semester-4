@@ -170,7 +170,7 @@
                     setInterval(() => {
                         currentSlide = (currentSlide + 1) % slides.length;
                         track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    },
+                    }, 5000);
                 }
             }
         });
