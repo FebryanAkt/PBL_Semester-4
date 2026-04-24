@@ -11,10 +11,15 @@
         </a>
     </div>
 
-    <div class="hidden md:flex flex-1 max-w-xl mx-8 relative">
-        <input type="text" placeholder="Cari barang Mahasiswa Malang" class="w-full py-2.5 px-4 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-bekas-green">
-        <button class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+    <div class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
+        <input type="text" placeholder="Cari barang Mahasiswa Malang..."
+            class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
+        <button class="absolute right-2 top-1.5 bottom-1.5 px-3 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
         </button>
     </div>
 
@@ -32,10 +37,15 @@
 </nav>
 
 <div class="block md:hidden bg-bekas-dark px-6 pb-4">
-    <div class="relative">
-        <input type="text" placeholder="Cari barang Mahasiswa Malang" class="w-full py-2.5 px-4 rounded-lg text-sm text-gray-800 focus:outline-none focus:ring-2 focus:ring-bekas-green">
-        <button class="absolute right-3 top-2.5 text-gray-500 hover:text-gray-700">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" /></svg>
+    <div class="relative group">
+        <input type="text" placeholder="Cari barang Mahasiswa Malang..."
+            class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
+        <button class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                stroke="currentColor" class="w-4 h-4">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+            </svg>
         </button>
     </div>
 </div>
