@@ -2,23 +2,21 @@
 
 namespace App\Filament\Widgets;
 
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat; // untuk v3
-use Filament\Widgets\StatsOverviewWidget\Card; // untuk v2 (deprecated)
-use Filament\Widgets\Widget;
+use Filament\Widgets\StatsOverviewWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class DashboardStats extends BaseWidget
+class DashboardStats extends StatsOverviewWidget
 {
     protected function getStats(): array
     {
         return [
             Stat::make('Users', \App\Models\User::count())
                 ->description('Total registered users')
-                ->color('success'),
+                ->icon('heroicon-o-users'),
 
             Stat::make('Barangs', \App\Models\Barang::count())
                 ->description('Total items')
-                ->color('info'),
+                ->icon('heroicon-o-archive-box'),
         ];
     }
 }
