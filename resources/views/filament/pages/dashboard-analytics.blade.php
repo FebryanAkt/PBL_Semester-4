@@ -1,16 +1,5 @@
 <x-filament-panels::page>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- Statistik ringkas --}}
-        <x-filament::stats-overview>
-            <x-filament::stats-overview.item
-                label="Total Users"
-                value="{{ \App\Models\User::count() }}"
-            />
-            <x-filament::stats-overview.item
-                label="Total Barangs"
-                value="{{ \App\Models\Barang::count() }}"
-            />
-        </x-filament::stats-overview>
 
         {{-- Chart sederhana --}}
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">

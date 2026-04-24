@@ -11,7 +11,14 @@ class DashboardAnalytics extends Page
     protected static ?string $title = 'Dashboard Analytics';
 
     // gunakan enum Icon, bukan string
-
+    
     // ini harus non-static
     protected string $view = 'filament.pages.dashboard-analytics';
+
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Widgets\DashboardStats::class,
+        ];
+    }
 }

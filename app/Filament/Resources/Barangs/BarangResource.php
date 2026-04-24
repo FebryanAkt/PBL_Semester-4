@@ -47,4 +47,14 @@ class BarangResource extends Resource
             'edit' => EditBarang::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Barangs';
+    }
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-cube';
+    }
 }

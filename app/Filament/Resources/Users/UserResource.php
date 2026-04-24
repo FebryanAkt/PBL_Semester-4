@@ -47,4 +47,14 @@ class UserResource extends Resource
             'edit' => EditUser::route('/{record}/edit'),
         ];
     }
+
+    public static function getNavigationLabel(): string
+    {
+        return 'Users';
+    }
+
+    public static function getNavigationIcon(): string
+    {
+        return 'heroicon-o-users';
+    }
 }
