@@ -9,11 +9,12 @@ class DashboardAnalytics extends Page
 {
     protected static ?string $navigationLabel = 'Analytics';
     protected static ?string $title = 'Dashboard Analytics';
-
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
     // gunakan enum Icon, bukan string
     
     // ini harus non-static
     protected string $view = 'filament.pages.dashboard-analytics';
+    
 
     protected function getHeaderWidgets(): array
     {

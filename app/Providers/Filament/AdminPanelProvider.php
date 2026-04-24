@@ -76,7 +76,7 @@ class AdminPanelProvider extends PanelProvider
                         color: white !important;
                     }
                     
-                    fi-topbar * { 
+                    .fi-topbar * { 
                         color: white !important; 
                     }
                    
@@ -92,27 +92,68 @@ class AdminPanelProvider extends PanelProvider
                         color: white !important;
                     }
                     
-                    .dark .fi-sidebar-item {
-                        background-color: white !important;
-                        border-radius: 7px !important;
-                    }
+                    // .dark .fi-sidebar-item {
+                    //     background-color: white !important;
+                    //     border-radius: 7px !important;
+                    // }
                         
 
                     .fi-sidebar {
                         background-color: #1F3A5F !important;
                     }
                     
-                    .fi-sidebar-item-active .fi-sidebar-item-label {
-                        color: black !important;
+
+                    /* default item */
+                    .fi-sidebar nav li a {
+                        background-color: transparent !important;
+                        border-radius: 12px;
+                        transition: all 0.2s ease;
                     }
 
+                    /* text default biar keliatan */
+                    .fi-sidebar-item-label,
+                    .fi-sidebar-item-icon {
+                        color: #cbd5e1 !important;
+                    }
+                    
+                    /* =========================
+                    HOVER
+                    ========================= */
+                    .fi-sidebar nav li a:hover {
+                        background-color: white !important;
+                    }
+
+                    .fi-sidebar nav li a:hover .fi-sidebar-item-label,
+                    .fi-sidebar nav li a:hover .fi-sidebar-item-icon {
+                        color: #1F3A5F !important;
+                    }
+
+                    /* =========================
+                    ACTIVE (YANG DIPILIH)
+                    ========================= */
+                    .fi-sidebar-item-active {
+                        background-color: white !important;
+                    }
+
+                    .fi-sidebar-item-active .fi-sidebar-item-label,
                     .fi-sidebar-item-active .fi-sidebar-item-icon {
-                        color: black !important;
+                        color: #1F3A5F !important;
                     }
 
                      /* Background halaman login */
                     .fi-simple-layout {
                         background-color: #1F3A5F !important;
+                    }
+                    
+                    /* =========================
+                    DARK MODE FIX
+                    ========================= */
+                    .dark .fi-sidebar nav li a {
+                        background-color: transparent !important;
+                    }
+ 
+                    .dark .fi-sidebar nav li a:hover {
+                        background-color: white !important;
                     }
 
                     /* Card login */
