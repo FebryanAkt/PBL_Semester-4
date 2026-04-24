@@ -33,3 +33,4 @@ class BarangCategoryChart extends Component
         });
     </script>
 </div>
+</div>

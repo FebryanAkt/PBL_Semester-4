@@ -10,7 +10,7 @@ class ItemController extends Controller
     public function landing()
     {
         $items = Item::latest()->get();
-        return view('guest_home', compact('items'));
+        return view('home', compact('items'));
     }
 
     public function index()
