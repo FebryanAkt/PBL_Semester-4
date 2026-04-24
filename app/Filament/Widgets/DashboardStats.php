@@ -4,7 +4,7 @@ namespace App\Filament\Widgets;
 
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Filament\Widgets\StatsOverviewWidget\Card;
+//use Filament\Widgets\StatsOverviewWidget\Card;
 
 class DashboardStats extends StatsOverviewWidget
 {
@@ -12,8 +12,8 @@ class DashboardStats extends StatsOverviewWidget
     {
         return [
             //
-            Card::make('Total Barang', \App\Models\Barang::count()),
-            Card::make('Total Users', \App\Models\User::count()),
+            Stat::make('Total Barang', \App\Models\Barang::count()),
+            Stat::make('Total Users', \App\Models\User::count()),
         ];
     }
 }
