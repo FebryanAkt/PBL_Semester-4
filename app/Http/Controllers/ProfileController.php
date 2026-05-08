@@ -11,7 +11,6 @@ class ProfileController extends Controller
     // Menampilkan halaman profil
     public function edit()
     {
-        // Mengambil data user yang sedang login
         /** @var \App\Models\User $user */
         $user = Auth::user();
         return view('profile.edit', compact('user'));
@@ -26,7 +25,7 @@ class ProfileController extends Controller
         //foto profil
         if ($request->hasFile('avatar')) {
             $request->validate([
-                'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], // Maks 2MB
+                'avatar' => ['required', 'image', 'mimes:jpeg,png,jpg', 'max:2048'], 
             ]);
 
             if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
@@ -37,7 +36,6 @@ class ProfileController extends Controller
             return back()->with('success', 'Foto profil berhasil diperbarui dan foto lama telah dihapus!');
         }
 
-        // SKENARIO 2: Jika tidak ada file 'avatar' (Berarti user klik tombol simpan form kanan)
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'university' => ['nullable', 'string', 'max:255'],

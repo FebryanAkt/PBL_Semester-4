@@ -55,7 +55,6 @@
                             {{ ucfirst($item->status) }}
                         </span>
 
-                        {{-- Tag Kategori (kiri bawah) --}}
                         <span class="absolute bottom-2 left-2 text-xs px-2 py-1 rounded-full bg-blue-100 text-blue-700">
                             {{ $item->category }}
                         </span>
@@ -67,7 +66,7 @@
                         <p class="text-sm font-bold">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                         <p class="text-xs text-gray-500">📍 {{ $item->location }}</p>
 
-                        {{-- TOMBOL EDIT --}}
+                        {{-- Tombol Edit --}}
                         <a href="{{ route('barang.edit', $item->id) }}"
                         class="text-blue-500 text-xs mt-2 block">
                         Edit
@@ -89,7 +88,7 @@
 
 </div>
 
-{{-- FLOAT BUTTON --}}
+{{-- Float Button --}}
 <a href="{{ route('barang.jual') }}"
    class="fixed bottom-6 right-6 bg-yellow-300 w-14 h-14 flex items-center justify-center rounded-full shadow-lg text-2xl font-bold">
     +

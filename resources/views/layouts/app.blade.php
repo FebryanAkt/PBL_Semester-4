@@ -40,7 +40,6 @@
         </button>
     </div>
     <script>
-        // Otomatis hilangkan notifikasi setelah 4 detik
         setTimeout(() => {
             const flash = document.getElementById('flash-message');
             if (flash) {
