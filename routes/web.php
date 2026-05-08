@@ -42,8 +42,15 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 //     ->name('barang.store');
 
 //Bual Barang
-Route::get('/barang/jual', [ItemController::class, 'jual'])->name('barang.jual');
+Route::middleware('auth')->group(function () {
 
+    Route::get('/barang/jual', [ItemController::class, 'jual'])
+        ->name('barang.jual');
+
+    Route::post('/barang/jual_simpan', [ItemController::class, 'jual_simpan'])
+        ->name('barang.jual_simpan');
+
+});
 //Profil
 Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');

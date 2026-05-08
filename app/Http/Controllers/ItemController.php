@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ItemController extends Controller
@@ -78,6 +79,48 @@ class ItemController extends Controller
     {
         
         return view('item.sell'); 
+    }
+
+    public function jual_simpan(Request $request)
+    {
+        // Validasi
+        $request->validate([
+            'nama_barang' => 'required|min:5',
+            'harga'       => 'required|numeric',
+            'kategori'    => 'required',
+            'lokasi'      => 'required',
+            'kondisi'     => 'required',
+            'foto_utama'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
+
+        // Upload gambar
+        $fileName = null;
+
+        if ($request->hasFile('foto_utama')) {
+
+            $file = $request->file('foto_utama');
+
+            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+
+            $file->move(public_path('images'), $fileName);
+        }
+
+        // Simpan data
+        Item::create([
+            'user_id'     => Auth::id(),
+            'name'        => $request->nama_barang,
+            'price'       => $request->harga,
+            'category'    => $request->kategori,
+            'location'    => $request->lokasi,
+            'condition'   => $request->kondisi,
+            'description' => $request->deskripsi,
+            'image'       => $fileName,
+            'status'      => 'tersedia',
+        ]);
+
+        return redirect()
+            ->route('barang.saya')
+            ->with('success', 'Barang berhasil diposting!');
     }
 
 }
