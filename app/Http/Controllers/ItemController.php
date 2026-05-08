@@ -71,7 +71,7 @@ class ItemController extends Controller
             'tags' => $request->tags,
         ]);
 
-        return redirect()->route('item.index')->with('success', 'Barang berhasil diupdate!');
+        return redirect()->route('home')->with('success', 'Barang berhasil diupdate!');
     }
 
     public function jual()
