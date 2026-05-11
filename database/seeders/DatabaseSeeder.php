@@ -22,9 +22,10 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
-        $this->call([
-            UserSeeder::class,
-            ItemSeeder::class,
-        ]);
+$this->call([
+        UserSeeder::class,
+        CategorySeeder::class, // Pastikan ini berjalan lebih dulu
+        ItemSeeder::class,     // Baru jalankan ItemSeeder
+    ]);
     }
 }

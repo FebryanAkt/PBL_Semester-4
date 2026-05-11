@@ -11,8 +11,19 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // 1. Buat tabel categories terlebih dahulu
+        Schema::create('categories', function (Blueprint $table) {
+            $table->id();
+            $table->string('name'); // Nama kategori untuk barang bekas
+            $table->string('slug')->unique()->nullable(); // Opsional: berguna jika butuh URL ramah SEO
+            $table->timestamps();
+        });
+
+        // 2. Setelah tabel categories ada, baru tambahkan foreign key di tabel items
         Schema::table('items', function (Blueprint $table) {
-            $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
+            $table->foreignId('category_id')
+                  ->constrained('categories')
+                  ->onDelete('cascade');
         });
     }
 
@@ -21,9 +32,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        // Saat rollback, hapus relasi di items dulu sebelum menghapus tabel categories
         Schema::table('items', function (Blueprint $table) {
             $table->dropForeign(['category_id']);
             $table->dropColumn('category_id');
         });
+
+        Schema::dropIfExists('categories');
     }
 };
