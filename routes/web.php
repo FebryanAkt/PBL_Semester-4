@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PaymentController;
 
 // Auth (Login / Register / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -41,10 +42,13 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 //     //->middleware('auth')
 //     ->name('barang.store');
 
-// Checkout (Payment Gateway UI)
-Route::get('/checkout', function () {
-    return view('checkout');
-})->name('checkout');
+// Checkout & Pembayaran
+Route::middleware('auth')->group(function () {
+    // Opsional: Anda bisa menambahkan {id} barang jika ingin mengirim data spesifik
+    // Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
+    
+    Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+});
 
 // Chat System
 Route::middleware('auth')->group(function () {
@@ -68,3 +72,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
 });
+
+// Midtrans Webhook / Callback
+Route::post('/midtrans-callback', [PaymentController::class, 'callback'])->name('midtrans.callback');

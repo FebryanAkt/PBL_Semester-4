@@ -172,7 +172,7 @@
                         </div>
 
                         <!-- Pay Button -->
-                        <button type="button" class="w-full bg-bekas-dark text-white font-bold text-lg py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-gray-800 transition-colors duration-300 shadow-md">
+                        <button type="button" id="pay-button" class="w-full bg-bekas-dark text-white font-bold text-lg py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-gray-800 transition-colors duration-300 shadow-md">
                             Bayar Sekarang
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                         </button>
@@ -188,4 +188,39 @@
         
     </div>
 </div>
+</div>
+</div>
+{{-- Midtrans Script --}}
+<script type="text/javascript"
+    src="https://app.sandbox.midtrans.com/snap/snap.js"
+    data-client-key="{{ $clientKey }}"></script>
+
+<script type="text/javascript">
+    document.getElementById('pay-button').onclick = function () {
+        // Panggil fungsi Snap Pay dengan token dari controller
+        window.snap.pay('{{ $snapToken }}', {
+            onSuccess: function (result) {
+                /* Pembayaran sukses */
+                alert("Pembayaran berhasil!"); 
+                console.log(result);
+                // Nanti kita bisa arahkan ke halaman sukses, misal:
+                // window.location.href = '/pembayaran-sukses';
+            },
+            onPending: function (result) {
+                /* Menunggu pembayaran (misal VA bank / e-wallet blm dibayar) */
+                alert("Menunggu pembayaran Anda!"); 
+                console.log(result);
+            },
+            onError: function (result) {
+                /* Pembayaran gagal */
+                alert("Pembayaran gagal!"); 
+                console.log(result);
+            },
+            onClose: function () {
+                /* Pengguna menutup popup tanpa membayar */
+                alert('Anda menutup jendela pembayaran sebelum menyelesaikannya');
+            }
+        });
+    };
+</script>
 @endsection
