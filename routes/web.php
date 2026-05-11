@@ -41,6 +41,18 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 //     //->middleware('auth')
 //     ->name('barang.store');
 
+// Checkout (Payment Gateway UI)
+Route::get('/checkout', function () {
+    return view('checkout');
+})->name('checkout');
+
+// Chat System
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [\App\Http\Controllers\ChatController::class, 'index'])->name('chat.index');
+    Route::get('/chat/{id}', [\App\Http\Controllers\ChatController::class, 'show'])->name('chat.show');
+    Route::post('/chat/{id}', [\App\Http\Controllers\ChatController::class, 'store'])->name('chat.store');
+});
+
 //Bual Barang
 Route::middleware('auth')->group(function () {
 
