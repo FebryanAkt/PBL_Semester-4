@@ -53,6 +53,16 @@
                        class="w-full p-3 rounded-lg border border-gray-300 focus:ring focus:ring-bekas-dark">
             </div>
 
+            {{-- Status --}}
+            <div class="mb-4">
+                <label for="status" class="block text-sm font-medium text-gray-700">Status</label>
+                <select name="status" id="status" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+                    <option value="tersedia" {{ $item->status == 'tersedia' ? 'selected' : '' }}>Tersedia</option>
+                    <option value="booking" {{ $item->status == 'booking' ? 'selected' : '' }}>Booking</option>
+                    <option value="terjual" {{ $item->status == 'terjual' ? 'selected' : '' }}>Terjual</option>
+                </select>
+            </div>
+
             {{-- Tombol Update --}}
             <div class="text-right">
                 <button class="bg-bekas-dark text-white px-6 py-3 rounded-lg hover:bg-bekas-light transition">

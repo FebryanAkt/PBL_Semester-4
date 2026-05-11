@@ -123,6 +123,7 @@ class ItemController extends Controller
             'description' => 'nullable',
             'tags' => 'nullable',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'status' => 'required|in:tersedia,booking,terjual',
         ]);
 
         if ($request->hasFile('image')) {
@@ -136,6 +137,7 @@ class ItemController extends Controller
             'category' => $request->category,
             'description' => $request->description,
             'tags' => $request->tags,
+            'status' => $request->status,
         ]);
         //Diarahkan ke halaman barang
         return redirect()->route('barang.saya')->with('success', 'Barang berhasil diupdate!');
@@ -157,6 +159,7 @@ class ItemController extends Controller
             'lokasi'      => 'required',
             'kondisi'     => 'required',
             'foto_utama'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'status'      => 'required|in:tersedia,booking,terjual',
         ]);
 
         // Upload gambar
@@ -181,7 +184,7 @@ class ItemController extends Controller
             'condition'   => $request->kondisi,
             'description' => $request->deskripsi,
             'image'       => $fileName,
-            'status'      => 'tersedia',
+            'status'      => $request->status,
         ]);
 
         return redirect()
