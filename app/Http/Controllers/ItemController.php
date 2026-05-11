@@ -8,15 +8,81 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
-    public function landing()
+    public function landing(Request $request)
     {
-        $items = Item::latest()->get();
+        $query = Item::latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->has('kategori') && $request->kategori != 'Semua Kategori' && $request->kategori != '') {
+            $kategori = trim(preg_replace('/[^\p{L}\p{N}\s]/u', '', $request->kategori));
+            $query->where('category', 'LIKE', '%' . $kategori . '%');
+        }
+
+        if ($request->has('kecamatan') && $request->kecamatan != 'Semua Kecamatan' && $request->kecamatan != '') {
+            $query->where('location', 'LIKE', '%' . $request->kecamatan . '%');
+        }
+
+        if ($request->has('kondisi') && $request->kondisi != 'Semua Kondisi' && $request->kondisi != '') {
+            $query->where('condition', 'LIKE', '%' . $request->kondisi . '%');
+        }
+
+        if ($request->has('harga') && $request->harga != 'Urutkan Harga' && $request->harga != '') {
+            if ($request->harga == 'Termurah') {
+                $query->getQuery()->orders = null;
+                $query->orderBy('price', 'asc');
+            } elseif ($request->harga == 'Termahal') {
+                $query->getQuery()->orders = null;
+                $query->orderBy('price', 'desc');
+            }
+        }
+
+        $items = $query->get();
         return view('home', compact('items'));
     }
 
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::latest()->get();
+        $query = Item::latest();
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
+                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->has('kategori') && $request->kategori != 'Semua Kategori' && $request->kategori != '') {
+            $kategori = trim(preg_replace('/[^\p{L}\p{N}\s]/u', '', $request->kategori));
+            $query->where('category', 'LIKE', '%' . $kategori . '%');
+        }
+
+        if ($request->has('kecamatan') && $request->kecamatan != 'Semua Kecamatan' && $request->kecamatan != '') {
+            $query->where('location', 'LIKE', '%' . $request->kecamatan . '%');
+        }
+
+        if ($request->has('kondisi') && $request->kondisi != 'Semua Kondisi' && $request->kondisi != '') {
+            $query->where('condition', 'LIKE', '%' . $request->kondisi . '%');
+        }
+
+        if ($request->has('harga') && $request->harga != 'Urutkan Harga' && $request->harga != '') {
+            if ($request->harga == 'Termurah') {
+                $query->getQuery()->orders = null;
+                $query->orderBy('price', 'asc');
+            } elseif ($request->harga == 'Termahal') {
+                $query->getQuery()->orders = null;
+                $query->orderBy('price', 'desc');
+            }
+        }
+
+        $items = $query->get();
         return view('home', compact('items'));
     }
 
