@@ -21,15 +21,15 @@
                 <p>Total Barang</p>
                 <h2 class="text-xl font-bold">{{ $total }}</h2>
             </div>
-            <div class="bg-yellow-300 p-4 rounded-xl text-center">
+            <div class="bg-green-400 p-4 rounded-xl text-center">
                 <p>Tersedia</p>
                 <h2 class="text-xl font-bold">{{ $tersedia }}</h2>
             </div>
-            <div class="bg-green-200 p-4 rounded-xl text-center">
+            <div class="bg-yellow-400 p-4 rounded-xl text-center">
                 <p>Booking</p>
                 <h2 class="text-xl font-bold">{{ $booking }}</h2>
             </div>
-            <div class="bg-gray-700 text-white p-4 rounded-xl text-center">
+            <div class="bg-red-700 text-white p-4 rounded-xl text-center">
                 <p>Terjual</p>
                 <h2 class="text-xl font-bold">{{ $terjual }}</h2>
             </div>
@@ -50,8 +50,14 @@
                             class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
                         @endif
 
-                        <span class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full 
-                            {{ $item->status == 'terjual' ? 'bg-red-500 text-white' : 'bg-green-600 text-white' }}">
+                        <span class="absolute top-2 right-2 text-xs px-2 py-1 rounded-full
+                            @if($item->status == 'terjual')
+                                bg-red-500 text-white
+                            @elseif($item->status == 'booking')
+                                bg-yellow-400 text-black
+                            @else
+                                bg-green-600 text-white
+                            @endif">
                             {{ ucfirst($item->status) }}
                         </span>
 
