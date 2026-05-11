@@ -13,18 +13,80 @@
 
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden flex flex-col md:flex-row">
         
-        <div class="w-full md:w-1/2 bg-gray-50 p-6 md:p-10 flex items-center justify-center min-h-[300px] md:min-h-[500px]">
-            @if($item->image)
-                <img src="{{ asset('images/' . $item->image) }}" 
-                alt="{{ $item->name }}" 
-                class="object-cover w-full h-full group-hover:scale-110 transition-transform duration-500">
-            @else
-                <div class="text-center text-gray-400">
-                    <svg class="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    <p>Tidak ada gambar</p>
+        <div class="w-full md:w-1/2 bg-gray-50 p-6 md:p-10">
+    
+    @php
+        $images = [];
+
+        if ($item->image) {
+            $images[] = $item->image;
+        }
+
+        // kalau nanti ada multiple image
+        // contoh: $item->images
+        // foreach ($item->images as $img) {
+        //     $images[] = $img->image;
+        // }
+    @endphp
+
+    @if(count($images) > 0)
+
+    <div x-data="{ activeSlide: 0 }" class="relative w-full">
+
+        {{-- Gambar --}}
+        <div class="overflow-hidden rounded-2xl">
+            <template x-for="(image, index) in {{ json_encode($images) }}" :key="index">
+                <div x-show="activeSlide === index" class="w-full">
+                    <img 
+                        :src="'/images/' + image"
+                        class="w-full h-[300px] md:h-[500px] object-cover transition-all duration-500"
+                    >
                 </div>
-            @endif
+            </template>
         </div>
+
+        {{-- Tombol kiri --}}
+        <button 
+            @click="activeSlide = activeSlide === 0 ? {{ count($images)-1 }} : activeSlide - 1"
+            class="absolute left-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white shadow-md rounded-full p-2"
+        >
+            ❮
+        </button>
+
+        {{-- Tombol kanan --}}
+        <button 
+            @click="activeSlide = activeSlide === {{ count($images)-1 }} ? 0 : activeSlide + 1"
+            class="absolute right-3 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white shadow-md rounded-full p-2"
+        >
+            ❯
+        </button>
+
+        {{-- Indicator --}}
+        <div class="flex justify-center mt-4 gap-2">
+            <template x-for="(image, index) in {{ json_encode($images) }}" :key="index">
+                <button
+                    @click="activeSlide = index"
+                    class="w-3 h-3 rounded-full"
+                    :class="activeSlide === index ? 'bg-bekas-green' : 'bg-gray-300'"
+                ></button>
+            </template>
+        </div>
+
+    </div>
+
+    @else
+
+    <div class="text-center text-gray-400">
+        <svg class="w-24 h-24 mx-auto mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z">
+            </path>
+        </svg>
+        <p>Tidak ada gambar</p>
+    </div>
+
+    @endif
+</div>
 
         <div class="w-full md:w-1/2 p-6 md:p-10 flex flex-col">
             <div class="mb-4 flex items-start justify-between gap-4">
