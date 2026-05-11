@@ -41,7 +41,18 @@ class ItemSeeder extends Seeder
             'condition' => 'Bekas',
             'description' => 'Bracket monitor kokoh merk Oximus...'
         ],
-    ];
+        [
+        'user_id' => 1,
+        'name' => 'Jacket Bomber',
+        'price' => 100000,
+        'category' => 'Fashion',
+        'location' => 'Blimbing',
+        'condition' => 'Sangat Baik',
+        'description' => 'Jacket berkualitas',
+        'image' => '1778473732_jacket_bomber.jpg',
+        'status' => 'tersedia',
+        ],
+        ];
 
         // Masukkan semua data ke dalam database
         foreach ($items as $item) {
