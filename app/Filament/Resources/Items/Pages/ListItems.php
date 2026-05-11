@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Filament\Resources\Barangs\Pages;
+namespace App\Filament\Resources\Items\Pages;
 
-use App\Filament\Resources\Barangs\BarangResource;
+use App\Filament\Resources\Items\ItemResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListBarangs extends ListRecords
+class ListItems extends ListRecords
 {
-    protected static string $resource = BarangResource::class;
+    protected static string $resource = ItemResource::class;
 
     protected function getHeaderActions(): array
     {

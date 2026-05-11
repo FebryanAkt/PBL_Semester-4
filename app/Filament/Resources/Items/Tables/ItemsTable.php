@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Filament\Resources\Barangs\Tables;
+namespace App\Filament\Resources\Items\Tables;
 
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 
-class BarangsTable
+class ItemsTable
 {
     public static function configure(Table $table): Table
     {
