@@ -46,7 +46,8 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 Route::middleware('auth')->group(function () {
     // Opsional: Anda bisa menambahkan {id} barang jika ingin mengirim data spesifik
     // Route::get('/checkout/{id}', [PaymentController::class, 'checkout'])->name('checkout');
-    
+    // Tambahkan ini di dalam grup middleware('auth') tempat Anda menaruh route checkout
+    Route::post('/checkout/get-token', [PaymentController::class, 'getToken'])->name('checkout.getToken');
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
 });
 
