@@ -19,24 +19,28 @@ class CartController extends Controller
     }
 
     // Menambahkan barang ke keranjang
+// Menambahkan barang ke keranjang
     public function add(Request $request, $itemId)
     {
         $user_id = Auth::id();
+        
+        // Ambil kuantitas dari request form, jika tidak ada default ke 1
+        $qty = $request->input('quantity', 1);
 
         // Cek apakah barang sudah ada di keranjang user ini
         $existingCart = Cart::where('user_id', $user_id)->where('item_id', $itemId)->first();
 
         if ($existingCart) {
-            // Jika sudah ada, tambahkan jumlahnya (quantity)
+            // Jika sudah ada, tambahkan jumlahnya (quantity) dengan $qty baru
             $existingCart->update([
-                'quantity' => $existingCart->quantity + 1
+                'quantity' => $existingCart->quantity + $qty
             ]);
         } else {
-            // Jika belum ada, buat baru
+            // Jika belum ada, buat baru dengan quantity $qty
             Cart::create([
                 'user_id' => $user_id,
                 'item_id' => $itemId,
-                'quantity' => 1
+                'quantity' => $qty
             ]);
         }
 
