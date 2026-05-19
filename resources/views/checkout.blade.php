@@ -186,45 +186,50 @@
                         </div>
 
                         <div class="p-5 md:p-6">
-                            <!-- Product Info -->
-                            <div class="flex gap-4 mb-6 pb-6 border-b border-gray-100">
-                                <div
-                                    class="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
-                                    <img src="https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=200&h=200&q=80"
-                                        alt="Produk" class="w-full h-full object-cover">
-                                </div>
-                                <div class="flex flex-col">
-                                    <span
-                                        class="text-[10px] font-bold text-bekas-green uppercase tracking-wider mb-1">ELEKTRONIK</span>
-                                    <h3 class="font-bold text-gray-800 line-clamp-2 leading-tight">Laptop Bekas Berkualitas
-                                        Mantap Kuliah Mulus</h3>
-                                    <p class="text-xs text-gray-500 mt-auto">Penjual: Ahmad Teknik</p>
-                                </div>
+                            <div class="mb-6 pb-6 border-b border-gray-100 space-y-4">
+                                @foreach($carts as $cart)
+                                    <div class="flex gap-4">
+                                        <div
+                                            class="w-20 h-20 rounded-xl bg-gray-100 overflow-hidden shrink-0 border border-gray-200">
+                                            <img src="{{ asset('images/' . $cart->item->image) }}" alt="Produk"
+                                                class="w-full h-full object-cover">
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <span
+                                                class="text-[10px] font-bold text-bekas-green uppercase tracking-wider mb-1">{{ $cart->item->category ?? 'UMUM' }}</span>
+                                            <h3 class="font-bold text-gray-800 line-clamp-2 leading-tight text-sm">
+                                                {{ $cart->item->name }}</h3>
+                                            <p class="text-xs text-gray-500 mt-auto">{{ $cart->quantity }} x Rp
+                                                {{ number_format($cart->item->price, 0, ',', '.') }}</p>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
 
-                            <!-- Price Breakdown -->
                             <div class="space-y-3 mb-6">
                                 <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-500">Harga Barang</span>
-                                    <span class="font-semibold text-gray-800">Rp 2.500.000</span>
+                                    <span class="text-gray-500">Total Harga Barang</span>
+                                    <span class="font-semibold text-gray-800">Rp
+                                        {{ number_format($totalBarang, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500">Biaya Layanan Platform</span>
-                                    <span class="font-semibold text-gray-800">Rp 2.500</span>
+                                    <span class="font-semibold text-gray-800">Rp
+                                        {{ number_format($biayaPlatform, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
                                     <span class="text-gray-500">Biaya Penanganan (Payment)</span>
-                                    <span class="font-semibold text-gray-800">Rp 1.500</span>
+                                    <span class="font-semibold text-gray-800">Rp
+                                        {{ number_format($biayaPenanganan, 0, ',', '.') }}</span>
                                 </div>
                             </div>
 
-                            <!-- Total -->
                             <div class="flex justify-between items-center pt-4 border-t border-gray-100 mb-8">
                                 <span class="font-bold text-gray-800">Total Pembayaran</span>
-                                <span class="text-xl font-black text-bekas-green">Rp 2.504.000</span>
+                                <span class="text-xl font-black text-bekas-green">Rp
+                                    {{ number_format($totalPembayaran, 0, ',', '.') }}</span>
                             </div>
 
-                            <!-- Pay Button -->
                             <button type="button" id="pay-button"
                                 class="w-full bg-bekas-dark text-white font-bold text-lg py-4 rounded-xl flex justify-center items-center gap-2 hover:bg-gray-800 transition-colors duration-300 shadow-md">
                                 Bayar Sekarang
@@ -245,71 +250,67 @@
                         </div>
                     </div>
                 </div>
-            </div>
-
-        </div>
-    </div>
-    </div>
-    </div>
-    {{-- Midtrans Script --}}
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ $clientKey }}"></script>
+                {{-- Midtrans Script --}}
+                <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+                    data-client-key="{{ $clientKey }}"></script>
 
 
-    <script type="text/javascript">
-        document.getElementById('pay-button').onclick = async function () {
-            const btn = document.getElementById('pay-button');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = 'Memproses...';
-            btn.disabled = true;
+                <script type="text/javascript">
+                    document.getElementById('pay-button').onclick = async function () {
+                        const btn = document.getElementById('pay-button');
+                        const originalText = btn.innerHTML;
+                        btn.innerHTML = 'Memproses...';
+                        btn.disabled = true;
 
-            const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
+                        const selectedMethod = document.querySelector('input[name="payment_method"]:checked').value;
 
-            try {
-                const response = await fetch("{{ route('checkout.getToken') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': "{{ csrf_token() }}"
-                    },
-                    body: JSON.stringify({
-                        payment_method: selectedMethod
-                    })
-                });
+                        try {
+                            const response = await fetch("{{ route('checkout.getToken') }}", {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': "{{ csrf_token() }}"
+                                },
+                                body: JSON.stringify({
+                                    payment_method: selectedMethod,
+                                    is_direct: "{{ $isDirectCheckout ? 'yes' : 'no' }}", // Tambahan status
+                                    item_id: "{{ $directItemId }}" // Tambahan ID barang jika mode langsung
+                                })
+                            });
 
-                const data = await response.json();
+                            const data = await response.json();
 
-                btn.innerHTML = originalText;
-                btn.disabled = false;
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
 
-                if (data.token) {
-                    // Di sinilah fungsi window.snap.pay dipanggil
-                    window.snap.pay(data.token, {
-                        onSuccess: function (result) {
-                            alert("Pembayaran berhasil!");
-                            console.log(result);
-                        },
-                        onPending: function (result) {
-                            alert("Menunggu pembayaran Anda!");
-                            console.log(result);
-                        },
-                        onError: function (result) {
-                            alert("Pembayaran gagal!");
-                            console.log(result);
-                        },
-                        onClose: function () {
-                            alert('Anda menutup jendela pembayaran sebelum menyelesaikannya');
+                            if (data.token) {
+                                // Di sinilah fungsi window.snap.pay dipanggil
+                                window.snap.pay(data.token, {
+                                    onSuccess: function (result) {
+                                        alert("Pembayaran berhasil!");
+                                        console.log(result);
+                                    },
+                                    onPending: function (result) {
+                                        alert("Menunggu pembayaran Anda!");
+                                        console.log(result);
+                                    },
+                                    onError: function (result) {
+                                        alert("Pembayaran gagal!");
+                                        console.log(result);
+                                    },
+                                    onClose: function () {
+                                        alert('Anda menutup jendela pembayaran sebelum menyelesaikannya');
+                                    }
+                                });
+                            } else {
+                                alert('Gagal membuat transaksi: ' + data.error);
+                            }
+                        } catch (error) {
+                            console.error(error);
+                            alert('Terjadi kesalahan pada server');
+                            btn.innerHTML = originalText;
+                            btn.disabled = false;
                         }
-                    });
-                } else {
-                    alert('Gagal membuat transaksi: ' + data.error);
-                }
-            } catch (error) {
-                console.error(error);
-                alert('Terjadi kesalahan pada server');
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-            }
-        };
-    </script>
+                    };
+                </script>
 @endsection

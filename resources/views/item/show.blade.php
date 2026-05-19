@@ -117,27 +117,54 @@
                 </div>
             </div>
 
-            <div class="mt-auto pt-6 flex flex-col sm:flex-row gap-3">
+            {{-- Bagian Tombol Aksi --}}
+            <div class="mt-auto pt-6 flex flex-col gap-3">
+                
+                {{-- Baris Atas: Chat Penjual & Beli Sekarang --}}
+                <div class="flex flex-col sm:flex-row gap-3">
+                    @if(Auth::check() && Auth::id() != ($item->user_id ?? 1))
+                        <a href="{{ route('chat.show', ['id' => $item->user_id ?? 1, 'item_id' => $item->id]) }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+                            Chat Penjual
+                        </a>
+                    @elseif(Auth::guest())
+                        <a href="{{ route('login') }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+                            Login untuk Chat
+                        </a>
+                    @else
+                        <button disabled class="w-full sm:w-1/2 bg-gray-100 border-2 border-gray-200 text-gray-400 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 cursor-not-allowed">
+                            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
+                            Barang Anda Sendiri
+                        </button>
+                    @endif
+
+                    <a href="{{ route('checkout', ['item_id' => $item->id]) }}" class="w-full sm:w-1/2 bg-bekas-green hover:bg-green-700 text-white text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-md">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                        Beli Sekarang
+                    </a>
+                </div>
+
+                {{-- Baris Bawah: Tombol Masukkan Keranjang (W-Full / Ukuran Panjang) --}}
                 @if(Auth::check() && Auth::id() != ($item->user_id ?? 1))
-                    <a href="{{ route('chat.show', ['id' => $item->user_id ?? 1, 'item_id' => $item->id]) }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
-                        Chat Penjual
-                    </a>
+                    <form action="{{ route('cart.add', $item->id) }}" method="POST" class="w-full">
+                        @csrf
+                        <button type="submit" class="w-full bg-emerald-50 border-2 border-bekas-green text-bekas-green hover:bg-emerald-100 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            Masukkan Keranjang
+                        </button>
+                    </form>
                 @elseif(Auth::guest())
-                    <a href="{{ route('login') }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
-                        Login untuk Chat
+                    <a href="{{ route('login') }}" class="w-full bg-emerald-50 border-2 border-bekas-green text-bekas-green hover:bg-emerald-100 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all text-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        Login untuk Masukkan Keranjang
                     </a>
-                @else
-                    <button disabled class="w-full sm:w-1/2 bg-gray-100 border-2 border-gray-200 text-gray-400 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 cursor-not-allowed">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
-                        Barang Anda Sendiri
-                    </button>
                 @endif
-                <a href="{{ route('checkout') }}" class="w-full sm:w-1/2 bg-bekas-green hover:bg-green-700 text-white text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-md">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    Beli Sekarang
-                </a>
+
             </div>
         </div>
     </div>

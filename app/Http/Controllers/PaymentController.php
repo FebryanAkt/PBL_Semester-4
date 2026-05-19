@@ -4,15 +4,58 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Cart;
+use App\Models\Transaction;
 use Midtrans\Config;
 use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
-    public function checkout()
+public function checkout(Request $request)
     {
         $clientKey = env('MIDTRANS_CLIENT_KEY');
-        return view('checkout', compact('clientKey'));
+        
+        // CEK MODE: Beli Langsung atau Dari Keranjang?
+        if ($request->has('item_id')) {
+            // -- MODE BELI LANGSUNG --
+            $item = \App\Models\Item::findOrFail($request->item_id);
+            
+            // Kita buat 'keranjang bohongan' di memori agar file checkout.blade.php 
+            // tetap bisa melakukan @foreach tanpa error
+            $cart = new \App\Models\Cart();
+            $cart->item = $item;
+            $cart->quantity = 1;
+            
+            $carts = collect([$cart]); // Ubah jadi collection
+            
+            // Tandai untuk dibawa ke Javascript
+            $isDirectCheckout = true;
+            $directItemId = $item->id;
+        } else {
+            // -- MODE KERANJANG --
+            $carts = \App\Models\Cart::with('item')->where('user_id', Auth::id())->get();
+
+            if ($carts->isEmpty()) {
+                return redirect()->route('home')->with('error', 'Keranjang belanja Anda masih kosong.');
+            }
+
+            $isDirectCheckout = false;
+            $directItemId = null;
+        }
+
+        // Hitung total
+        $totalBarang = $carts->sum(function($cart) {
+            return $cart->item->price * $cart->quantity;
+        });
+
+        $biayaPlatform = 2500;
+        $biayaPenanganan = 1500;
+        $totalPembayaran = $totalBarang + $biayaPlatform + $biayaPenanganan;
+
+        return view('checkout', compact(
+            'clientKey', 'carts', 'totalBarang', 'biayaPlatform', 
+            'biayaPenanganan', 'totalPembayaran', 'isDirectCheckout', 'directItemId'
+        ));
     }
 
     public function getToken(Request $request)
@@ -24,36 +67,52 @@ class PaymentController extends Controller
 
         $user = Auth::user();
 
-        // 1. Tangkap pilihan radio button dari frontend
-        $paymentMethod = $request->payment_method;
-
-        // 2. Cocokkan value radio button dengan kode Midtrans
-        $enabledPayments = [];
-        if ($paymentMethod === 'gopay') {
-            $enabledPayments = ['gopay'];
-        } elseif ($paymentMethod === 'shopeepay') {
-            $enabledPayments = ['shopeepay'];
-        } elseif ($paymentMethod === 'bca') {
-            $enabledPayments = ['bca_va'];
-        } elseif ($paymentMethod === 'mandiri') {
-            $enabledPayments = ['echannel']; // Di Midtrans, Mandiri VA disebut echannel
-        } elseif ($paymentMethod === 'bni') {
-            $enabledPayments = ['bni_va'];
+        // CEK ULANG HARGA DI DATABASE (Sesuai parameter dari frontend)
+        if ($request->is_direct == 'yes') {
+            // Mode Beli Langsung
+            $item = \App\Models\Item::findOrFail($request->item_id);
+            $totalBarang = $item->price;
+            $itemToTransaction = $item->id;
         } else {
-            // Untuk DANA / OVO biasanya menggunakan QRIS jika belum integrasi B2B khusus
-            $enabledPayments = ['other_qris'];
+            // Mode Keranjang
+            $carts = \App\Models\Cart::with('item')->where('user_id', $user->id)->get();
+            if ($carts->isEmpty()) {
+                return response()->json(['error' => 'Keranjang kosong'], 400);
+            }
+            $totalBarang = $carts->sum(function($cart) {
+                return $cart->item->price * $cart->quantity;
+            });
+            $itemToTransaction = $carts->first()->item_id;
         }
+
+        $grossAmount = $totalBarang + 2500 + 1500; // Tambah biaya admin
+
+        // Buat Transaksi
+        $transaction = \App\Models\Transaction::create([
+            'user_id' => $user->id,
+            'item_id' => $itemToTransaction, 
+            'price' => $grossAmount,
+            'status' => 'pending'
+        ]);
+
+        $paymentMethod = $request->payment_method;
+        $enabledPayments = [];
+        if ($paymentMethod === 'gopay') { $enabledPayments = ['gopay']; } 
+        elseif ($paymentMethod === 'shopeepay') { $enabledPayments = ['shopeepay']; } 
+        elseif ($paymentMethod === 'bca') { $enabledPayments = ['bca_va']; } 
+        elseif ($paymentMethod === 'mandiri') { $enabledPayments = ['echannel']; } 
+        elseif ($paymentMethod === 'bni') { $enabledPayments = ['bni_va']; } 
+        else { $enabledPayments = ['other_qris']; }
 
         $params = [
             'transaction_details' => [
-                'order_id' => rand(),
-                'gross_amount' => 2504000,
+                'order_id' => 'TRX-' . $transaction->id . '-' . time(), 
+                'gross_amount' => $grossAmount,
             ],
             'customer_details' => [
                 'first_name' => $user ? $user->name : 'Pelanggan',
                 'email' => $user ? $user->email : 'customer@example.com',
             ],
-            // 3. MASUKKAN PARAMETER INI UNTUK BYPASS MENU MIDTRANS
             'enabled_payments' => $enabledPayments
         ];
 
@@ -67,7 +126,6 @@ class PaymentController extends Controller
 
     public function callback(Request $request)
     {
-        // Nanti kita isi logika untuk menerima status sukses/gagal dari Midtrans di sini
         return response()->json(['message' => 'Callback diterima']);
     }
 }
