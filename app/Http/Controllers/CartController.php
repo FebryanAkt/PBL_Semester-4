@@ -19,10 +19,13 @@ class CartController extends Controller
     }
 
     // Menambahkan barang ke keranjang
-// Menambahkan barang ke keranjang
-    public function add(Request $request, $itemId)
+    // PERBAIKAN: Hapus parameter $itemId dari argumen fungsi
+    public function add(Request $request)
     {
         $user_id = Auth::id();
+        
+        // PERBAIKAN: Ambil item_id dari hidden input form request
+        $itemId = $request->input('item_id');
         
         // Ambil kuantitas dari request form, jika tidak ada default ke 1
         $qty = $request->input('quantity', 1);

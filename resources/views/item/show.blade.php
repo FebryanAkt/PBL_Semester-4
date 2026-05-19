@@ -25,12 +25,6 @@
                     if ($item->image) {
                         $images[] = $item->image;
                     }
-
-                    // kalau nanti ada multiple image
-                    // contoh: $item->images
-                    // foreach ($item->images as $img) {
-                    //     $images[] = $img->image;
-                    // }
                 @endphp
 
                 @if(count($images) > 0)
@@ -125,7 +119,6 @@
                     </div>
                 </div>
 
-                {{-- Bagian Tombol Aksi --}}
                 {{-- Bagian Tombol Aksi (Dibungkus dengan Alpine.js x-data) --}}
                 <div class="mt-auto pt-6 flex flex-col gap-4" x-data="{ qty: 1 }">
 
@@ -171,7 +164,6 @@
                             </button>
                         @endif
 
-                        {{-- Link Beli Sekarang dibuat dinamis mengambil nilai qty dari Alpine --}}
                         <a :href="'{{ route('checkout', ['item_id' => $item->id]) }}&quantity=' + qty"
                             class="w-full sm:w-1/2 bg-bekas-green hover:bg-green-700 text-white text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-md">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,8 +176,11 @@
 
                     {{-- Baris Bawah: Tombol Masukkan Keranjang --}}
                     @if(Auth::check() && Auth::id() != ($item->user_id ?? 1))
-                        <form action="{{ route('cart.add', $item->id) }}" method="POST" class="w-full">
+                        <form action="{{ route('cart.add') }}" method="POST" class="w-full">
                             @csrf
+                            
+                            <input type="hidden" name="item_id" value="{{ $item->id }}">
+                            
                             {{-- Input hidden untuk mengirim data kuantitas ke controller --}}
                             <input type="hidden" name="quantity" :value="qty">
 
