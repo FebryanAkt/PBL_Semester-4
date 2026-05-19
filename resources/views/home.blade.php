@@ -49,16 +49,16 @@
                 </div>
                 
                 <h2 class="text-4xl md:text-5xl font-extrabold text-bekas-dark leading-[1.15] tracking-tight">
-                    BELI SEKEN,<br class="hidden sm:block"> 
+                    BELI BARANG BEKAS,<br class="hidden sm:block"> 
                     <span class="text-bekas-green relative inline-block">
                         HEMAT,
                         <svg class="absolute w-full h-3 -bottom-1 left-0 text-emerald-300/40" fill="currentColor" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z"></path></svg>
                     </span> 
-                    & SUSTAINABLE
+                    & BERKELANJUTAN
                 </h2>
                 
                 <p class="text-base md:text-lg text-gray-600 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
-                    Temukan berbagai barang bekas berkualitas dengan harga yang bersahabat.
+                    Temukan berbagai barang bekas berkualitas dengan harga yang terjangkau.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row items-center gap-4 pt-2 justify-center md:justify-start">
@@ -75,7 +75,7 @@
                         @php
                             $banners = [
                                 ['image' => 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Promo Elektronik', 'subtitle' => 'Laptop & Gadget Kuliah'],
-                                ['image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Furniture Kosan', 'subtitle' => 'Meja, Kursi & Nyaman'],
+                                ['image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Perabotan Kosan', 'subtitle' => 'Meja, Kursi & Nyaman'],
                                 ['image' => 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Thrift Fashion', 'subtitle' => 'Tampil Kece Tanpa Kere'],
                                 ['image' => 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Alat Hobi', 'subtitle' => 'Musik, Olahraga & Fotografi']
                             ];
