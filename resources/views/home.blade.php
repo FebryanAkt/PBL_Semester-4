@@ -128,7 +128,7 @@
                                     @elseif($filter['icon'] == 'map')
                                         <svg class="w-4.5 h-4.5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.243-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                                     @elseif($filter['icon'] == 'badge')
-                                        <svg class="w-4.5 h-4.5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138z"></path></svg>
+                                        <svg class="w-4.5 h-4.5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
                                     @else
                                         <svg class="w-4.5 h-4.5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                     @endif
@@ -277,10 +277,11 @@
                                 <p class="text-lg font-black text-gray-900 leading-none">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
                                 
                                 <div class="flex items-center text-xs text-gray-500">
-                                    <svg class="w-3.5 h-3.5 mr-1.5 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 nudge 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
+                                    <svg class="w-3.5 h-3.5 mr-1.5 text-gray-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M11.54 22.351l.07.04.028.016a.76.76 0 00.723 0l.028-.015.071-.041a16.975 16.975 0 001.144-.742 19.58 19.58 0 002.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 00-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 002.682 2.282 16.975 16.975 0 001.145.742zM12 13.5a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd" /></svg>
                                     <span class="truncate font-medium">{{ $item->location }}</span>
                                 </div>
-                                <form action="{{ route('cart.add') }}" method="POST" class="w-full relative z-20">
+                                
+                                <form action="{{ route('cart.add') }}" method="POST" class="w-full relative z-20 add-to-cart-form">
                                     @csrf
                                     <input type="hidden" name="item_id" value="{{ $item->id }}">
                                     <button type="submit" class="btn-action w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-bekas-green hover:border-bekas-green hover:text-white transition-all duration-300 cursor-pointer">
@@ -341,6 +342,78 @@
 
             document.querySelectorAll('.animate-on-scroll').forEach((el) => {
                 observer.observe(el);
+            });
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cartForms = document.querySelectorAll('.add-to-cart-form');
+            
+            cartForms.forEach(form => {
+                form.addEventListener('submit', async function(e) {
+                    e.preventDefault(); // Mencegah halaman reload
+
+                    const btn = this.querySelector('button[type="submit"]');
+                    const originalHtml = btn.innerHTML; // Simpan tampilan tombol asli
+
+                    // Ubah tampilan tombol jadi "Loading"
+                    btn.innerHTML = `<svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Memproses...`;
+                    btn.disabled = true;
+
+                    try {
+                        // Kirim data ke backend
+                        const response = await fetch(this.action, {
+                            method: 'POST',
+                            body: new FormData(this),
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest', // Tanda AJAX
+                                'Accept': 'application/json'
+                            }
+                        });
+
+                        if (response.ok) {
+                            // 1. Ambil data JSON dari respons Controller
+                            const data = await response.json();
+
+                            // 2. Update Badge Keranjang di Header secara Real-Time!
+                            const cartBadge = document.getElementById('cart-badge');
+                            if (cartBadge && data.cart_count) {
+                                cartBadge.textContent = data.cart_count; // Ubah angkanya
+                                cartBadge.classList.remove('hidden'); // Munculkan jika sebelumnya 0 (hidden)
+                                
+                                // (Opsional) Beri animasi denyut kecil pada badge saat angkanya berubah
+                                cartBadge.classList.add('scale-125');
+                                setTimeout(() => cartBadge.classList.remove('scale-125'), 300);
+                            }
+
+                            // 3. Sukses! Ubah warna tombol jadi hijau
+                            btn.innerHTML = `<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Berhasil!`;
+                            btn.classList.add('bg-bekas-green', 'text-white', 'border-bekas-green');
+                            btn.classList.remove('bg-white', 'text-gray-700', 'border-gray-200');
+
+                            // Kembalikan tombol ke semula setelah 2 detik
+                            setTimeout(() => {
+                                btn.innerHTML = originalHtml;
+                                btn.disabled = false;
+                                btn.classList.remove('bg-bekas-green', 'text-white', 'border-bekas-green');
+                                btn.classList.add('bg-white', 'text-gray-700', 'border-gray-200');
+                            }, 2000);
+                        } else {
+                            if(response.status === 401) {
+                                window.location.href = "{{ route('login') }}"; 
+                                return;
+                            }
+                            throw new Error('Gagal');
+                        }
+                    } catch (error) {
+                        btn.innerHTML = '❌ Gagal';
+                        setTimeout(() => {
+                            btn.innerHTML = originalHtml;
+                            btn.disabled = false;
+                        }, 2000);
+                    }
+                });
             });
         });
     </script>

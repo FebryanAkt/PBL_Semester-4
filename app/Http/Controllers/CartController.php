@@ -14,19 +14,18 @@ class CartController extends Controller
     {
         // Ambil data keranjang milik user yang sedang login beserta data barangnya
         $carts = Cart::with('item')->where('user_id', Auth::id())->get();
-        
+
         return view('cart.index', compact('carts'));
     }
 
     // Menambahkan barang ke keranjang
-    // PERBAIKAN: Hapus parameter $itemId dari argumen fungsi
     public function add(Request $request)
     {
         $user_id = Auth::id();
-        
-        // PERBAIKAN: Ambil item_id dari hidden input form request
+
+        // Ambil item_id dari hidden input form request
         $itemId = $request->input('item_id');
-        
+
         // Ambil kuantitas dari request form, jika tidak ada default ke 1
         $qty = $request->input('quantity', 1);
 
@@ -47,6 +46,19 @@ class CartController extends Controller
             ]);
         }
 
+        // TAMBAHAN: Hitung total kuantitas keranjang terbaru untuk user ini
+        $totalCartCount = Cart::where('user_id', $user_id)->sum('quantity');
+
+        // TANGGAPAN UNTUK AJAX REQUEST
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Barang berhasil ditambahkan ke keranjang!',
+                'cart_count' => $totalCartCount // <-- Kirim total terbaru ke frontend
+            ]);
+        }
+
+        // Tanggapan normal
         return redirect()->back()->with('success', 'Barang berhasil ditambahkan ke keranjang!');
     }
 
