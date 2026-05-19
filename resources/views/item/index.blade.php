@@ -26,7 +26,7 @@
                 <h2 class="text-xl font-bold">{{ $tersedia }}</h2>
             </div>
             <div class="bg-yellow-400 p-4 rounded-xl text-center">
-                <p>Booking</p>
+                <p>Pesanan</p>
                 <h2 class="text-xl font-bold">{{ $booking }}</h2>
             </div>
             <div class="bg-red-700 text-white p-4 rounded-xl text-center">
