@@ -5,6 +5,7 @@ use App\Http\Controllers\ItemController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\CartController;
 
 // Auth (Login / Register / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -42,6 +43,14 @@ Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.upda
 //     //->middleware('auth')
 //     ->name('barang.store');
 
+Route::middleware('auth')->group(function () {
+    // Route Keranjang
+    Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
+    Route::post('/keranjang/tambah/{item_id}', [CartController::class, 'add'])->name('cart.add');
+    Route::delete('/keranjang/hapus/{id}', [CartController::class, 'remove'])->name('cart.remove');
+    
+});
+
 // Checkout & Pembayaran
 Route::middleware('auth')->group(function () {
     // Opsional: Anda bisa menambahkan {id} barang jika ingin mengirim data spesifik
@@ -49,6 +58,7 @@ Route::middleware('auth')->group(function () {
     // Tambahkan ini di dalam grup middleware('auth') tempat Anda menaruh route checkout
     Route::post('/checkout/get-token', [PaymentController::class, 'getToken'])->name('checkout.getToken');
     Route::get('/checkout', [PaymentController::class, 'checkout'])->name('checkout');
+    
 });
 
 // Chat System
