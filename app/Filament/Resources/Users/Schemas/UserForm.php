@@ -36,8 +36,10 @@ class UserForm
                     ->label('Role')
                     ->options([
                         'admin' => 'Admin',
-                        'user'  => 'User',
+                        'seller' => 'Penjual',
+                        'buyer'  => 'Pembeli',
                     ])
+                    ->default('buyer')
                     ->required(),
 
                 Toggle::make('is_active')

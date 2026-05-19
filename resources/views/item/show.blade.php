@@ -106,7 +106,7 @@
                 </div>
                 <div class="flex items-center text-gray-600">
                     <svg class="w-5 h-5 mr-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    <span class="font-medium">Dijual oleh: <span class="text-gray-900 font-bold">Mahasiswa UB</span></span>
+                    <span class="font-medium">Dijual oleh: <span class="text-gray-900 font-bold">{{ $item->user->name ?? 'Penjual Bekaswit' }}</span></span>
                 </div>
                 
                 <div class="pt-4 mt-4">
@@ -122,8 +122,8 @@
                 
                 {{-- Baris Atas: Chat Penjual & Beli Sekarang --}}
                 <div class="flex flex-col sm:flex-row gap-3">
-                    @if(Auth::check() && Auth::id() != ($item->user_id ?? 1))
-                        <a href="{{ route('chat.show', ['id' => $item->user_id ?? 1, 'item_id' => $item->id]) }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
+                    @if(Auth::check() && $item->user_id && Auth::id() != $item->user_id)
+                        <a href="{{ route('chat.show', ['id' => $item->user_id, 'item_id' => $item->id]) }}" class="w-full sm:w-1/2 bg-white border-2 border-bekas-dark text-bekas-dark hover:bg-gray-50 text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all">
                             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
                             Chat Penjual
                         </a>

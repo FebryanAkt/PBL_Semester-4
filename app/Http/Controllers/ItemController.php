@@ -8,6 +8,17 @@ use Illuminate\Http\Request;
 
 class ItemController extends Controller
 {
+    private function denyBuyerIfNeeded()
+    {
+        if (!Auth::user()?->isSeller()) {
+            return redirect()
+                ->route('home')
+                ->with('success', 'Akun pembeli tidak memiliki akses ke fitur jual barang.');
+        }
+
+        return null;
+    }
+
     public function landing(Request $request)
     {
         $query = Item::latest();
@@ -95,7 +106,11 @@ class ItemController extends Controller
 
     public function myItems()
     {
-        $items = Item::latest()->get();
+        if ($response = $this->denyBuyerIfNeeded()) {
+            return $response;
+        }
+
+        $items = Item::where('user_id', Auth::id())->latest()->get();
         
         $total = $items->count();
         $tersedia = $items->where('status', 'tersedia')->count();
@@ -108,13 +123,24 @@ class ItemController extends Controller
     // EDIT BARANG
     public function edit($id)
     {
+        if ($response = $this->denyBuyerIfNeeded()) {
+            return $response;
+        }
+
         $item = Item::findOrFail($id);
+        abort_if(!Auth::user()->isAdmin() && (int) $item->user_id !== (int) Auth::id(), 403);
+
         return view('item.edit', compact('item'));
     }
 
     public function update(Request $request, $id)
     {
+        if ($response = $this->denyBuyerIfNeeded()) {
+            return $response;
+        }
+
         $item = Item::findOrFail($id);
+        abort_if(!Auth::user()->isAdmin() && (int) $item->user_id !== (int) Auth::id(), 403);
 
         $request->validate([
             'name' => 'required',
@@ -145,12 +171,19 @@ class ItemController extends Controller
 
     public function jual()
     {
+        if ($response = $this->denyBuyerIfNeeded()) {
+            return $response;
+        }
         
         return view('item.sell'); 
     }
 
     public function jual_simpan(Request $request)
     {
+        if ($response = $this->denyBuyerIfNeeded()) {
+            return $response;
+        }
+
         // Validasi
         $request->validate([
             'nama_barang' => 'required|min:5',

@@ -11,7 +11,7 @@
         
         <div class="divide-y divide-gray-100">
             @forelse($conversations as $conv)
-                <a href="{{ route('chat.show', $conv['user']->id) }}" class="flex items-center gap-4 p-5 hover:bg-gray-50 transition-colors">
+                <a href="{{ route('chat.show', ['id' => $conv['user']->id, 'item_id' => optional($conv['item'])->id]) }}" class="flex items-center gap-4 p-5 hover:bg-gray-50 transition-colors">
                     <div class="w-12 h-12 rounded-full bg-bekas-green/10 flex items-center justify-center text-bekas-green font-bold text-lg shrink-0">
                         {{ substr($conv['user']->name, 0, 1) }}
                     </div>
@@ -20,6 +20,11 @@
                             <h3 class="font-bold text-gray-900 truncate">{{ $conv['user']->name }}</h3>
                             <span class="text-xs text-gray-500 whitespace-nowrap ml-2">{{ $conv['last_message']->created_at->diffForHumans() }}</span>
                         </div>
+                        @if($conv['item'])
+                            <p class="text-xs text-bekas-green font-bold uppercase tracking-wider truncate mb-1">
+                                {{ $conv['item']->name }}
+                            </p>
+                        @endif
                         <p class="text-sm text-gray-600 truncate {{ $conv['unread'] > 0 ? 'font-semibold text-gray-900' : '' }}">
                             {{ $conv['last_message']->sender_id == Auth::id() ? 'Anda: ' : '' }}{{ $conv['last_message']->message }}
                         </p>

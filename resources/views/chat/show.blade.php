@@ -17,7 +17,7 @@
                 </div>
                 <div>
                     <h2 class="font-bold text-gray-900">{{ $partner->name }}</h2>
-                    <p class="text-xs text-gray-500">Penjual Bekaswit</p>
+                    <p class="text-xs text-gray-500">{{ $partner->isSeller() ? 'Penjual Bekaswit' : 'Pembeli Bekaswit' }}</p>
                 </div>
             </div>
         </div>
@@ -100,6 +100,12 @@ document.addEventListener('DOMContentLoaded', function() {
         lastMessageId = items[items.length - 1].dataset.id;
     }
 
+    function escapeHtml(value) {
+        const div = document.createElement('div');
+        div.textContent = value;
+        return div.innerHTML;
+    }
+
     // Send Message
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -146,14 +152,14 @@ document.addEventListener('DOMContentLoaded', function() {
         if(msg.is_mine) {
             div.innerHTML = `
                 <div class="bg-bekas-green text-white max-w-[75%] rounded-2xl rounded-tr-sm px-4 py-2 shadow-sm transform transition-all duration-300 scale-100 opacity-100">
-                    <p class="text-sm">${msg.text}</p>
+                    <p class="text-sm">${escapeHtml(msg.text)}</p>
                     <span class="text-[10px] text-green-100 mt-1 block text-right">${msg.time}</span>
                 </div>
             `;
         } else {
             div.innerHTML = `
                 <div class="bg-gray-100 text-gray-800 max-w-[75%] rounded-2xl rounded-tl-sm px-4 py-2 border border-gray-200 transform transition-all duration-300 scale-100 opacity-100">
-                    <p class="text-sm">${msg.text}</p>
+                    <p class="text-sm">${escapeHtml(msg.text)}</p>
                     <span class="text-[10px] text-gray-400 mt-1 block">${msg.time}</span>
                 </div>
             `;
@@ -166,7 +172,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Polling for "Real-Time" feel every 3 seconds
     setInterval(() => {
-        fetch("{{ route('chat.show', $partner->id) }}?item_id={{ request('item_id') }}", {
+        fetch(@json(route('chat.show', ['id' => $partner->id, 'item_id' => request('item_id')])), {
             headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
         .then(res => res.json())

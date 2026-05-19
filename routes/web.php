@@ -27,12 +27,12 @@ Route::get('/produk/{id}', [ItemController::class, 'show'])->name('produk.detail
 
 // Barang Saya
 Route::get('/barang-saya', [ItemController::class, 'myItems'])
-    //->middleware('auth')
+    ->middleware('auth')
     ->name('barang.saya');
 
 // Edit Barang
-Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->name('barang.edit');
-Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.update');
+Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->middleware('auth')->name('barang.edit');
+Route::put('/barang/{id}', [ItemController::class, 'update'])->middleware('auth')->name('barang.update');
 
 // // TAMBAH BARANG
 // Route::get('/barang/tambah', [ItemController::class, 'create'])

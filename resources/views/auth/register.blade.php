@@ -47,6 +47,27 @@
                 <p class="text-xs text-gray-400 mt-1">Disarankan menggunakan email kampus</p>
             </div>
 
+            <!-- Pilih Jenis Akun -->
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">Jenis Akun</label>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="role" value="buyer" class="peer sr-only" {{ old('role', 'buyer') === 'buyer' ? 'checked' : '' }}>
+                        <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-4 transition-all peer-checked:border-bekas-green peer-checked:bg-green-50">
+                            <p class="font-bold text-gray-800">Pembeli</p>
+                            <p class="text-xs text-gray-500 mt-1">Beli barang dan chat penjual.</p>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="role" value="seller" class="peer sr-only" {{ old('role') === 'seller' ? 'checked' : '' }}>
+                        <div class="rounded-xl border-2 border-gray-200 bg-gray-50 p-4 transition-all peer-checked:border-bekas-green peer-checked:bg-green-50">
+                            <p class="font-bold text-gray-800">Penjual</p>
+                            <p class="text-xs text-gray-500 mt-1">Jual dan kelola barang sendiri.</p>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <!-- Password -->
             <div>
                 <label for="password" class="block text-sm font-bold text-gray-700 mb-2">Kata Sandi</label>

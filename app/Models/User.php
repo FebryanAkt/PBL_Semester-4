@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'university', 'address', 'phone_number','avatar'])]
+#[Fillable(['name', 'email', 'password', 'role', 'university', 'address', 'phone_number','avatar'])]
 #[Hidden(['password', 'remember_token'])]
 class User extends Authenticatable
 {
@@ -33,6 +33,21 @@ class User extends Authenticatable
     public function items()
     {
         return $this->hasMany(Item::class);
+    }
+
+    public function isSeller(): bool
+    {
+        return in_array($this->role, ['seller', 'admin'], true);
+    }
+
+    public function isBuyer(): bool
+    {
+        return $this->role === 'buyer';
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 
     public function transactions()
