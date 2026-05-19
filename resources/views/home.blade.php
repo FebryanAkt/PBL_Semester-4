@@ -4,43 +4,40 @@
 
 @section('content')
     <!-- Hero Section -->
-    <div class="relative overflow-hidden bg-gray-50/50">
-        <!-- Subtle Pattern Background -->
+<div class="relative overflow-hidden bg-gray-50/50">
         <div class="absolute inset-0 opacity-[0.03]" style="background-image: radial-gradient(#1f2937 1px, transparent 1px); background-size: 32px 32px;"></div>
         
-        <div class="px-6 md:px-12 pt-16 md:pt-24 pb-24 md:pb-32 flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto gap-10 text-center md:text-left relative z-10">
-            <!-- Hero Content -->
-            <div class="w-full md:w-1/2 space-y-8">
+        <div class="px-4 sm:px-6 pt-16 md:pt-24 pb-24 md:pb-32 flex flex-col md:flex-row justify-between items-center max-w-6xl mx-auto gap-12 text-center md:text-left relative z-10">
+            
+            <div class="w-full md:w-1/2 space-y-6 md:space-y-8 pr-0 md:pr-4">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bekas-green/10 text-bekas-green text-sm font-bold tracking-wide border border-bekas-green/20">
                     ✨ Marketplace Mahasiswa Malang
                 </div>
                 
-                <h2 class="text-4xl sm:text-5xl md:text-[3.5rem] font-extrabold text-bekas-dark leading-[1.15] tracking-tight">
+                <h2 class="text-4xl md:text-5xl font-extrabold text-bekas-dark leading-[1.15] tracking-tight">
                     BELI SEKEN,<br class="hidden sm:block"> 
                     <span class="text-bekas-green relative inline-block">
                         HEMAT,
-                        <!-- Underline decoration -->
                         <svg class="absolute w-full h-3 -bottom-1 left-0 text-emerald-300/40" fill="currentColor" viewBox="0 0 100 10" preserveAspectRatio="none"><path d="M0 5 Q 50 10 100 5 L 100 10 L 0 10 Z"></path></svg>
                     </span> 
                     & SUSTAINABLE
                 </h2>
                 
-                <p class="text-lg text-gray-600 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
+                <p class="text-base md:text-lg text-gray-600 max-w-lg mx-auto md:mx-0 leading-relaxed font-medium">
                     Temukan berbagai barang bekas berkualitas dengan harga yang bersahabat.
                 </p>
                 
                 <div class="flex flex-col sm:flex-row items-center gap-4 pt-2 justify-center md:justify-start">
-                    <a href="#katalog-produk" class="flex items-center justify-center gap-3 bg-bekas-dark text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg w-full sm:w-auto">
+                    <a href="#katalog-produk" class="group flex items-center justify-center gap-3 bg-bekas-dark text-white px-8 py-4 rounded-xl font-bold transition-all duration-300 shadow-lg hover:scale-105 hover:shadow-2xl hover:shadow-bekas-dark/40 w-full sm:w-auto">
                         JELAJAHI SEKARANG
-                        <svg class="w-5 h-5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        <svg class="w-5 h-5 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
                 </div>
             </div>
             
-            <!-- Hero Slider -->
-            <div class="w-full md:w-1/2 mt-10 md:mt-0 flex items-center justify-center">
+            <div class="w-full md:w-1/2 mt-12 md:mt-0 flex items-center justify-center md:justify-end">
                 
-                <div class="w-full max-w-[650px] aspect-[4/3] md:aspect-[16/9] relative overflow-hidden rounded-2xl shadow-2xl border-[6px] border-white bg-white" id="banner-slider">
+                <div class="w-full max-w-[480px] aspect-[4/3] md:aspect-[16/10] relative overflow-hidden rounded-2xl shadow-2xl border-[6px] border-white bg-white" id="banner-slider">
                     <div id="slider-track" class="flex w-full h-full transition-transform duration-700 ease-in-out">
                         @php
                             $banners = [
@@ -54,16 +51,16 @@
                         @foreach($banners as $banner)
                             <div class="slider-item w-full h-full flex-shrink-0 relative">
                                 <img src="{{ $banner['image'] }}" class="w-full h-full object-cover transition-transform duration-1000 ease-out" alt="{{ $banner['title'] }}">
-                                <!-- Clean black gradient overlay -->
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-10">
-                                    <h3 class="text-white font-extrabold text-2xl md:text-4xl tracking-tight mb-2">{{ $banner['title'] }}</h3>
-                                    <p class="text-gray-200 font-medium text-sm md:text-lg">{{ $banner['subtitle'] }}</p>
+                                    <h3 class="text-white font-extrabold text-2xl md:text-3xl tracking-tight mb-1.5">{{ $banner['title'] }}</h3>
+                                    <p class="text-gray-200 font-medium text-sm md:text-base">{{ $banner['subtitle'] }}</p>
                                 </div>
                             </div>
                         @endforeach
                     </div>
                 </div>
             </div>
+            
         </div>
     </div>
 
@@ -88,9 +85,9 @@
                     @foreach($filters as $fIdx => $filter)
                         <div class="relative custom-dropdown" data-dropdown="{{ $filter['id'] }}">
                             <input type="hidden" name="{{ $filter['id'] }}" id="input-{{ $filter['id'] }}" value="{{ request($filter['id'], $filter['options'][0]) }}">
-                            {{-- Trigger Button --}}
+                        {{-- Trigger Button --}}
                             <button type="button" 
-                                class="dropdown-trigger w-full flex items-center gap-3 px-4 py-3 bg-gray-50 border border-transparent rounded-xl transition-colors duration-200 cursor-pointer"
+                                class="dropdown-trigger w-full flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-200 border border-transparent rounded-xl transition-all duration-300 cursor-pointer"
                                 onclick="toggleDropdown('{{ $filter['id'] }}')">
                                 <div class="flex items-center justify-center w-8 h-8 rounded-lg bg-white shadow-sm text-gray-500 transition-colors duration-200 shrink-0">
                                     @if($filter['icon'] == 'grid')
@@ -127,7 +124,7 @@
 
                 {{-- Search Button --}}
                 <div class="flex-shrink-0">
-                    <button type="submit" class="w-full lg:w-auto h-full bg-bekas-green text-white px-8 py-3.5 rounded-xl flex justify-center items-center gap-2.5 transition-colors duration-300 focus:outline-none focus:ring-4 focus:ring-green-700/20 font-bold text-sm">
+                    <button type="submit" class="w-full lg:w-auto h-full bg-bekas-green text-white px-8 py-3.5 rounded-xl flex justify-center items-center gap-2.5 transition-all duration-300 shadow-md hover:scale-[1.03] focus:outline-none focus:ring-4 focus:ring-green-700/20 font-bold text-sm">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                         <span>Cari</span>
                     </button>
@@ -205,12 +202,31 @@
             }
         });
     </script>
+        {{-- Catalog Product --}}
+        {{-- Style --}}
+    <style>
+        /* 1. Animasi dasar untuk card saat di-hover (Membesar & Bayangan) */
+        .product-card {
+            transition: all 0.3s ease;
+        }
+        .product-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
 
-    <div id="katalog-produk" class="max-w-7xl mx-auto px-6 pt-20 pb-24 scroll-mt-4">
+        /* 2. PENGECUALIAN: Saat tombol 'btn-action' di-hover, kembalikan ukuran */
+        .product-card:has(.btn-action:hover) {
+            transform: scale(1);
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+    {{-- kontainer --}}
+    <div id="katalog-produk" class="max-w-6xl mx-auto px-4 sm:px-6 pt-20 pb-24 scroll-mt-4">
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 md:gap-8">
             
-            @forelse ($items as $item)
-                <div class="bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative">
+            {{-- Product Cards --}}
+           @forelse ($items as $item)
+                <div class="product-card bg-white p-3.5 rounded-2xl shadow-sm border border-gray-100 flex flex-col h-full relative">
 
                     <div class="w-full aspect-[4/3] bg-gray-100 rounded-xl relative mb-4 flex items-center justify-center overflow-hidden shrink-0">
                         @if($item->image)
@@ -233,9 +249,11 @@
                             <span class="text-[10px] font-bold text-bekas-green uppercase tracking-wider">{{ $item->category ?? 'Lainnya' }}</span>
                         </div>
                         
-                        <h3 class="text-base font-bold text-gray-800 line-clamp-2 leading-tight transition-colors mb-3">
+                        <h3 class="card-title text-base font-bold text-gray-800 line-clamp-2 leading-tight mb-3">
                             <a href="{{ route('produk.detail', ['id' => $item->id]) }}" class="before:absolute before:inset-0 before:z-10 focus:outline-none">
-                                {{ $item->name }}
+                                <span class="relative z-20 hover:text-bekas-green transition-colors duration-300">
+                                    {{ $item->name }}
+                                </span>
                             </a>
                         </h3>
                         
@@ -247,7 +265,7 @@
                                 <span class="truncate font-medium">{{ $item->location }}</span>
                             </div>
 
-                            <a href="https://wa.me/6281234567890" target="_blank" class="relative z-20 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+                            <a href="https://wa.me/6281234567890" target="_blank" class="btn-action relative z-20 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 hover:bg-bekas-green hover:border-bekas-green hover:text-white transition-all duration-300">
                                 <svg viewBox="0 0 448 512" class="w-4 h-4 fill-current"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zM223.9 413.3c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 334.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 54.3 0 105.4 21.2 143.8 59.6 38.4 38.4 59.6 89.5 59.6 143.8 0 101.7-82.8 184.5-184.6 184.5zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
                                 Hubungi Penjual
                             </a>
