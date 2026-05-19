@@ -47,6 +47,23 @@ class CartController extends Controller
         return redirect()->back()->with('success', 'Barang berhasil ditambahkan ke keranjang!');
     }
 
+    // Mengupdate jumlah barang (Plus/Minus) di keranjang
+    public function update(Request $request, $id)
+    {
+        $cart = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
+
+        if ($request->action == 'plus') {
+            $cart->increment('quantity');
+        } elseif ($request->action == 'minus') {
+            // Pastikan quantity tidak kurang dari 1. Jika 1, abaikan atau biarkan user pakai tombol hapus.
+            if ($cart->quantity > 1) {
+                $cart->decrement('quantity');
+            }
+        }
+
+        return redirect()->back(); // Halaman akan otomatis refresh dan menghitung ulang total
+    }
+
     // Menghapus barang dari keranjang
     public function remove($id)
     {
