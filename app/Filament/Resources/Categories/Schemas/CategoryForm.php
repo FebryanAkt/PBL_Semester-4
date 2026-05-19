@@ -11,7 +11,7 @@ class CategoryForm
     public static function configure(Schema $schema): Schema
     {
         return $schema->components([
-            TextInput::make('name')
+            TextInput::make('nama')
                 ->label('Nama Kategori')
                 ->required()
                 ->live()

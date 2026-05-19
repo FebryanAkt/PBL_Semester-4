@@ -8,8 +8,8 @@ use App\Filament\Widgets\BarangCategoryChart;
 
 class DashboardAnalytics extends Page
 {
-    protected static ?string $navigationLabel = 'Analytics';
-    protected static ?string $title = 'Dashboard Analytics';
+    protected static ?string $navigationLabel = 'Analitik';
+    protected static ?string $title = 'Dasbor Analitik';
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-chart-bar';
     // gunakan enum Icon, bukan string
     
