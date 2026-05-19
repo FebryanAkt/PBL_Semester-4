@@ -15,6 +15,7 @@ class Item extends Model
     'price',
     'category',
     'location',
+    'phone',
     'condition',
     'description',
     'image',

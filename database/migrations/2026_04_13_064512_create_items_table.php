@@ -21,6 +21,7 @@ return new class extends Migration
             $table->string('image')->nullable();
             $table->integer('price');
             $table->string('location');
+            $table->string('phone');
             $table->string('condition')->default('Bekas');
 
             //STATUS: tersedia, terjual, atau disewa
