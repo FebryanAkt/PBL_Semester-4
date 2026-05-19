@@ -275,6 +275,7 @@
                                     payment_method: selectedMethod,
                                     is_direct: "{{ $isDirectCheckout ? 'yes' : 'no' }}", // Tambahan status
                                     item_id: "{{ $directItemId }}" // Tambahan ID barang jika mode langsung
+                                    quantity: "{{ $directQuantity ?? 1 }}"
                                 })
                             });
 
