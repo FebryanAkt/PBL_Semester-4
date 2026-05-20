@@ -178,7 +178,7 @@ class ItemController extends Controller
         return view('item.sell'); 
     }
 
-public function jual_simpan(Request $request)
+    public function jual_simpan(Request $request)
     {
         if ($response = $this->denyBuyerIfNeeded()) {
             return $response;
@@ -193,6 +193,7 @@ public function jual_simpan(Request $request)
             'nomor_telp'  => 'required|string|min:10|max:15', // <--- TAMBAHAN VALIDASI
             'kondisi'     => 'required',
             'foto_utama'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'foto_tambahan.*' => 'image|mimes:jpg,jpeg,png|max:2048',
             // Hapus baris validasi status jika di form tidak ada input status, 
             // biarkan default database yang bekerja (tersedia)
         ]);
@@ -205,17 +206,32 @@ public function jual_simpan(Request $request)
             $file->move(public_path('images'), $fileName);
         }
 
+        $additionalImages = [];
+
+        if ($request->hasFile('foto_tambahan')) {
+
+            foreach ($request->file('foto_tambahan') as $image) {
+
+                $imageName = time() . '_' . $image->getClientOriginalName();
+
+                $image->move(public_path('images'), $imageName);
+
+                $additionalImages[] = $imageName;
+            }
+        }
+
         // Simpan data
         Item::create([
             'user_id'     => Auth::id(),
             'name'        => $request->nama_barang,
             'price'       => $request->harga,
-            'category'    => $request->kategori,
+            'category_id' => $request->kategori,
             'location'    => $request->lokasi,
             'phone'       => $request->nomor_telp, // <--- SIMPAN KE DATABASE
             'condition'   => $request->kondisi,
             'description' => $request->deskripsi,
             'image'       => $fileName,
+            'images'      => json_encode($additionalImages),
             'status'      => 'tersedia', // <--- Set default langsung di sini
         ]);
 

@@ -24,11 +24,22 @@
                     </div>
                 </div>
                 <div class="md:col-span-7 grid grid-cols-3 gap-2">
-                    @for ($i = 1; $i <= 6; $i++)
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg h-28 flex flex-col items-center justify-center bg-gray-50 relative">
+                   @for ($i = 1; $i <= 6; $i++)
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg h-28 flex flex-col items-center justify-center bg-gray-50 relative overflow-hidden">
+
+                        <img id="previewTambahan{{ $i }}"
+                            class="hidden w-full h-full object-cover absolute inset-0">
+
                         <span class="text-gray-400 text-2xl">+</span>
+
                         <span class="text-gray-400 text-xs uppercase">tambah</span>
-                        <input type="file" name="foto_tambahan[]" class="absolute inset-0 opacity-0 cursor-pointer">
+
+                        <input type="file"
+                            name="foto_tambahan[]"
+                            accept="image/*"
+                            onchange="previewTambahan(event, {{ $i }})"
+                            class="absolute inset-0 opacity-0 cursor-pointer">
+
                     </div>
                     @endfor
                 </div>
@@ -53,10 +64,10 @@
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
                     <select name="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-500">
-                        <option value="Elektronik">Elektronik</option>
-                        <option value="Furniture">Furnitur</option>
-                        <option value="Fashion">Fashion</option>
-                        <option value="Hobi">Hobi</option>
+                        <option value="1">Elektronik</option>
+                        <option value="2">Furniture</option>
+                        <option value="3">Fashion</option>
+                        <option value="4">Hobi</option>
 
                     </select>
                 </div>
@@ -104,6 +115,26 @@ function previewImage(event) {
 
         reader.onload = function(e) {
             preview.src = e.target.result;
+            preview.classList.remove('hidden');
+        }
+
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+function previewTambahan(event, index) {
+
+    const input = event.target;
+
+    const preview = document.getElementById('previewTambahan' + index);
+
+    if (input.files && input.files[0]) {
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+
+            preview.src = e.target.result;
+
             preview.classList.remove('hidden');
         }
 

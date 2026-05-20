@@ -13,12 +13,13 @@ class Item extends Model
     'user_id',
     'name',
     'price',
-    'category',
+    'category_id',
     'location',
     'phone',
     'condition',
     'description',
     'image',
+    'images',
     'status',
     ];
 

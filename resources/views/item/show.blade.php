@@ -22,8 +22,19 @@
                 @php
                     $images = [];
 
+                    // gambar utama
                     if ($item->image) {
                         $images[] = $item->image;
+                    }
+
+                    // gambar tambahan
+                    if ($item->images) {
+
+                        $additionalImages = json_decode($item->images, true);
+
+                        if (is_array($additionalImages)) {
+                            $images = array_merge($images, $additionalImages);
+                        }
                     }
                 @endphp
 
