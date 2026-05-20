@@ -21,7 +21,7 @@ class ItemController extends Controller
 
     public function landing(Request $request)
     {
-        $query = Item::latest();
+        $query = Item::where('status', '!=', 'terjual')->latest();
 
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
@@ -60,7 +60,7 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
-        $query = Item::latest();
+        $query = Item::where('status', '!=', 'terjual')->latest();
 
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
