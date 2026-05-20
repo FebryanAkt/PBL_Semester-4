@@ -54,7 +54,7 @@
                     </form>
                     
                     <div class="bg-blue-50 text-blue-600 rounded-lg p-3 text-xs w-full">
-                        Upload avatar baru. Resolusi maksimal 2MB. (Format: JPG, PNG).
+                        Unggah avatar baru. Resolusi maksimal 2MB. (Format: JPG, PNG).
                     </div>
                     
                     <div class="mt-6 pt-6 border-t border-gray-100 w-full text-xs text-gray-400">

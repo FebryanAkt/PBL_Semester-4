@@ -18,19 +18,19 @@ class ItemsTable
                     ->label('ID')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                Tables\Columns\TextColumn::make('nama')
+                    ->label('Nama')
                     ->searchable(),
 
-                Tables\Columns\TextColumn::make('price')
-                    ->label('Price')
+                Tables\Columns\TextColumn::make('harga')
+                    ->label('Harga')
                     ->numeric(),
 
-                Tables\Columns\TextColumn::make('stock')
-                    ->label('Stock'),
+                Tables\Columns\TextColumn::make('stok')
+                    ->label('Stok'),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Dibuat Pada')
                     ->dateTime(),
             ])
             ->filters([

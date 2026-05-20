@@ -18,13 +18,13 @@ use Filament\Tables\Table;
 
 class ItemsRelationManager extends RelationManager
 {
-    protected static string $relationship = 'items';
+    protected static string $relationship = 'barang';
 
     public function form(Schema $schema): Schema
     {
         return $schema
             ->components([
-                TextInput::make('name')
+                TextInput::make('nama')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -33,9 +33,9 @@ class ItemsRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return $table
-            ->recordTitleAttribute('name')
+            ->recordTitleAttribute('nama')
             ->columns([
-                TextColumn::make('name')
+                TextColumn::make('nama')
                     ->searchable(),
             ])
             ->filters([

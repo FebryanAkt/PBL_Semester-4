@@ -8,7 +8,7 @@
         @csrf
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-            <h5 class="text-lg font-bold text-bekas-green mb-4 italic uppercase">upload Foto</h5>
+            <h5 class="text-lg font-bold text-bekas-green mb-4 italic uppercase">unggah Foto</h5>
             <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div class="md:col-span-5">
                     <div class="border-2 border-dashed border-gray-300 rounded-lg h-64 flex flex-col items-center justify-center bg-gray-50 relative overflow-hidden">
@@ -54,7 +54,7 @@
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
                     <select name="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-500">
                         <option value="Elektronik">Elektronik</option>
-                        <option value="Furniture">Furniture</option>
+                        <option value="Furniture">Furnitur</option>
                         <option value="Fashion">Fashion</option>
                         <option value="Hobi">Hobi</option>
 
