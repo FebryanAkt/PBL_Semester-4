@@ -178,7 +178,7 @@ class ItemController extends Controller
         return view('item.sell'); 
     }
 
-    public function jual_simpan(Request $request)
+public function jual_simpan(Request $request)
     {
         if ($response = $this->denyBuyerIfNeeded()) {
             return $response;
@@ -190,20 +190,18 @@ class ItemController extends Controller
             'harga'       => 'required|numeric',
             'kategori'    => 'required',
             'lokasi'      => 'required',
+            'nomor_telp'  => 'required|string|min:10|max:15', // <--- TAMBAHAN VALIDASI
             'kondisi'     => 'required',
             'foto_utama'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
-            'status'      => 'required|in:tersedia,booking,terjual',
+            // Hapus baris validasi status jika di form tidak ada input status, 
+            // biarkan default database yang bekerja (tersedia)
         ]);
 
         // Upload gambar
         $fileName = null;
-
         if ($request->hasFile('foto_utama')) {
-
             $file = $request->file('foto_utama');
-
             $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
-
             $file->move(public_path('images'), $fileName);
         }
 
@@ -214,10 +212,11 @@ class ItemController extends Controller
             'price'       => $request->harga,
             'category'    => $request->kategori,
             'location'    => $request->lokasi,
+            'phone'       => $request->nomor_telp, // <--- SIMPAN KE DATABASE
             'condition'   => $request->kondisi,
             'description' => $request->deskripsi,
             'image'       => $fileName,
-            'status'      => $request->status,
+            'status'      => 'tersedia', // <--- Set default langsung di sini
         ]);
 
         return redirect()

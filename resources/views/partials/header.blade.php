@@ -1,11 +1,15 @@
 <nav class="bg-bekas-dark text-white py-4 px-6 md:px-12 flex justify-between items-center shadow-md sticky top-0 z-50">
     <div class="flex items-center gap-3">
-        <a href="{{ route('home') }}" class="flex items-center gap-3 hover:opacity-90 transition-opacity">
-            <div class="w-11 h-11 flex items-center justify-center">
+        <a href="{{ route('home') }}" class="flex items-center gap-3 group relative transition-all duration-300">
+            
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[160%] bg-white/10 blur-[15px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"></div>
+            
+            <div class="w-11 h-11 flex items-center justify-center transition-transform duration-300 group-hover:scale-105 relative z-10">
                 <img src="{{ asset('images/logo.png') }}" alt="Logo Bekaswit" class="w-full h-full object-contain">
             </div>
-            <div class="leading-tight">
-                <h1 class="font-bold text-xl tracking-wide">BEKASWIT</h1>
+            
+            <div class="leading-tight relative z-10">
+                <h1 class="font-bold text-xl tracking-wide text-white">BEKASWIT</h1>
                 <p class="text-[10px] text-gray-300 tracking-wider">Bekas Jadi Duwit</p>
             </div>
         </a>
@@ -36,21 +40,43 @@
                         @php 
                             $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity'); 
                         @endphp
-                        @if($cartCount > 0)
-                            <span class="absolute -top-2 -right-2 bg-red-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full min-w-[16px] text-center">
+                        
+                        <span id="cart-badge" 
+                                class="absolute -top-1.5 -right-2 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 transition-all duration-300 {{ $cartCount > 0 ? '' : 'hidden' }}">
                                 {{ $cartCount }}
                             </span>
-                        @endif
                     </div>
-                    Keranjang
                 </a>
-                <a href="{{ route('chat.index') }}" class="hover:text-bekas-green transition flex items-center gap-1.5">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-                    Pesan
+
+                <a href="{{ route('chat.index') }}" class="hover:text-bekas-green transition flex items-center" title="Pesan">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
                 </a>
                 @if(Auth::user()->isSeller())
-                    <a href="{{ route('barang.jual') }}" class="hover:text-bekas-green transition">Jual Barang</a>
-                    <a href="{{ route('barang.saya') }}" class="hover:text-bekas-green transition">Barang Saya</a>
+                    <div x-data="{ open: false }" @mouseenter="open = true" @mouseleave="open = false" class="relative flex justify-center">
+                        <button type="button" class="hover:text-bekas-green transition flex items-center focus:outline-none cursor-pointer" title="Toko Saya">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                            </svg>
+                        </button>
+
+                        <div x-show="open"
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 translate-y-2"
+                             x-transition:enter-end="opacity-100 translate-y-0"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 translate-y-0"
+                             x-transition:leave-end="opacity-0 translate-y-2"
+                             class="absolute top-full left-1/2 -translate-x-1/2 mt-4 w-36 bg-white rounded-xl shadow-xl border border-gray-100 py-1.5 z-50 overflow-hidden"
+                             style="display: none;">
+
+                            <a href="{{ route('barang.jual') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-bekas-green font-semibold transition-colors">
+                                Jual Barang
+                            </a>
+                            <a href="{{ route('barang.saya') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 hover:text-bekas-green font-semibold transition-colors border-t border-gray-50">
+                                Barang Saya
+                            </a>
+                        </div>
+                    </div>
                 @endif
             </div>
 

@@ -11,7 +11,7 @@ use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
-public function checkout(Request $request)
+    public function checkout(Request $request)
     {
         $clientKey = env('MIDTRANS_CLIENT_KEY');
         
@@ -20,17 +20,21 @@ public function checkout(Request $request)
             // -- MODE BELI LANGSUNG --
             $item = \App\Models\Item::findOrFail($request->item_id);
             
+            // Ambil kuantitas dari URL, default ke 1 jika kosong
+            $qty = $request->input('quantity', 1);
+            
             // Kita buat 'keranjang bohongan' di memori agar file checkout.blade.php 
             // tetap bisa melakukan @foreach tanpa error
             $cart = new \App\Models\Cart();
             $cart->item = $item;
-            $cart->quantity = 1;
+            $cart->quantity = $qty; // <-- Kuantitas dinamis
             
             $carts = collect([$cart]); // Ubah jadi collection
             
             // Tandai untuk dibawa ke Javascript
             $isDirectCheckout = true;
             $directItemId = $item->id;
+            $directQuantity = $qty; // Simpan kuantitas untuk dikirim via fetch
         } else {
             // -- MODE KERANJANG --
             $carts = \App\Models\Cart::with('item')->where('user_id', Auth::id())->get();
@@ -41,6 +45,7 @@ public function checkout(Request $request)
 
             $isDirectCheckout = false;
             $directItemId = null;
+            $directQuantity = null;
         }
 
         // Hitung total
@@ -54,7 +59,7 @@ public function checkout(Request $request)
 
         return view('checkout', compact(
             'clientKey', 'carts', 'totalBarang', 'biayaPlatform', 
-            'biayaPenanganan', 'totalPembayaran', 'isDirectCheckout', 'directItemId'
+            'biayaPenanganan', 'totalPembayaran', 'isDirectCheckout', 'directItemId', 'directQuantity'
         ));
     }
 
@@ -71,7 +76,9 @@ public function checkout(Request $request)
         if ($request->is_direct == 'yes') {
             // Mode Beli Langsung
             $item = \App\Models\Item::findOrFail($request->item_id);
-            $totalBarang = $item->price;
+            $qty = $request->input('quantity', 1); // Ambil kuantitas dari fetch JS
+            
+            $totalBarang = $item->price * $qty; // <-- Harga dikalikan kuantitas
             $itemToTransaction = $item->id;
         } else {
             // Mode Keranjang
