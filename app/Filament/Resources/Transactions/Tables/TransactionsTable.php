@@ -10,15 +10,17 @@ class TransactionsTable
     public static function configure(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('user.name'),
-            Tables\Columns\TextColumn::make('item.name'),
-            Tables\Columns\TextColumn::make('price'),
+            Tables\Columns\TextColumn::make('user.name')
+                ->label('Nama'),   
+            Tables\Columns\TextColumn::make('item.name')
+                ->label('Barang'),
+            Tables\Columns\TextColumn::make('harga')->money('idr', true),
 
             Tables\Columns\BadgeColumn::make('status')
                 ->colors([
                     'warning' => 'pending',
-                    'success' => 'success',
-                    'danger' => 'cancel',
+                    'success' => 'berhasil',
+                    'danger' => 'batal',
                 ]),
         ]);
     }

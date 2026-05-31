@@ -4,7 +4,8 @@ namespace App\Filament\Pages;
 
 use Filament\Pages\Page;
 use Filament\Support\Enums\Icon;
-use App\Filament\Widgets\BarangCategoryChart;
+use App\Filament\Widgets\ItemCategoryChart;
+use App\Filament\Widgets\TransactionPerMonthChart;
 
 class DashboardAnalytics extends Page
 {
@@ -20,7 +21,8 @@ class DashboardAnalytics extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            BarangCategoryChart::class,
+            ItemCategoryChart::class,
+            \App\Filament\Widgets\TransactionPerMonthChart::class,
             \App\Filament\Widgets\DashboardStats::class,
         ];
     }
@@ -28,7 +30,8 @@ class DashboardAnalytics extends Page
     protected function getWidgets(): array
     {
         return [
-            \App\Filament\Widgets\BarangCategoryChart::class,
+            \App\Filament\Widgets\ItemCategoryChart::class,
+            \App\Filament\Widgets\TransactionPerMonthChart::class,
         ];
     }
 }

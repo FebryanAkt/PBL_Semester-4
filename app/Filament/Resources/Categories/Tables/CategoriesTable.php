@@ -10,8 +10,9 @@ class CategoriesTable
     public static function configure(Table $table): Table
     {
         return $table->columns([
-            Tables\Columns\TextColumn::make('nama')
-                ->searchable(),
+            Tables\Columns\TextColumn::make('name')
+            ->label('Nama')    
+            ->searchable(),
 
             Tables\Columns\TextColumn::make('slug'),
         ]);

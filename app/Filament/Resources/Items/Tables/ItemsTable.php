@@ -7,6 +7,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 
 class ItemsTable
 {
@@ -18,16 +19,17 @@ class ItemsTable
                     ->label('ID')
                     ->sortable(),
 
-                Tables\Columns\TextColumn::make('nama')
+                TextColumn::make('name')
                     ->label('Nama')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
 
-                Tables\Columns\TextColumn::make('harga')
+                Tables\Columns\TextColumn::make('price')
                     ->label('Harga')
                     ->numeric(),
 
-                Tables\Columns\TextColumn::make('stok')
-                    ->label('Stok'),
+                Tables\Columns\TextColumn::make('status')
+                    ->label('Status'),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat Pada')

@@ -2,23 +2,23 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Barang;
+use App\Models\Item;
 use Filament\Widgets\ChartWidget;
 
-class BarangCategoryChart extends ChartWidget
+class ItemCategoryChart extends ChartWidget
 {
-    protected ?string $heading = 'Barang per Kategori';
+    protected ?string $heading = 'Item per Kategori';
 
     protected function getData(): array
     {
-        $categories = Barang::selectRaw('category, COUNT(*) as total')
+        $categories = Item::selectRaw('category, COUNT(*) as total')
             ->groupBy('category')
             ->pluck('total', 'category');
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Jumlah Barang',
+                    'label' => 'Jumlah Item',
                     'data' => $categories->values(),
                     'backgroundColor' => ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'],
                 ],
@@ -29,6 +29,6 @@ class BarangCategoryChart extends ChartWidget
 
     protected function getType(): string
     {
-        return 'bar'; // atau 'line' kalau mau tren waktu
+        return 'bar';
     }
 }

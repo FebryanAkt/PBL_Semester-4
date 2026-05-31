@@ -20,7 +20,7 @@ class UsersTable
                     ->sortable(),
 
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Name')
+                    ->label('Nama')
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('email')
@@ -28,7 +28,7 @@ class UsersTable
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->label('Dibuat pada')
                     ->dateTime(),
             ])
             ->filters([
