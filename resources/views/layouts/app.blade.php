@@ -22,7 +22,7 @@
     </script>
 </head>
 
-<body class="bg-bekas-bg font-sans antialiased text-gray-800">
+<body class="flex min-h-screen flex-col bg-bekas-bg font-sans antialiased text-gray-800">
 
     @include('partials.header')
 
@@ -51,9 +51,12 @@
     </script>
     @endif
 
-    <main>
+    <main class="flex-1">
         @yield('content')
     </main>
+
+    @include('partials.footer')
+
 <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </body>
 
