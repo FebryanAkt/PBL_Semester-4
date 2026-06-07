@@ -25,9 +25,9 @@ class ItemController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 
@@ -68,9 +68,9 @@ class ItemController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                  ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
             });
         }
 
@@ -123,8 +123,8 @@ class ItemController extends Controller
             return $response;
         }
 
-        $items = Item::where('user_id', Auth::id())->latest()->get();
-        
+        $items = Item::where('user_id', Auth::id())->get();
+
         $total = $items->count();
         $tersedia = $items->where('status', 'tersedia')->count();
         $booking = $items->where('status', 'booking')->count();
@@ -187,8 +187,8 @@ class ItemController extends Controller
         if ($response = $this->denyBuyerIfNeeded()) {
             return $response;
         }
-        
-        return view('item.sell'); 
+
+        return view('item.sell');
     }
 
     public function jual_simpan(Request $request)
@@ -252,5 +252,4 @@ class ItemController extends Controller
             ->route('barang.saya')
             ->with('success', 'Barang berhasil diposting!');
     }
-
 }

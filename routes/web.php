@@ -14,6 +14,7 @@ Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/riwayat-transaksi', [PaymentController::class, 'history'])->name('transaksi.riwayat');
 
 // Home Guest
 Route::get('/', [ItemController::class, 'landing'])->name('landing');
@@ -63,5 +64,5 @@ Route::middleware('auth')->group(function () {
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
-
+    Route::get('/transaction/detail/{id}', [PaymentController::class, 'detail'])->name('transaction.detail');
 });

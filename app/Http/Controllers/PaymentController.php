@@ -4,33 +4,31 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\Cart;
+use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
-use Midtrans\Config;
-use Midtrans\Snap;
 
 class PaymentController extends Controller
 {
     public function checkout(Request $request)
     {
         $clientKey = env('MIDTRANS_CLIENT_KEY');
-        
+
         // CEK MODE: Beli Langsung atau Dari Keranjang?
         if ($request->has('item_id')) {
             // -- MODE BELI LANGSUNG --
             $item = \App\Models\Item::findOrFail($request->item_id);
-            
+
             // Ambil kuantitas dari URL, default ke 1 jika kosong
             $qty = $request->input('quantity', 1);
-            
+
             // Kita buat 'keranjang bohongan' di memori agar file checkout.blade.php 
             // tetap bisa melakukan @foreach tanpa error
             $cart = new \App\Models\Cart();
             $cart->item = $item;
             $cart->quantity = $qty; // <-- Kuantitas dinamis
-            
+
             $carts = collect([$cart]); // Ubah jadi collection
-            
+
             // Tandai untuk dibawa ke Javascript
             $isDirectCheckout = true;
             $directItemId = $item->id;
@@ -49,7 +47,7 @@ class PaymentController extends Controller
         }
 
         // Hitung total
-        $totalBarang = $carts->sum(function($cart) {
+        $totalBarang = $carts->sum(function ($cart) {
             return $cart->item->price * $cart->quantity;
         });
 
@@ -57,9 +55,16 @@ class PaymentController extends Controller
         $biayaPenanganan = 1500;
         $totalPembayaran = $totalBarang + $biayaPlatform + $biayaPenanganan;
 
-        return view('checkout', compact(
-            'clientKey', 'carts', 'totalBarang', 'biayaPlatform', 
-            'biayaPenanganan', 'totalPembayaran', 'isDirectCheckout', 'directItemId', 'directQuantity'
+        return view('checkout.index', compact(
+            'clientKey',
+            'carts',
+            'totalBarang',
+            'biayaPlatform',
+            'biayaPenanganan',
+            'totalPembayaran',
+            'isDirectCheckout',
+            'directItemId',
+            'directQuantity'
         ));
     }
 
@@ -76,9 +81,9 @@ class PaymentController extends Controller
         if ($request->is_direct == 'yes') {
             // Mode Beli Langsung
             $item = \App\Models\Item::findOrFail($request->item_id);
-            $qty = $request->input('quantity', 1); // Ambil kuantitas dari fetch JS
-            
-            $totalBarang = $item->price * $qty; // <-- Harga dikalikan kuantitas
+            $qty = $request->input('quantity', 1);
+
+            $totalBarang = $item->price * $qty;
             $itemToTransaction = $item->id;
         } else {
             // Mode Keranjang
@@ -86,7 +91,7 @@ class PaymentController extends Controller
             if ($carts->isEmpty()) {
                 return response()->json(['error' => 'Keranjang kosong'], 400);
             }
-            $totalBarang = $carts->sum(function($cart) {
+            $totalBarang = $carts->sum(function ($cart) {
                 return $cart->item->price * $cart->quantity;
             });
             $itemToTransaction = $carts->first()->item_id;
@@ -94,26 +99,28 @@ class PaymentController extends Controller
 
         $grossAmount = $totalBarang + 2500 + 1500; // Tambah biaya admin
 
-        // Buat Transaksi
-        $transaction = \App\Models\Transaction::create([
-            'user_id' => $user->id,
-            'item_id' => $itemToTransaction, 
-            'price' => $grossAmount,
-            'status' => 'pending'
-        ]);
+        // 1. Buat Order ID Unik di awal
+        $orderId = 'TRX-' . time() . '-' . rand(1000, 9999);
 
         $paymentMethod = $request->payment_method;
         $enabledPayments = [];
-        if ($paymentMethod === 'gopay') { $enabledPayments = ['gopay']; } 
-        elseif ($paymentMethod === 'shopeepay') { $enabledPayments = ['shopeepay']; } 
-        elseif ($paymentMethod === 'bca') { $enabledPayments = ['bca_va']; } 
-        elseif ($paymentMethod === 'mandiri') { $enabledPayments = ['echannel']; } 
-        elseif ($paymentMethod === 'bni') { $enabledPayments = ['bni_va']; } 
-        else { $enabledPayments = ['other_qris']; }
+        if ($paymentMethod === 'gopay') {
+            $enabledPayments = ['gopay'];
+        } elseif ($paymentMethod === 'shopeepay') {
+            $enabledPayments = ['shopeepay'];
+        } elseif ($paymentMethod === 'bca') {
+            $enabledPayments = ['bca_va'];
+        } elseif ($paymentMethod === 'mandiri') {
+            $enabledPayments = ['echannel'];
+        } elseif ($paymentMethod === 'bni') {
+            $enabledPayments = ['bni_va'];
+        } else {
+            $enabledPayments = ['other_qris'];
+        }
 
         $params = [
             'transaction_details' => [
-                'order_id' => 'TRX-' . $transaction->id . '-' . time(), 
+                'order_id' => $orderId, // Gunakan Order ID yang dibuat di atas
                 'gross_amount' => $grossAmount,
             ],
             'customer_details' => [
@@ -124,7 +131,19 @@ class PaymentController extends Controller
         ];
 
         try {
+            // 2. Minta Token ke Midtrans terlebih dahulu
             $snapToken = \Midtrans\Snap::getSnapToken($params);
+
+            // 3. Simpan Transaksi ke Database (Sekarang beserta order_id & snap_token)
+            \App\Models\Transaction::create([
+                'user_id' => $user->id,
+                'item_id' => $itemToTransaction,
+                'price' => $grossAmount,
+                'status' => 'pending',
+                'order_id' => $orderId,      // Menyimpan Order ID
+                'snap_token' => $snapToken   // Menyimpan Token
+            ]);
+
             return response()->json(['token' => $snapToken]);
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -133,6 +152,98 @@ class PaymentController extends Controller
 
     public function callback(Request $request)
     {
-        return response()->json(['message' => 'Callback diterima']);
+        $serverKey = env('MIDTRANS_SERVER_KEY');
+        $notification = json_decode($request->getContent());
+
+        if (!$notification) {
+            return response()->json(['message' => 'Invalid payload'], 400);
+        }
+
+        // 1. LOG DATA MASUK: Cek apakah Midtrans benar-benar mengirim data
+        Log::info('Webhook Midtrans Masuk:', (array) $notification);
+
+        $validSignatureKey = hash("sha512", $notification->order_id . $notification->status_code . $notification->gross_amount . $serverKey);
+
+        if ($notification->signature_key != $validSignatureKey) {
+            // 2. LOG JIKA SIGNATURE GAGAL
+            Log::error('Webhook Gagal: Signature tidak valid!');
+            return response()->json(['message' => 'Invalid signature'], 403);
+        }
+
+        $transaction = \App\Models\Transaction::where('order_id', $notification->order_id)->first();
+
+        if (!$transaction) {
+            // 3. LOG JIKA TRANSAKSI TIDAK KETEMU
+            Log::error('Webhook Gagal: Order ID ' . $notification->order_id . ' tidak ditemukan di database.');
+            return response()->json(['message' => 'Transaction not found'], 404);
+        }
+
+        if (in_array($transaction->status, ['success', 'failed'])) {
+            Log::info('Webhook diterima untuk transaksi yang sudah final. Status saat ini: ' . $transaction->status);
+            return response()->json(['message' => 'Transaction already finalized']);
+        }
+
+
+        $transactionStatus = $notification->transaction_status;
+        $fraudStatus = $notification->fraud_status ?? '';
+
+        // 4. LOG SEBELUM MASUK KE BLOK IF
+        Log::info('Berhasil melewati keamanan. Status dari Midtrans: ' . $transactionStatus);
+
+        // --- BLOK IF KAMU DIMULAI DI SINI ---
+        if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
+            if ($fraudStatus == 'challenge') {
+                $transaction->status = 'pending';
+                if ($transaction->status != 'success' && $transaction->status != 'failed') {
+                    $transaction->status = 'pending';
+                }
+            } else {
+                $transaction->status = 'success';
+
+                $item = \App\Models\Item::find($transaction->item_id);
+                if ($item) {
+                    $item->status = 'terjual';
+                    $item->save();
+                    Log::info('Status Item berhasil diubah jadi terjual');
+                }
+            }
+        } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
+            $transaction->status = 'failed';
+        } else if ($transactionStatus == 'pending') {
+            $transaction->status = 'pending';
+        }
+
+        $transaction->save();
+
+        Log::info('Selesai memproses Webhook dan database berhasil diupdate.');
+        return response()->json(['message' => 'Webhook success']);
+    }
+
+    public function history()
+    {
+        // Mengambil transaksi milik user yang sedang login beserta relasi item-nya
+        $transactions = \App\Models\Transaction::with('item')
+            ->where('user_id', auth()->id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return view('transaction.index', compact('transactions'));
+    }
+
+    public function detail($id)
+    {
+        $transaction = Transaction::with('item')->where('user_id', auth()->id())->findOrFail($id);
+
+        // Data yang akan dikirim ke modal
+        return response()->json([
+            'item_name'        => $transaction->item?->name ?? 'Barang tidak tersedia',
+            'item_image'       => $transaction->item?->image ? asset('images/' . $transaction->item->image) : null,
+            'category'         => $transaction->item?->category,
+            'created_at'       => $transaction->created_at->format('d M Y, H:i'),
+            'price_formatted'  => 'Rp ' . number_format($transaction->price, 0, ',', '.'),
+            'status'           => $transaction->status,
+            'delivery_status'  => $transaction->delivery_status ?? 'belum_dikirim',
+            'payment_method'   => $transaction->payment_method ?? 'Belum tersedia', // optional nanti
+            'notes'            => $transaction->notes ?? null
+        ]);
     }
 }

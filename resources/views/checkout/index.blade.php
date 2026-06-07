@@ -274,7 +274,7 @@
                                 body: JSON.stringify({
                                     payment_method: selectedMethod,
                                     is_direct: "{{ $isDirectCheckout ? 'yes' : 'no' }}", // Tambahan status
-                                    item_id: "{{ $directItemId }}" // Tambahan ID barang jika mode langsung
+                                    item_id: "{{ $directItemId }}", // Tambahan ID barang jika mode langsung
                                     quantity: "{{ $directQuantity ?? 1 }}"
                                 })
                             });
@@ -288,19 +288,20 @@
                                 // Di sinilah fungsi window.snap.pay dipanggil
                                 window.snap.pay(data.token, {
                                     onSuccess: function (result) {
-                                        alert("Pembayaran berhasil!");
-                                        console.log(result);
+                                        // Arahkan ke riwayat transaksi saat sukses
+                                        window.location.href = "{{ route('transaksi.riwayat') }}";
                                     },
                                     onPending: function (result) {
-                                        alert("Menunggu pembayaran Anda!");
-                                        console.log(result);
+                                        // Arahkan ke riwayat transaksi agar user bisa melihat instruksi pembayaran
+                                        window.location.href = "{{ route('transaksi.riwayat') }}";
                                     },
                                     onError: function (result) {
-                                        alert("Pembayaran gagal!");
-                                        console.log(result);
+                                        alert("Pembayaran gagal, silakan coba lagi.");
+                                        // Tetap di halaman pembayaran jika gagal agar bisa coba lagi
                                     },
                                     onClose: function () {
-                                        alert('Anda menutup jendela pembayaran sebelum menyelesaikannya');
+                                        alert('Anda menutup jendela pembayaran. Anda bisa melanjutkan pembayaran nanti melalui riwayat transaksi.');
+                                        window.location.href = "{{ route('transaksi.riwayat') }}";
                                     }
                                 });
                             } else {

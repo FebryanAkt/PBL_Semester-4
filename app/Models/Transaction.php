@@ -10,7 +10,11 @@ class Transaction extends Model
         'user_id',
         'item_id',
         'price',
-        'status'
+        'status',
+        'order_id',
+        'snap_token',
+        'delivery_status'
+        
     ];
 
     public function user()
