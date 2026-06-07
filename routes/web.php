@@ -7,11 +7,13 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PenjualController;
 
 // Auth (Login / Register / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::get('/penjual/dashboard', [PenjualController::class, 'index'])->name('penjual.dashboard');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 

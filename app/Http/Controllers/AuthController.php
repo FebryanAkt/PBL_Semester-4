@@ -23,8 +23,13 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
-            return redirect()->route('home')->with('success', 'Berhasil masuk! Selamat datang kembali.');
+            $user = Auth::user();
+
+            if ($user->role === 'seller') {
+                return redirect()->route('penjual.dashboard')->with('success', 'Berhasil masuk sebagai Penjual!');
+            }
+
+            return redirect()->route('home')->with('success', 'Berhasil masuk sebagai Pembeli!');
         }
 
         return back()->withErrors([
@@ -56,6 +61,11 @@ class AuthController extends Controller
 
         
         Auth::login($user);
+
+        // Redirect sesuai role
+        if ($user->role === 'seller') {
+            return redirect()->route('penjual.dashboard')->with('success', 'Akun Penjual berhasil dibuat! Selamat datang di Bekaswit.');
+        }
 
         return redirect()->route('home')->with('success', 'Akun berhasil dibuat! Selamat datang di Bekaswit.');
     }
