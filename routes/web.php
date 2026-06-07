@@ -7,11 +7,17 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\PenjualController;
+use App\Http\Controllers\BarangController;
 
 // Auth (Login / Register / Logout)
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/penjual/{id}/follow', [PenjualController::class, 'follow'])->name('penjual.follow');
+Route::delete('/penjual/{id}/unfollow', [PenjualController::class, 'unfollow'])->name('penjual.unfollow');
+Route::get('/lapak/{id}', [PenjualController::class, 'lapak'])->name('penjual.lapak');
+Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/riwayat-transaksi', [PaymentController::class, 'history'])->name('transaksi.riwayat');

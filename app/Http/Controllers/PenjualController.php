@@ -3,15 +3,16 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Item; 
+use App\Models\User;
+use App\Models\Item;
 
 class PenjualController extends Controller
 {
-    public function index()
+    public function lapak($id)
     {
-        // Ambil semua barang milik penjual yang sedang login
-        $items = Item::where('user_id', auth()->id())->get();
+        $user = User::findOrFail($id);
+        $items = Item::where('user_id', $user->id)->get();
 
-        return view('penjual.dashboard', compact('items'));
+        return view('penjual.lapak', compact('user', 'items'));
     }
 }
