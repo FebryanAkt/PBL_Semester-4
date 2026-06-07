@@ -22,7 +22,7 @@
                         
                         <div class="flex-1">
                             <h3 class="font-bold text-slate-800 text-base sm:text-lg line-clamp-2 leading-tight mb-1">{{ $cart->item->name }}</h3>
-                            <p class="text-sm text-emerald-600 font-bold mb-3">Rp {{ number_format($cart->item->price, 0, ',', '.') }}</p>
+                            <p class="text-sm text-emerald-600 font-bold mb-3">Rp{{ number_format($cart->item->price, 0, ',', '.') }}</p>
                         
                             {{-- KONTROL KUANTITAS (PLUS MINUS) --}}
                             <div class="flex items-center gap-4">
@@ -78,13 +78,13 @@
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-slate-500">
                             <span>Subtotal ({{ $carts->sum('quantity') }} Barang)</span>
-                            <span class="font-medium text-slate-700">Rp {{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
+                            <span class="font-medium text-slate-700">Rp{{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
                         </div>
                     </div>
 
                     <div class="border-t border-gray-100 pt-4 mb-8 flex justify-between items-center">
                         <span class="font-bold text-slate-800">Total Harga</span>
-                        <span class="text-2xl font-black text-emerald-600">Rp {{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
+                        <span class="text-2xl font-black text-emerald-600">Rp{{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
                     </div>
 
                     @if($carts->count() > 0)

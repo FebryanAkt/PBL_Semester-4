@@ -35,7 +35,7 @@
             </div>
 
             <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-2">{{ $item->name }}</h1>
-            <p class="text-3xl font-black text-bekas-green mb-6 border-b border-gray-100 pb-6">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+            <p class="text-3xl font-black text-bekas-green mb-6 border-b border-gray-100 pb-6">Rp{{ number_format($item->price, 0, ',', '.') }}</p>
 
             <div class="space-y-4 mb-8 flex-grow">
                 <div class="flex items-center text-gray-600">

@@ -70,7 +70,7 @@
                     <div class="mt-3">
                         {{-- Nama Barang --}}
                         <h3 class="text-sm font-semibold">{{ $item->name }}</h3>
-                        <p class="text-sm font-bold">Rp {{ number_format($item->price, 0, ',', '.') }}</p>
+                        <p class="text-sm font-bold">Rp{{ number_format($item->price, 0, ',', '.') }}</p>
                         <p class="text-xs text-gray-500">📍 {{ $item->location }}</p>
 
                         {{-- Tombol Edit --}}

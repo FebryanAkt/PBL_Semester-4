@@ -249,7 +249,7 @@
                                     </td>
                                     <td>{{ $transaction->user?->name ?? 'Pengguna dihapus' }}</td>
                                     <td class="bekaswit-table__primary">
-                                        Rp {{ number_format((float) $transaction->price, 0, ',', '.') }}
+                                        Rp{{ number_format((float) $transaction->price, 0, ',', '.') }}
                                     </td>
                                     <td>
                                         <span class="bekaswit-badge bekaswit-badge--{{ $transaction->status }}">
