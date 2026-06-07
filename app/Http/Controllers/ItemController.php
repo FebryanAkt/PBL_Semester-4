@@ -60,6 +60,10 @@ class ItemController extends Controller
 
     public function index(Request $request)
     {
+        if (Auth::user()?->isSeller() && $request->routeIs('home')) {
+            return redirect()->route('penjual.home', $request->query());
+        }
+
         $query = Item::where('status', '!=', 'terjual')->latest();
 
         if ($request->has('search') && $request->search != '') {
@@ -95,6 +99,15 @@ class ItemController extends Controller
 
         $items = $query->get();
         return view('home', compact('items'));
+    }
+
+    public function sellerHome(Request $request)
+    {
+        if (!Auth::user()?->isSeller()) {
+            return redirect()->route('home');
+        }
+
+        return $this->index($request);
     }
 
     public function show($id)

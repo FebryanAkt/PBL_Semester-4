@@ -3,6 +3,12 @@
 @section('title', 'Bekaswit - Beranda')
 
 @section('content')
+    @php
+        $marketplaceHomeUrl = Auth::check() && Auth::user()->isSeller()
+            ? route('penjual.home')
+            : route('home');
+    @endphp
+
     {{-- CSS Animasi --}}
     <style>
         /* State awal sebelum di-scroll */
@@ -74,16 +80,21 @@
                     <div id="slider-track" class="flex w-full h-full transition-transform duration-700 ease-in-out">
                         @php
                             $banners = [
-                                ['image' => 'https://images.unsplash.com/photo-1498049794561-7780e7231661?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Promo Elektronik', 'subtitle' => 'Laptop & Gadget Kuliah'],
-                                ['image' => 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Perabotan Kosan', 'subtitle' => 'Meja, Kursi & Nyaman'],
-                                ['image' => 'https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Thrift Fashion', 'subtitle' => 'Tampil Kece Tanpa Kere'],
-                                ['image' => 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?auto=format&fit=crop&w=1000&h=600&q=80', 'title' => 'Alat Hobi', 'subtitle' => 'Musik, Olahraga & Fotografi']
+                                ['image' => asset('images/hero-kos-meja-belajar.jpg'), 'title' => 'Sudut Belajar Hemat', 'subtitle' => 'Meja, kursi, dan laptop second'],
+                                ['image' => asset('images/hero-kos-peralatan.jpg'), 'title' => 'Peralatan Anak Kos', 'subtitle' => 'Rice cooker, kipas, dan ketel bekas'],
+                                ['image' => asset('images/hero-kos-thrift.jpg'), 'title' => 'Thrift Buat Ngampus', 'subtitle' => 'Pakaian dan tas second yang masih layak'],
+                                ['image' => asset('images/hero-kos-hobi.jpg'), 'title' => 'Kuliah dan Hobi', 'subtitle' => 'Perlengkapan bekas dengan harga bersahabat']
                             ];
                         @endphp
                         
-                        @foreach($banners as $banner)
+                        @foreach($banners as $index => $banner)
                             <div class="slider-item w-full h-full flex-shrink-0 relative">
-                                <img src="{{ $banner['image'] }}" class="w-full h-full object-cover transition-transform duration-1000 ease-out" alt="{{ $banner['title'] }}">
+                                <img
+                                    src="{{ $banner['image'] }}"
+                                    class="w-full h-full object-cover transition-transform duration-1000 ease-out"
+                                    alt="{{ $banner['title'] }}"
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}"
+                                    decoding="async">
                                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-6 md:p-10">
                                     <h3 class="text-white font-extrabold text-2xl md:text-3xl tracking-tight mb-1.5">{{ $banner['title'] }}</h3>
                                     <p class="text-gray-200 font-medium text-sm md:text-base">{{ $banner['subtitle'] }}</p>
@@ -100,7 +111,7 @@
 
     {{-- ===== SEARCH & FILTER BAR ===== --}}
     <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-30 -mt-8 md:-mt-12">
-        <form action="{{ route('home') }}" method="GET" class="animate-on-scroll bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 md:p-4 border border-gray-100 flex flex-col gap-3">
+        <form action="{{ $marketplaceHomeUrl }}" method="GET" class="animate-on-scroll bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] p-3 md:p-4 border border-gray-100 flex flex-col gap-3">
             
             {{-- Filter Row --}}
             <div class="flex flex-col lg:flex-row items-stretch gap-3">

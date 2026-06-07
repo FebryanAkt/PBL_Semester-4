@@ -1,6 +1,12 @@
+@php
+    $marketplaceHomeUrl = Auth::check() && Auth::user()->isSeller()
+        ? route('penjual.home')
+        : route('home');
+@endphp
+
 <nav class="bg-bekas-dark text-white py-4 px-6 md:px-12 flex justify-between items-center shadow-md sticky top-0 z-50">
     <div class="flex items-center gap-3">
-        <a href="{{ route('home') }}" class="flex items-center gap-3 group relative transition-all duration-300">
+        <a href="{{ $marketplaceHomeUrl }}" class="flex items-center gap-3 group relative transition-all duration-300">
             
             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[160%] bg-white/10 blur-[15px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none z-0"></div>
             
@@ -15,7 +21,7 @@
         </a>
     </div>
 
-    <form action="{{ route('home') }}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
+    <form action="{{ $marketplaceHomeUrl }}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
             class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
         <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 px-3 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
@@ -123,7 +129,7 @@
 </nav>
 
 <div class="block md:hidden bg-bekas-dark px-6 pb-4">
-    <form action="{{ route('home') }}" method="GET" class="relative group">
+    <form action="{{ $marketplaceHomeUrl }}" method="GET" class="relative group">
         <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
             class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
         <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
