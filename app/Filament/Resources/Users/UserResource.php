@@ -54,7 +54,7 @@ class UserResource extends Resource
 
     public static function getNavigationLabel(): string
     {
-        return 'Users';
+        return 'Pengguna';
     }
 
     public static function getNavigationIcon(): string

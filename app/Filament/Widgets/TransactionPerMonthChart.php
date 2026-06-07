@@ -7,31 +7,79 @@ use Filament\Widgets\ChartWidget;
 
 class TransactionPerMonthChart extends ChartWidget
 {
-    protected ?string $heading = 'Transaksi Per Bulan';
+    protected static bool $isLazy = false;
+
+    protected ?string $heading = 'Tren Transaksi';
+    protected ?string $description = 'Pergerakan transaksi dalam 12 bulan terakhir';
+    protected ?string $maxHeight = '320px';
+    protected bool $isCollapsible = true;
 
     protected function getData(): array
     {
-        $transactions = Transaction::selectRaw('MONTH(created_at) as bulan, COUNT(*) as total')
-            ->groupBy('bulan')
-            ->orderBy('bulan')
-            ->pluck('total', 'bulan');
+        $startMonth = now()->startOfMonth()->subMonths(11);
+        $transactions = Transaction::query()
+            ->where('created_at', '>=', $startMonth)
+            ->get(['created_at'])
+            ->countBy(fn (Transaction $transaction) => $transaction->created_at->format('Y-m'));
+
+        $months = collect(range(0, 11))
+            ->map(fn (int $offset) => $startMonth->copy()->addMonths($offset));
 
         return [
             'datasets' => [
                 [
                     'label' => 'Jumlah Transaksi',
-                    'data' => $transactions->values(),
-                    'backgroundColor' => ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#6366f1', '#14b8a6'],
+                    'data' => $months
+                        ->map(fn ($month) => (int) ($transactions[$month->format('Y-m')] ?? 0))
+                        ->values(),
+                    'borderColor' => '#2E7D32',
+                    'backgroundColor' => 'rgba(46, 125, 50, 0.12)',
+                    'pointBackgroundColor' => '#1F3A5F',
+                    'pointBorderColor' => '#ffffff',
+                    'pointBorderWidth' => 2,
+                    'pointRadius' => 4,
+                    'pointHoverRadius' => 6,
+                    'borderWidth' => 3,
+                    'fill' => true,
+                    'tension' => 0.4,
                 ],
             ],
-            'labels' => $transactions->keys()->map(function ($bulan) {
-                return date('F', mktime(0, 0, 0, $bulan, 1)); // ubah angka bulan jadi nama bulan
-            }),
+            'labels' => $months
+                ->map(fn ($month) => $month->translatedFormat('M y'))
+                ->values(),
         ];
     }
 
     protected function getType(): string
     {
-        return 'bar'; 
+        return 'line';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'maintainAspectRatio' => false,
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+            ],
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'ticks' => [
+                        'precision' => 0,
+                    ],
+                    'grid' => [
+                        'color' => 'rgba(148, 163, 184, 0.18)',
+                    ],
+                ],
+                'x' => [
+                    'grid' => [
+                        'display' => false,
+                    ],
+                ],
+            ],
+        ];
     }
 }
