@@ -100,6 +100,13 @@
 
                 <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 leading-tight mb-2">{{ $item->name }}</h1>
                 <p class="text-3xl font-black text-bekas-green mb-6 border-b border-gray-100 pb-6">Rp{{ number_format($item->price, 0, ',', '.') }}</p>
+                    {{ number_format($item->price, 0, ',', '.') }}</p>
+                <p class="text-sm text-gray-500 mb-4">
+                    Stok tersedia:
+                    <span class="font-bold text-green-600">
+                        {{ $item->stock }}
+                    </span>
+                </p>
 
                 <div class="space-y-4 mb-8 flex-grow">
                     <div class="flex items-center text-gray-600">
@@ -133,7 +140,7 @@
                 </div>
 
                 {{-- Bagian Tombol Aksi (Dibungkus dengan Alpine.js x-data) --}}
-                <div class="mt-auto pt-6 flex flex-col gap-4" x-data="{ qty: 1 }">
+                <div class="mt-auto pt-6 flex flex-col gap-4" x-data="{ qty: 1, stock: {{ $item->stock }} }">
 
                     {{-- UI Pengatur Jumlah / Kuantitas --}}
                     <div class="flex items-center gap-4 border-t border-gray-100 pt-4">
@@ -141,10 +148,8 @@
                         <div class="flex items-center border border-gray-300 rounded-lg bg-white">
                             <button type="button" @click="if(qty > 1) qty--"
                                 class="px-4 py-1.5 text-gray-600 hover:bg-gray-100 rounded-l-lg transition-colors font-bold text-lg">-</button>
-                            <input type="number" x-model="qty"
-                                class="w-14 text-center text-gray-800 font-bold border-x border-gray-300 focus:outline-none appearance-none m-0 py-1.5 pointer-events-none"
-                                min="1" readonly>
-                            <button type="button" @click="qty++"
+                            <input type="number"x-model="qty"min="1"max="{{ $item->stock }}"readonly>
+                            <button type="button" @click="if(qty < stock) qty++"
                                 class="px-4 py-1.5 text-gray-600 hover:bg-gray-100 rounded-r-lg transition-colors font-bold text-lg">+</button>
                         </div>
                     </div>
@@ -217,6 +222,12 @@
                             </svg>
                             Masuk untuk Tambahkan Keranjang
                         </a>
+                    @endif
+
+                    @if($item->stock > 0)
+                        Tombol Beli
+                    @else
+                        Tombol Stok Habis
                     @endif
                 </div>
             </div>

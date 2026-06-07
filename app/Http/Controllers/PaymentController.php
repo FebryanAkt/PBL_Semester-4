@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
+use App\Models\TransactionItem;
+use App\Models\Cart;
 
 class PaymentController extends Controller
 {
@@ -81,9 +83,13 @@ class PaymentController extends Controller
         if ($request->is_direct == 'yes') {
             // Mode Beli Langsung
             $item = \App\Models\Item::findOrFail($request->item_id);
-            $qty = $request->input('quantity', 1);
-
-            $totalBarang = $item->price * $qty;
+            $qty = $request->input('quantity', 1); // Ambil kuantitas dari fetch JS
+            if ($qty > $item->stock) {
+                return response()->json([
+                    'error' => 'Stok barang tidak mencukupi.'
+                ], 400);
+            }
+            $totalBarang = $item->price * $qty; // <-- Harga dikalikan kuantitas
             $itemToTransaction = $item->id;
         } else {
             // Mode Keranjang
@@ -91,9 +97,19 @@ class PaymentController extends Controller
             if ($carts->isEmpty()) {
                 return response()->json(['error' => 'Keranjang kosong'], 400);
             }
+            foreach ($carts as $cart) {
+
+                if ($cart->quantity > $cart->item->stock) {
+
+                    return response()->json([
+                        'error' => 'Stok ' . $cart->item->name . ' tidak mencukupi.'
+                    ], 400);
+                }
+            }
             $totalBarang = $carts->sum(function ($cart) {
                 return $cart->item->price * $cart->quantity;
             });
+             $qty = $carts->sum('quantity');
             $itemToTransaction = $carts->first()->item_id;
         }
 
@@ -135,14 +151,32 @@ class PaymentController extends Controller
             $snapToken = \Midtrans\Snap::getSnapToken($params);
 
             // 3. Simpan Transaksi ke Database (Sekarang beserta order_id & snap_token)
-            \App\Models\Transaction::create([
+            $transaction = \App\Models\Transaction::create([
                 'user_id' => $user->id,
                 'item_id' => $itemToTransaction,
+                'quantity' => $qty,
                 'price' => $grossAmount,
                 'status' => 'pending',
                 'order_id' => $orderId,      // Menyimpan Order ID
                 'snap_token' => $snapToken   // Menyimpan Token
             ]);
+            if ($request->is_direct != 'yes') {
+                 $carts = Cart::with('item')
+                ->where('user_id', $user->id)
+                ->get();
+
+
+            foreach ($carts as $cart) {
+
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'cart_id' => $cart->id,
+                    'item_id' => $cart->item_id,
+                    'quantity' => $cart->quantity,
+                    'price' => $cart->item->price,
+                ]);
+            }
+}
 
             return response()->json(['token' => $snapToken]);
         } catch (\Exception $e) {
@@ -192,19 +226,51 @@ class PaymentController extends Controller
 
         // --- BLOK IF KAMU DIMULAI DI SINI ---
         if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
+
             if ($fraudStatus == 'challenge') {
+
                 $transaction->status = 'pending';
-                if ($transaction->status != 'success' && $transaction->status != 'failed') {
-                    $transaction->status = 'pending';
-                }
+
             } else {
+
                 $transaction->status = 'success';
 
-                $item = \App\Models\Item::find($transaction->item_id);
-                if ($item) {
-                    $item->status = 'terjual';
-                    $item->save();
-                    Log::info('Status Item berhasil diubah jadi terjual');
+                $transaction->load('transactionItems.item');
+
+                if ($transaction->transactionItems->count() > 0) {
+
+                    foreach ($transaction->transactionItems as $detail) {
+
+                        $item = $detail->item;
+
+                        if ($item) {
+
+                            $item->stock -= $detail->quantity;
+
+                            if ($item->stock <= 0) {
+                                $item->stock = 0;
+                                $item->status = 'terjual';
+                            }
+
+                            $item->save();
+                        }
+                    }
+
+                } else {
+
+                    $item = \App\Models\Item::find($transaction->item_id);
+
+                    if ($item) {
+
+                        $item->stock -= $transaction->quantity;
+
+                        if ($item->stock <= 0) {
+                            $item->stock = 0;
+                            $item->status = 'terjual';
+                        }
+
+                        $item->save();
+                    }
                 }
             }
         } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
@@ -214,6 +280,14 @@ class PaymentController extends Controller
         }
 
         $transaction->save();
+       if ($transaction->status == 'success') {
+
+            $cartIds = $transaction->transactionItems
+                ->pluck('cart_id')
+                ->filter();
+
+            \App\Models\Cart::whereIn('id', $cartIds)->delete();
+        }
 
         Log::info('Selesai memproses Webhook dan database berhasil diupdate.');
         return response()->json(['message' => 'Webhook success']);

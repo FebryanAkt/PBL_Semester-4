@@ -9,12 +9,12 @@ class Transaction extends Model
     protected $fillable = [
         'user_id',
         'item_id',
+        'quantity',
         'price',
         'status',
         'order_id',
         'snap_token',
         'delivery_status'
-        
     ];
 
     public function user()
@@ -22,8 +22,15 @@ class Transaction extends Model
         return $this->belongsTo(User::class);
     }
 
+    // transaksi lama (beli langsung)
     public function item()
     {
         return $this->belongsTo(Item::class);
+    }
+
+    // transaksi banyak barang (keranjang)
+    public function transactionItems()
+    {
+        return $this->hasMany(TransactionItem::class);
     }
 }

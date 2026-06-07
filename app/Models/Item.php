@@ -22,6 +22,7 @@ class Item extends Model
         'image',
         'images',
         'status',
+        'stock',
     ];
 
     public function user()

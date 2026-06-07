@@ -29,13 +29,26 @@ class CartController extends Controller
         // Ambil kuantitas dari request form, jika tidak ada default ke 1
         $qty = $request->input('quantity', 1);
 
+        //pengecekan stock
+        $item = Item::findOrFail($itemId);
+
+        if ($qty > $item->stock) {
+            return back()->with('error', 'Jumlah melebihi stok yang tersedia.');
+        }
+
         // Cek apakah barang sudah ada di keranjang user ini
         $existingCart = Cart::where('user_id', $user_id)->where('item_id', $itemId)->first();
 
         if ($existingCart) {
-            // Jika sudah ada, tambahkan jumlahnya (quantity) dengan $qty baru
+
+        $newQty = $existingCart->quantity + $qty;
+
+            if ($newQty > $item->stock) {
+                return back()->with('error', 'Jumlah di keranjang melebihi stok.');
+            }
+
             $existingCart->update([
-                'quantity' => $existingCart->quantity + $qty
+            'quantity' => $existingCart->quantity + $qty
             ]);
         } else {
             // Jika belum ada, buat baru dengan quantity $qty
@@ -68,8 +81,10 @@ class CartController extends Controller
         $cart = Cart::where('id', $id)->where('user_id', Auth::id())->firstOrFail();
 
         if ($request->action == 'plus') {
-            $cart->increment('quantity');
-        } elseif ($request->action == 'minus') {
+            if ($cart->quantity < $cart->item->stock) {
+                $cart->increment('quantity');
+            }
+        }elseif ($request->action == 'minus') {
             // Pastikan quantity tidak kurang dari 1. Jika 1, abaikan atau biarkan user pakai tombol hapus.
             if ($cart->quantity > 1) {
                 $cart->decrement('quantity');

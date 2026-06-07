@@ -182,6 +182,7 @@ class ItemController extends Controller
             'tags' => 'nullable',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'status' => 'required|in:tersedia,booking,terjual',
+            'stock' => 'required|integer|min:0',
         ]);
 
         if ($request->hasFile('image')) {
@@ -197,7 +198,13 @@ class ItemController extends Controller
             'description' => $request->description,
             'tags' => $request->tags,
             'status' => $request->status,
+             'stock' => $request->stock,
         ]);
+
+        if ($request->stock > 0) {
+            $item->status = 'tersedia';
+            $item->save();
+        }
         //Diarahkan ke halaman barang
         return redirect()->route('barang.saya')->with('success', 'Barang berhasil diupdate!');
     }
@@ -224,6 +231,7 @@ class ItemController extends Controller
             'nama_barang' => 'required|min:5',
             'harga'       => 'required|numeric',
             'kategori'    => 'required|exists:categories,id',
+            'stock' => 'required|integer|min:1',
             'lokasi'      => 'required',
             'nomor_telp'  => 'required|string|min:10|max:15', // <--- TAMBAHAN VALIDASI
             'kondisi'     => 'required',
@@ -260,6 +268,7 @@ class ItemController extends Controller
             'user_id'     => Auth::id(),
             'name'        => $request->nama_barang,
             'price'       => $request->harga,
+            'stock' => $request->stock,
             'category_id' => $request->kategori,
             'location'    => $request->lokasi,
             'phone'       => $request->nomor_telp, // <--- SIMPAN KE DATABASE

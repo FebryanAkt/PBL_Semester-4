@@ -63,6 +63,18 @@
                     <option value="terjual" @selected(old('status', $item->status) === 'terjual')>Terjual</option>
                 </select>
             </div>
+            {{-- Stock --}}
+            <div>
+                <label class="block text-sm font-bold text-gray-700 mb-2">
+                    Stok Barang
+                </label>
+
+                <input type="number"
+                    name="stock"
+                    min="1"
+                    value="{{ $item->stock }}"
+                    class="w-full px-4 py-2 border border-gray-300 rounded-md">
+            </div>
 
             {{-- Tombol Update --}}
             <div class="text-right">
