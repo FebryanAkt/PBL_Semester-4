@@ -57,18 +57,19 @@
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kondisi</label>
                     <select name="kondisi" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-500">
                         <option>Sangat Baik</option>
+                        <option>Baik</option>
+                        <option>Bekas</option>
                         <option>Minus Pemakaian</option>
-                        
                     </select>
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kategori</label>
                     <select name="kategori" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-500">
-                        <option value="1">Elektronik</option>
-                        <option value="2">Furniture</option>
-                        <option value="3">Fashion</option>
-                        <option value="4">Hobi</option>
-
+                        @foreach($categories as $category)
+                            <option value="{{ $category->id }}" @selected(old('kategori') == $category->id)>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
                 <div>
@@ -82,7 +83,8 @@
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi</label>
                     <select name="lokasi" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-600">
-                        <option value="Lowokwaru, Klojen">Lowokwaru, Klojen</option>
+                        <option value="Lowokwaru">Lowokwaru</option>
+                        <option value="Klojen">Klojen</option>
                         <option value="Blimbing">Blimbing</option>
                         <option value="Kedungkandang">Kedungkandang</option>
                         <option value="Sukun">Sukun</option>

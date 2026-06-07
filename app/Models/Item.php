@@ -10,17 +10,18 @@ class Item extends Model
     use HasFactory;
 
     protected $fillable = [
-    'user_id',
-    'name',
-    'price',
-    'category_id',
-    'location',
-    'phone',
-    'condition',
-    'description',
-    'image',
-    'images',
-    'status',
+        'user_id',
+        'name',
+        'price',
+        'category',
+        'category_id',
+        'location',
+        'phone',
+        'condition',
+        'description',
+        'image',
+        'images',
+        'status',
     ];
 
     public function user()
@@ -31,6 +32,18 @@ class Item extends Model
     public function category()
     {
         return $this->belongsTo(Category::class);
+    }
+
+    public function categoryRecord()
+    {
+        return $this->belongsTo(Category::class, 'category_id');
+    }
+
+    public function getCategoryNameAttribute(): string
+    {
+        return $this->categoryRecord?->name
+            ?? $this->attributes['category']
+            ?? 'Lainnya';
     }
 
     public function transactions()

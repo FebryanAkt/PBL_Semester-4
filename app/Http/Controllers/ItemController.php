@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Item;
+use App\Models\Category;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -21,41 +23,7 @@ class ItemController extends Controller
 
     public function landing(Request $request)
     {
-        $query = Item::where('status', '!=', 'terjual')->latest();
-
-        if ($request->has('search') && $request->search != '') {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
-            });
-        }
-
-        if ($request->has('kategori') && $request->kategori != 'Semua Kategori' && $request->kategori != '') {
-            $kategori = trim(preg_replace('/[^\p{L}\p{N}\s]/u', '', $request->kategori));
-            $query->where('category', 'LIKE', '%' . $kategori . '%');
-        }
-
-        if ($request->has('kecamatan') && $request->kecamatan != 'Semua Kecamatan' && $request->kecamatan != '') {
-            $query->where('location', 'LIKE', '%' . $request->kecamatan . '%');
-        }
-
-        if ($request->has('kondisi') && $request->kondisi != 'Semua Kondisi' && $request->kondisi != '') {
-            $query->where('condition', 'LIKE', '%' . $request->kondisi . '%');
-        }
-
-        if ($request->has('harga') && $request->harga != 'Urutkan Harga' && $request->harga != '') {
-            if ($request->harga == 'Termurah') {
-                $query->getQuery()->orders = null;
-                $query->orderBy('price', 'asc');
-            } elseif ($request->harga == 'Termahal') {
-                $query->getQuery()->orders = null;
-                $query->orderBy('price', 'desc');
-            }
-        }
-
-        $items = $query->get();
-        return view('home', compact('items'));
+        return $this->renderMarketplace($request);
     }
 
     public function index(Request $request)
@@ -64,41 +32,7 @@ class ItemController extends Controller
             return redirect()->route('penjual.home', $request->query());
         }
 
-        $query = Item::where('status', '!=', 'terjual')->latest();
-
-        if ($request->has('search') && $request->search != '') {
-            $searchTerm = $request->search;
-            $query->where(function ($q) use ($searchTerm) {
-                $q->where('name', 'LIKE', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
-            });
-        }
-
-        if ($request->has('kategori') && $request->kategori != 'Semua Kategori' && $request->kategori != '') {
-            $kategori = trim(preg_replace('/[^\p{L}\p{N}\s]/u', '', $request->kategori));
-            $query->where('category', 'LIKE', '%' . $kategori . '%');
-        }
-
-        if ($request->has('kecamatan') && $request->kecamatan != 'Semua Kecamatan' && $request->kecamatan != '') {
-            $query->where('location', 'LIKE', '%' . $request->kecamatan . '%');
-        }
-
-        if ($request->has('kondisi') && $request->kondisi != 'Semua Kondisi' && $request->kondisi != '') {
-            $query->where('condition', 'LIKE', '%' . $request->kondisi . '%');
-        }
-
-        if ($request->has('harga') && $request->harga != 'Urutkan Harga' && $request->harga != '') {
-            if ($request->harga == 'Termurah') {
-                $query->getQuery()->orders = null;
-                $query->orderBy('price', 'asc');
-            } elseif ($request->harga == 'Termahal') {
-                $query->getQuery()->orders = null;
-                $query->orderBy('price', 'desc');
-            }
-        }
-
-        $items = $query->get();
-        return view('home', compact('items'));
+        return $this->renderMarketplace($request);
     }
 
     public function sellerHome(Request $request)
@@ -107,7 +41,91 @@ class ItemController extends Controller
             return redirect()->route('home');
         }
 
-        return $this->index($request);
+        return $this->renderMarketplace($request);
+    }
+
+    private function renderMarketplace(Request $request)
+    {
+        $items = $this->marketplaceQuery($request)->get();
+        $filterOptions = $this->filterOptions();
+
+        return view('home', compact('items', 'filterOptions'));
+    }
+
+    private function marketplaceQuery(Request $request): Builder
+    {
+        $query = Item::query()
+            ->with('categoryRecord')
+            ->where('status', '!=', 'terjual');
+
+        if ($request->filled('search')) {
+            $searchTerm = trim((string) $request->input('search'));
+
+            $query->where(function (Builder $query) use ($searchTerm) {
+                $query->where('name', 'LIKE', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'LIKE', '%' . $searchTerm . '%');
+            });
+        }
+
+        $category = $request->input('kategori');
+        if ($category && $category !== 'Semua Kategori') {
+            $query->where(function (Builder $query) use ($category) {
+                $query->where('category', $category)
+                    ->orWhereHas('categoryRecord', function (Builder $categoryQuery) use ($category) {
+                        $categoryQuery->where('name', $category);
+                    });
+            });
+        }
+
+        $district = $request->input('kecamatan');
+        if ($district && $district !== 'Semua Kecamatan') {
+            $query->where('location', 'LIKE', '%' . $district . '%');
+        }
+
+        $condition = $request->input('kondisi');
+        if ($condition && $condition !== 'Semua Kondisi') {
+            $query->where('condition', $condition);
+        }
+
+        return match ($request->input('harga')) {
+            'Termurah' => $query->orderBy('price')->orderBy('id'),
+            'Termahal' => $query->orderByDesc('price')->orderByDesc('id'),
+            default => $query->latest(),
+        };
+    }
+
+    private function filterOptions(): array
+    {
+        $categories = Category::query()
+            ->orderBy('name')
+            ->pluck('name')
+            ->all();
+
+        $legacyCategories = Item::query()
+            ->whereNotNull('category')
+            ->where('category', '!=', '')
+            ->distinct()
+            ->orderBy('category')
+            ->pluck('category')
+            ->all();
+
+        $conditions = Item::query()
+            ->whereNotNull('condition')
+            ->where('condition', '!=', '')
+            ->distinct()
+            ->orderBy('condition')
+            ->pluck('condition')
+            ->all();
+
+        return [
+            'categories' => array_values(array_unique(array_merge($categories, $legacyCategories))),
+            'districts' => ['Blimbing', 'Kedungkandang', 'Klojen', 'Lowokwaru', 'Sukun'],
+            'conditions' => array_values(array_unique(array_merge(
+                ['Bekas', 'Sangat Baik', 'Baik', 'Minus Pemakaian'],
+                $conditions
+            ))),
+            'prices' => ['Termurah', 'Termahal'],
+        ];
     }
 
     public function show($id)
@@ -142,8 +160,9 @@ class ItemController extends Controller
 
         $item = Item::findOrFail($id);
         abort_if(!Auth::user()->isAdmin() && (int) $item->user_id !== (int) Auth::id(), 403);
+        $categories = Category::query()->orderBy('name')->get();
 
-        return view('item.edit', compact('item'));
+        return view('item.edit', compact('item', 'categories'));
     }
 
     public function update(Request $request, $id)
@@ -158,7 +177,7 @@ class ItemController extends Controller
         $request->validate([
             'name' => 'required',
             'price' => 'required|numeric',
-            'category' => 'nullable',
+            'category_id' => 'required|exists:categories,id',
             'description' => 'nullable',
             'tags' => 'nullable',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -173,7 +192,8 @@ class ItemController extends Controller
         $item->update([
             'name' => $request->name,
             'price' => $request->price,
-            'category' => $request->category,
+            'category' => null,
+            'category_id' => $request->category_id,
             'description' => $request->description,
             'tags' => $request->tags,
             'status' => $request->status,
@@ -188,7 +208,9 @@ class ItemController extends Controller
             return $response;
         }
 
-        return view('item.sell');
+        $categories = Category::query()->orderBy('name')->get();
+
+        return view('item.sell', compact('categories'));
     }
 
     public function jual_simpan(Request $request)
@@ -201,7 +223,7 @@ class ItemController extends Controller
         $request->validate([
             'nama_barang' => 'required|min:5',
             'harga'       => 'required|numeric',
-            'kategori'    => 'required',
+            'kategori'    => 'required|exists:categories,id',
             'lokasi'      => 'required',
             'nomor_telp'  => 'required|string|min:10|max:15', // <--- TAMBAHAN VALIDASI
             'kondisi'     => 'required',

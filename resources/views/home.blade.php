@@ -118,17 +118,23 @@
                 <input type="hidden" name="search" value="{{ request('search') }}">
                 @php
                     $filters = [
-                        ['id' => 'kategori', 'label' => 'Kategori', 'icon' => 'grid', 'options' => ['Semua Kategori', 'Elektronik', 'Furniture', 'Fashion', 'Hobi']],
-                        ['id' => 'kecamatan', 'label' => 'Kecamatan', 'icon' => 'map', 'options' => ['Semua Kecamatan', 'Lowokwaru', 'Klojen', 'Blimbing']],
-                        ['id' => 'kondisi', 'label' => 'Kondisi', 'icon' => 'badge', 'options' => ['Semua Kondisi', 'Sangat Baik', 'Baik', 'Minus Pemakaian']],
-                        ['id' => 'harga', 'label' => 'Harga', 'icon' => 'money', 'options' => ['Urutkan Harga', 'Termurah', 'Termahal']],
+                        ['id' => 'kategori', 'label' => 'Kategori', 'icon' => 'grid', 'options' => array_merge(['Semua Kategori'], $filterOptions['categories'])],
+                        ['id' => 'kecamatan', 'label' => 'Kecamatan', 'icon' => 'map', 'options' => array_merge(['Semua Kecamatan'], $filterOptions['districts'])],
+                        ['id' => 'kondisi', 'label' => 'Kondisi', 'icon' => 'badge', 'options' => array_merge(['Semua Kondisi'], $filterOptions['conditions'])],
+                        ['id' => 'harga', 'label' => 'Harga', 'icon' => 'money', 'options' => array_merge(['Urutkan Harga'], $filterOptions['prices'])],
                     ];
                 @endphp
 
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2 w-full">
                     @foreach($filters as $fIdx => $filter)
+                        @php
+                            $selectedValue = request($filter['id'], $filter['options'][0]);
+                            $selectedValue = in_array($selectedValue, $filter['options'], true)
+                                ? $selectedValue
+                                : $filter['options'][0];
+                        @endphp
                         <div class="relative custom-dropdown" data-dropdown="{{ $filter['id'] }}">
-                            <input type="hidden" name="{{ $filter['id'] }}" id="input-{{ $filter['id'] }}" value="{{ request($filter['id'], $filter['options'][0]) }}">
+                            <input type="hidden" name="{{ $filter['id'] }}" id="input-{{ $filter['id'] }}" value="{{ $selectedValue }}">
                             {{-- Trigger Button --}}
                             <button type="button" 
                                 class="dropdown-trigger w-full flex items-center gap-3 px-4 py-3 bg-gray-50 hover:bg-gray-200 border border-transparent rounded-xl transition-all duration-300 cursor-pointer"
@@ -146,7 +152,7 @@
                                 </div>
                                 <div class="flex flex-col items-start min-w-0 flex-1">
                                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest leading-none mb-0.5">{{ $filter['label'] }}</span>
-                                    <span class="dropdown-value text-sm font-semibold text-gray-700 truncate w-full text-left">{{ request($filter['id'], $filter['options'][0]) }}</span>
+                                    <span class="dropdown-value text-sm font-semibold text-gray-700 truncate w-full text-left">{{ $selectedValue }}</span>
                                 </div>
                                 <svg class="dropdown-chevron w-4 h-4 text-gray-400 transition-transform duration-300 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </button>
@@ -154,10 +160,11 @@
                             {{-- Dropdown Menu --}}
                             <div class="dropdown-menu hidden absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.12)] border border-gray-100 overflow-hidden z-50 opacity-0 -translate-y-2 transition-all duration-200">
                                 @foreach($filter['options'] as $oIdx => $option)
+                                    @php($isSelected = $selectedValue === $option)
                                     <button type="button"
-                                        class="dropdown-option w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 flex items-center gap-3 {{ $oIdx === 0 ? 'text-bekas-green bg-bekas-green/5 font-semibold' : 'text-gray-600' }}"
-                                        onclick="selectOption('{{ $filter['id'] }}', this, '{{ $option }}')">
-                                        <span class="w-2 h-2 rounded-full {{ $oIdx === 0 ? 'bg-bekas-green' : 'bg-transparent' }} transition-colors duration-200 shrink-0"></span>
+                                        class="dropdown-option w-full px-4 py-3 text-left text-sm font-medium transition-all duration-200 flex items-center gap-3 {{ $isSelected ? 'text-bekas-green bg-bekas-green/5 font-semibold' : 'text-gray-600' }}"
+                                        onclick="selectOption('{{ $filter['id'] }}', this, @js($option))">
+                                        <span class="w-2 h-2 rounded-full {{ $isSelected ? 'bg-bekas-green' : 'bg-transparent' }} transition-colors duration-200 shrink-0"></span>
                                         {{ $option }}
                                     </button>
                                 @endforeach
@@ -273,7 +280,7 @@
 
                         <div class="flex flex-col flex-grow px-1">
                             <div class="mb-1.5">
-                                <span class="text-[10px] font-bold text-bekas-green uppercase tracking-wider">{{ $item->category ?? 'Lainnya' }}</span>
+                                <span class="text-[10px] font-bold text-bekas-green uppercase tracking-wider">{{ $item->category_name }}</span>
                             </div>
                             
                             <h3 class="card-title text-base font-bold text-gray-800 line-clamp-2 leading-tight mb-3">
