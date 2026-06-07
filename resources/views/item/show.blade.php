@@ -122,7 +122,7 @@
                             <a href="{{ route('penjual.lapak', $item->user_id) }}" class="text-green-600 hover:underline">
                                 {{ $item->user->name }}
                             </a>
-                            </p>
+                        </p>
                     </div>
 
                     <div class="pt-4 mt-4">

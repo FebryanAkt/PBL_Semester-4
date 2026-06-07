@@ -17,36 +17,38 @@
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-5 flex items-start sm:items-center gap-4">
                     
                     {{-- PERBAIKAN: Gambar yang sebelumnya rusak --}}
-                    <img src="{{ asset('images/' . $cart->item->image) }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-gray-200 shrink-0">
-                    
-                    <div class="flex-1">
-                        <h3 class="font-bold text-slate-800 text-base sm:text-lg line-clamp-2 leading-tight mb-1">{{ $cart->item->name }}</h3>
-                        <p class="text-sm text-emerald-600 font-bold mb-3">Rp {{ number_format($cart->item->price, 0, ',', '.') }}</p>
+                    <a href="{{ route('produk.detail', ['id' => $cart->item->id]) }}" class="flex items-start gap-4">
+                        <img src="{{ asset('images/' . $cart->item->image) }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-gray-200 shrink-0">
                         
-                        {{-- KONTROL KUANTITAS (PLUS MINUS) --}}
-                        <div class="flex items-center gap-4">
-                            <div class="flex items-center border border-gray-300 rounded-lg bg-white w-max h-8">
-                                {{-- Tombol Minus --}}
-                                <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="action" value="minus">
-                                    <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-l-lg font-bold transition-colors flex items-center justify-center {{ $cart->quantity <= 1 ? 'opacity-30 cursor-not-allowed' : '' }}" {{ $cart->quantity <= 1 ? 'disabled' : '' }}>-</button>
-                                </form>
-                                
-                                {{-- Angka Kuantitas --}}
-                                <span class="w-10 text-center text-gray-800 font-bold text-sm border-x border-gray-300 h-full flex items-center justify-center bg-gray-50">{{ $cart->quantity }}</span>
-                                
-                                {{-- Tombol Plus --}}
-                                <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
-                                    @csrf
-                                    @method('PATCH')
-                                    <input type="hidden" name="action" value="plus">
-                                    <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-r-lg font-bold transition-colors flex items-center justify-center">+</button>
-                                </form>
+                        <div class="flex-1">
+                            <h3 class="font-bold text-slate-800 text-base sm:text-lg line-clamp-2 leading-tight mb-1">{{ $cart->item->name }}</h3>
+                            <p class="text-sm text-emerald-600 font-bold mb-3">Rp {{ number_format($cart->item->price, 0, ',', '.') }}</p>
+                        
+                            {{-- KONTROL KUANTITAS (PLUS MINUS) --}}
+                            <div class="flex items-center gap-4">
+                                <div class="flex items-center border border-gray-300 rounded-lg bg-white w-max h-8">
+                                    {{-- Tombol Minus --}}
+                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="action" value="minus">
+                                        <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-l-lg font-bold transition-colors flex items-center justify-center {{ $cart->quantity <= 1 ? 'opacity-30 cursor-not-allowed' : '' }}" {{ $cart->quantity <= 1 ? 'disabled' : '' }}>-</button>
+                                    </form>
+                                    
+                                    {{-- Angka Kuantitas --}}
+                                    <span class="w-10 text-center text-gray-800 font-bold text-sm border-x border-gray-300 h-full flex items-center justify-center bg-gray-50">{{ $cart->quantity }}</span>
+                                    
+                                    {{-- Tombol Plus --}}
+                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
+                                        @csrf
+                                        @method('PATCH')
+                                        <input type="hidden" name="action" value="plus">
+                                        <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-r-lg font-bold transition-colors flex items-center justify-center">+</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
 
                     {{-- Tombol Hapus (Tong Sampah) --}}
                     <div class="flex flex-col items-end gap-4 h-full justify-start shrink-0">

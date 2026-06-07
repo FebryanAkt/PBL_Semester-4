@@ -130,7 +130,7 @@ class ItemController extends Controller
 
     public function show($id)
     {
-        $item = Item::findOrFail($id);
+        $item = Item::with('user')->findOrFail($id);
         return view('item.show', compact('item'));
     }
 

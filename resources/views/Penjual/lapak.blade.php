@@ -72,7 +72,7 @@
                             <span class="truncate font-medium">{{ $item->location }}</span>
                         </div>
 
-                        <!-- Tombol Keranjang -->
+                        <!-- Tombol Detail -->
                         <form action="{{ route('cart.add') }}" method="POST" class="w-full mb-2">
                             @csrf
                             <input type="hidden" name="item_id" value="{{ $item->id }}">

@@ -14,8 +14,6 @@ use App\Http\Controllers\BarangController;
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-Route::post('/penjual/{id}/follow', [PenjualController::class, 'follow'])->name('penjual.follow');
-Route::delete('/penjual/{id}/unfollow', [PenjualController::class, 'unfollow'])->name('penjual.unfollow');
 Route::get('/lapak/{id}', [PenjualController::class, 'lapak'])->name('penjual.lapak');
 Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
