@@ -51,7 +51,7 @@
             
             <div class="w-full md:w-1/2 space-y-6 md:space-y-8 pr-0 md:pr-4 animate-on-scroll">
                 <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bekas-green/10 text-bekas-green text-sm font-bold tracking-wide border border-bekas-green/20">
-                    ✨ Marketplace Mahasiswa Malang
+                     Marketplace Mahasiswa Malang
                 </div>
                 
                 <h2 class="text-4xl md:text-5xl font-extrabold text-bekas-dark leading-[1.15] tracking-tight">
