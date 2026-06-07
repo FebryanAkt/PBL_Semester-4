@@ -41,8 +41,9 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
 
             @forelse($items as $item)
-                <div class="bg-white rounded-xl p-3 shadow">
-
+                
+            <a href="{{ route('produk.detail', $item->id) }}">
+                <div class="bg-white rounded-xl p-3 shadow hover:shadow-lg transition">
                     <div class="bg-gray-200 h-32 rounded-lg relative flex items-center justify-center">
                         @if($item->image)
                             <img src="{{ asset('images/' . $item->image) }}" 
@@ -85,6 +86,7 @@
                     </div>
 
                 </div>
+            </a>
             @empty
                 <p class="col-span-full text-center text-gray-400">Belum ada barang</p>
             @endforelse
