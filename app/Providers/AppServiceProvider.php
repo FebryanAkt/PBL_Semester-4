@@ -3,6 +3,8 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use App\Events\TransactionSuccess;
+use App\Listeners\SendNotificationToSeller;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,4 +23,12 @@ class AppServiceProvider extends ServiceProvider
     {
         //
     }
+
+    protected $listen = [
+    // ... event lain jika ada
+    \App\Events\TransactionSuccess::class => [
+        \App\Listeners\SendNotificationToSeller::class,
+    ],
+];
+
 }
