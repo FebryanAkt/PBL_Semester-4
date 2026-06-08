@@ -10,7 +10,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 relative z-10">
         {{-- Tombol kembali --}}
         <div class="mb-5">
-            <a href="{{ route('seller.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-bekas-green hover:text-green-700 transition">
+            <a href="{{ route('penjual.orders.index') }}" class="inline-flex items-center gap-2 text-sm font-medium text-bekas-green hover:text-green-700 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
                 Kembali ke daftar pesanan
             </a>
@@ -78,7 +78,7 @@
                     <svg class="w-5 h-5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
                     Status Pengiriman
                 </h2>
-                <form action="{{ route('seller.orders.delivery', $transaction->id) }}" method="POST" class="space-y-5 max-w-md">
+                <form action="{{ route('penjual.orders.delivery', $transaction->id) }}" method="POST" class="space-y-5 max-w-md">
                     @csrf
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Status Kirim</label>

@@ -17,24 +17,52 @@
     {{-- Statistik --}}
     <div class="bg-gray-100 p-4 rounded-xl shadow-sm mb-8">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-green-900 text-white p-4 rounded-xl text-center">
+
+            <a href="{{ route('barang.saya') }}"
+            class="bg-green-900 text-white p-4 rounded-xl text-center hover:scale-105 transition">
                 <p>Total Barang</p>
                 <h2 class="text-xl font-bold">{{ $total }}</h2>
-            </div>
-            <div class="bg-green-400 p-4 rounded-xl text-center">
+            </a>
+
+            <a href="{{ route('barang.saya', ['filter' => 'tersedia']) }}"
+            class="bg-green-400 p-4 rounded-xl text-center hover:scale-105 transition">
                 <p>Tersedia</p>
                 <h2 class="text-xl font-bold">{{ $tersedia }}</h2>
-            </div>
-            <div class="bg-yellow-400 p-4 rounded-xl text-center">
+            </a>
+
+            <a href="{{ route('penjual.orders.index') }}"
+            class="bg-yellow-400 p-4 rounded-xl text-center hover:scale-105 transition">
                 <p>Pesanan</p>
                 <h2 class="text-xl font-bold">{{ $booking }}</h2>
-            </div>
-            <div class="bg-red-700 text-white p-4 rounded-xl text-center">
+            </a>
+
+            <a href="{{ route('barang.saya', ['filter' => 'terjual']) }}"
+            class="bg-red-700 text-white p-4 rounded-xl text-center hover:scale-105 transition">
                 <p>Terjual</p>
                 <h2 class="text-xl font-bold">{{ $terjual }}</h2>
-            </div>
+            </a>
+
         </div>
     </div>
+
+    <h2 class="text-2xl font-bold mb-4">
+    @switch($filter)
+        @case('tersedia')
+            Barang Tersedia
+            @break
+
+        @case('booking')
+            Pesanan Masuk
+            @break
+
+        @case('terjual')
+            Barang Terjual
+            @break
+
+        @default
+            Semua Barang
+    @endswitch
+</h2>
 
     {{-- Grid --}}
     <div class="bg-gray-100 p-6 rounded-xl">
