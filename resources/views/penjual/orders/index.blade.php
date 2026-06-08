@@ -67,7 +67,7 @@
                                 </span>
                             @endif
                         </div>
-                        <a href="{{ route('seller.orders.show', $trx->id) }}" 
+                        <a href="{{ route('penjual.orders.show', $trx->id) }}" 
                            class="group flex items-center justify-center gap-2 bg-bekas-dark text-white px-4 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-md hover:bg-gray-800 hover:shadow-lg w-full text-sm">
                             Detail Pesanan
                             <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>

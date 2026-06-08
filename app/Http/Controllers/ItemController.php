@@ -139,20 +139,47 @@ class ItemController extends Controller
     }
 
 
-    public function myItems()
+    public function myItems(Request $request)
     {
         if ($response = $this->denyBuyerIfNeeded()) {
-            return $response;
+        return $response;
+        }
+        $filter = $request->get('filter', 'all');
+
+        $query = Item::where('user_id', Auth::id());
+
+        $total = (clone $query)->count();
+        $tersedia = (clone $query)->where('status', 'tersedia')->count();
+        $booking = (clone $query)->where('status', 'booking')->count();
+        $terjual = (clone $query)->where('status', 'terjual')->count();
+
+        switch ($filter) {
+            case 'tersedia':
+                $query->where('status', 'tersedia');
+                break;
+
+            case 'booking':
+                $query->where('status', 'booking');
+                break;
+
+            case 'terjual':
+                $query->where('status', 'terjual');
+                break;
         }
 
-        $items = Item::where('user_id', Auth::id())->get();
+        $items = $query->latest()->get();
 
-        $total = $items->count();
-        $tersedia = $items->where('status', 'tersedia')->count();
-        $booking = $items->where('status', 'booking')->count();
-        $terjual = $items->where('status', 'terjual')->count();
-
-        return view('item.index', compact('items', 'total', 'tersedia', 'booking', 'terjual'));
+        return view(
+            'item.index',
+            compact(
+                'items',
+                'total',
+                'tersedia',
+                'booking',
+                'terjual',
+                'filter'
+            )
+        );
     }
 
     // EDIT BARANG
