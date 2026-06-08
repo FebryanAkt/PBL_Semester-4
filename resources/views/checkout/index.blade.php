@@ -218,7 +218,7 @@
                                         {{ number_format($biayaPlatform, 0, ',', '.') }}</span>
                                 </div>
                                 <div class="flex justify-between items-center text-sm">
-                                    <span class="text-gray-500">Biaya Penanganan (Payment)</span>
+                                    <span class="text-gray-500">Biaya Penanganan </span>
                                     <span class="font-semibold text-gray-800">Rp
                                         {{ number_format($biayaPenanganan, 0, ',', '.') }}</span>
                                 </div>

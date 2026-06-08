@@ -72,7 +72,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Nama Barang</label>
-                    <input type="text" name="nama_barang" placeholder="  " class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none">
+                    <input type="text" name="nama_barang" placeholder="Buku Kalkulus II  " class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none">
                 </div>
                 <div>
                     <label class="block text-sm font-bold text-gray-700 mb-2">Kondisi</label>
@@ -80,7 +80,7 @@
                         <option>Sangat Baik</option>
                         <option>Baik</option>
                         <option>Bekas</option>
-                        <option>Minus Pemakaian</option>
+                        <option>Cacat Pemakaian</option>
                     </select>
                 </div>
                 <div>
@@ -128,7 +128,7 @@
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
             <h5 class="text-lg font-bold text-bekas-dark mb-4">Deskripsi</h5>
-            <textarea name="deskripsi" rows="4" placeholder="Jelaskan kondisi, kelengkapan, dan alasan barang dijual" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none"></textarea>
+            <textarea name="deskripsi" rows="4" placeholder="Jelaskan kondisi, kelengkapan, dan alasan barang dijual!" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none"></textarea>
         </div>
 
         <div class="flex justify-end gap-4 mt-8 pb-10">

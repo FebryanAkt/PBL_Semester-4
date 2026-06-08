@@ -16,8 +16,8 @@ class CategorySeeder extends Seeder
 
         $categories = [
             ['name' => 'Elektronik', 'slug' => 'elektronik'],
-            ['name' => 'Furniture', 'slug' => 'furniture'],
-            ['name' => 'Fashion', 'slug' => 'fashion'],
+            ['name' => 'Perabotan', 'slug' => 'Perabotan'],
+            ['name' => 'Pakaian', 'slug' => 'pakaian'],
             ['name' => 'Hobi', 'slug' => 'hobi'],
         ];
 
