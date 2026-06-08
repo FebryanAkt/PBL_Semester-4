@@ -17,7 +17,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::get('/lapak/{id}', [PenjualController::class, 'lapak'])->name('penjual.lapak');
-Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
+Route::get('/barang/{id}', [BarangController::class, 'show'])->whereNumber('id')->name('barang.show');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/riwayat-transaksi', [PaymentController::class, 'history'])->name('transaksi.riwayat');
@@ -38,9 +38,9 @@ Route::post('/midtrans-callback', [PaymentController::class, 'callback'])->name(
 // SEMUA ROUTE DI BAWAH INI WAJIB LOGIN (AUTH MIDDLEWARE GROUP)
 // ====================================================================
 Route::middleware('auth')->group(function () {
-    // Beranda khusus penjual tetap menggunakan katalog utama.
-    Route::get('/penjual/home', [ItemController::class, 'sellerHome'])->name('penjual.home');
-    Route::redirect('/penjual/dashboard', '/penjual/home')->name('penjual.dashboard');
+    // Penjual langsung diarahkan ke halaman pengelolaan barang.
+    Route::redirect('/penjual/home', '/barang-saya')->name('penjual.home');
+    Route::redirect('/penjual/dashboard', '/barang-saya')->name('penjual.dashboard');
 
     // Barang Saya & Jual Barang
     Route::get('/barang-saya', [ItemController::class, 'myItems'])->name('barang.saya');
@@ -48,8 +48,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/item/jual_simpan', [ItemController::class, 'jual_simpan'])->name('barang.jual_simpan');
 
     // Edit Barang
-    Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->name('barang.edit');
-    Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.update');
+    Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->whereNumber('id')->name('barang.edit');
+    Route::put('/barang/{id}', [ItemController::class, 'update'])->whereNumber('id')->name('barang.update');
 
     // Route Keranjang
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');

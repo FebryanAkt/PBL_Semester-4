@@ -26,7 +26,7 @@ class AuthController extends Controller
             $user = Auth::user();
 
             if ($user->role === 'seller') {
-                return redirect()->route('penjual.home')->with('success', 'Berhasil masuk sebagai Penjual!');
+                return redirect()->route('barang.saya')->with('success', 'Berhasil masuk sebagai Penjual!');
             }
 
             return redirect()->route('home')->with('success', 'Berhasil masuk sebagai Pembeli!');
@@ -64,7 +64,7 @@ class AuthController extends Controller
 
         // Redirect sesuai role
         if ($user->role === 'seller') {
-            return redirect()->route('penjual.home')->with('success', 'Akun Penjual berhasil dibuat! Selamat datang di Bekaswit.');
+            return redirect()->route('barang.saya')->with('success', 'Akun Penjual berhasil dibuat! Selamat datang di Bekaswit.');
         }
 
         return redirect()->route('home')->with('success', 'Akun berhasil dibuat! Selamat datang di Bekaswit.');

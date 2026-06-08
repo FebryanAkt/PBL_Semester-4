@@ -1,6 +1,7 @@
 @php
-    $marketplaceHomeUrl = Auth::check() && Auth::user()->isSeller()
-        ? route('penjual.home')
+    $isSeller = Auth::check() && Auth::user()->isSeller();
+    $marketplaceHomeUrl = $isSeller
+        ? route('barang.saya')
         : route('home');
 @endphp
 
@@ -21,38 +22,42 @@
         </a>
     </div>
 
-    <form action="{{ $marketplaceHomeUrl }}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
-            class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
-        <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 px-3 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-        </button>
-    </form>
+    @unless($isSeller)
+        <form action="{{ $marketplaceHomeUrl }}" method="GET" class="hidden md:flex flex-1 max-w-xl mx-8 relative group">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
+                class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
+            <button type="submit" class="absolute right-2 top-1.5 bottom-1.5 px-3 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </button>
+        </form>
+    @endunless
 
     <div class="flex items-center gap-4 md:gap-6 text-sm font-medium">
         
         @auth
             <div class="hidden md:flex items-center gap-6">
-                <a href="{{ route('cart.index') }}" class="hover:text-bekas-green transition flex items-center gap-1.5 relative group" title="Keranjang">
-                    <div class="relative">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        
-                        @php 
-                            $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity'); 
-                        @endphp
-                        
-                        <span id="cart-badge" 
-                                class="absolute -top-1.5 -right-2 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 transition-all duration-300 {{ $cartCount > 0 ? '' : 'hidden' }}">
-                                {{ $cartCount }}
-                            </span>
-                    </div>
-                </a>
+                @unless($isSeller)
+                    <a href="{{ route('cart.index') }}" class="hover:text-bekas-green transition flex items-center gap-1.5 relative group" title="Keranjang">
+                        <div class="relative">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                            
+                            @php 
+                                $cartCount = \App\Models\Cart::where('user_id', auth()->id())->sum('quantity'); 
+                            @endphp
+                            
+                            <span id="cart-badge" 
+                                    class="absolute -top-1.5 -right-2 flex items-center justify-center bg-red-500 text-white text-[9px] font-bold rounded-full w-4 h-4 transition-all duration-300 {{ $cartCount > 0 ? '' : 'hidden' }}">
+                                    {{ $cartCount }}
+                                </span>
+                        </div>
+                    </a>
+                @endunless
 
                 <a href="{{ route('transaksi.riwayat') }}" class="hover:text-bekas-green transition flex items-center" title="Riwayat Transaksi">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -135,16 +140,18 @@
     </div>
 </nav>
 
-<div class="block md:hidden bg-bekas-dark px-6 pb-4">
-    <form action="{{ $marketplaceHomeUrl }}" method="GET" class="relative group">
-        <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
-            class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
-        <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
-                stroke="currentColor" class="w-4 h-4">
-                <path stroke-linecap="round" stroke-linejoin="round"
-                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-            </svg>
-        </button>
-    </form>
-</div>
+@unless($isSeller)
+    <div class="block md:hidden bg-bekas-dark px-6 pb-4">
+        <form action="{{ $marketplaceHomeUrl }}" method="GET" class="relative group">
+            <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari barang Mahasiswa Malang..."
+                class="w-full py-2.5 pl-5 pr-12 rounded-full bg-white/10 border border-white/20 text-sm text-white placeholder-gray-300 focus:outline-none focus:bg-white focus:text-gray-800 focus:placeholder-gray-400 focus:ring-4 focus:ring-bekas-green/50 transition-all duration-300 shadow-sm focus:shadow-lg">
+            <button type="submit" class="absolute right-1.5 top-1.5 bottom-1.5 px-4 bg-white/10 group-focus-within:bg-bekas-green text-white rounded-full hover:bg-bekas-green transition-colors flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                    stroke="currentColor" class="w-4 h-4">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </button>
+        </form>
+    </div>
+@endunless

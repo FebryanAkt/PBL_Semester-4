@@ -4,7 +4,7 @@
 <div class="max-w-5xl mx-auto py-10 px-4">
     <h2 class="text-3xl font-bold text-bekas-dark mb-8">Tambah Barang Yang Ingin Dijual</h2>
 
-    <form action="/barang/jual_simpan" method="POST" enctype="multipart/form-data" class="space-y-6">
+    <form action="/item/jual_simpan" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">

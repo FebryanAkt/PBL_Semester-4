@@ -1,6 +1,7 @@
 @php
-    $marketplaceHomeUrl = Auth::check() && Auth::user()->isSeller()
-        ? route('penjual.home')
+    $isSeller = Auth::check() && Auth::user()->isSeller();
+    $marketplaceHomeUrl = $isSeller
+        ? route('barang.saya')
         : route('home');
 @endphp
 
@@ -26,22 +27,21 @@
         <div>
             <h2 class="text-sm font-bold uppercase tracking-wider text-white">Jelajahi</h2>
             <ul class="mt-5 space-y-3 text-sm text-gray-300">
-                <li>
-                    <a href="{{ $marketplaceHomeUrl }}" class="transition hover:text-bekas-green">Beranda</a>
-                </li>
-                <li>
-                    <a href="{{ $marketplaceHomeUrl }}#katalog-produk" class="transition hover:text-bekas-green">Katalog Barang</a>
-                </li>
-                @auth
-                    @if(Auth::user()->isSeller())
-                        <li>
-                            <a href="{{ route('barang.jual') }}" class="transition hover:text-bekas-green">Jual Barang</a>
-                        </li>
-                        <li>
-                            <a href="{{ route('barang.saya') }}" class="transition hover:text-bekas-green">Barang Saya</a>
-                        </li>
-                    @endif
-                @endauth
+                @if($isSeller)
+                    <li>
+                        <a href="{{ route('barang.saya') }}" class="transition hover:text-bekas-green">Barang Saya</a>
+                    </li>
+                    <li>
+                        <a href="{{ route('barang.jual') }}" class="transition hover:text-bekas-green">Jual Barang</a>
+                    </li>
+                @else
+                    <li>
+                        <a href="{{ $marketplaceHomeUrl }}" class="transition hover:text-bekas-green">Beranda</a>
+                    </li>
+                    <li>
+                        <a href="{{ $marketplaceHomeUrl }}#katalog-produk" class="transition hover:text-bekas-green">Katalog Barang</a>
+                    </li>
+                @endif
             </ul>
         </div>
 
@@ -55,9 +55,11 @@
                     <li>
                         <a href="{{ route('chat.index') }}" class="transition hover:text-bekas-green">Pesan</a>
                     </li>
-                    <li>
-                        <a href="{{ route('cart.index') }}" class="transition hover:text-bekas-green">Keranjang</a>
-                    </li>
+                    @unless($isSeller)
+                        <li>
+                            <a href="{{ route('cart.index') }}" class="transition hover:text-bekas-green">Keranjang</a>
+                        </li>
+                    @endunless
                 @else
                     <li>
                         <a href="{{ route('login') }}" class="transition hover:text-bekas-green">Masuk</a>
