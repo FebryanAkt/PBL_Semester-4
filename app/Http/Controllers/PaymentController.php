@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\Cart;
+use App\Notifications\NewOrderNotification;
 
 class PaymentController extends Controller
 {
@@ -253,7 +254,10 @@ class PaymentController extends Controller
                             }
 
                             $item->save();
-                            event(new TransactionSuccess($transaction));
+                            $penjual = $item->user;
+                            if ($penjual) {
+                                $penjual->notify(new NewOrderNotification($transaction));
+                            }
                         }
                     }
 
@@ -271,6 +275,10 @@ class PaymentController extends Controller
                         }
 
                         $item->save();
+                        $penjual = $item->user;
+                        if ($penjual) {
+                            $penjual->notify(new NewOrderNotification($transaction));
+                        }
                     }
                 }
             }
@@ -278,6 +286,9 @@ class PaymentController extends Controller
             $transaction->status = 'failed';
         } else if ($transactionStatus == 'pending') {
             $transaction->status = 'pending';
+            if ($transaction->status != 'success' && $transaction->status != 'failed') {
+                $transaction->status = 'pending';
+            }
         }
 
         $transaction->save();

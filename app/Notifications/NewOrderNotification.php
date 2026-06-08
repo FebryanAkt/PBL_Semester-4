@@ -45,7 +45,7 @@ class NewOrderNotification extends Notification
             'buyer_name' => $this->transaction->user->name ?? 'Pembeli',
             'total_price' => $this->transaction->price,
             'message' => 'Ada pesanan baru untuk barang "' . ($this->transaction->item->name ?? 'unknown') . '" dari ' . ($this->transaction->user->name ?? 'pembeli'),
-            'url' => route('seller.orders.show', $this->transaction->id),
+            'url' => route('penjual.orders.show', $this->transaction->id),
         ];
     }
 }
