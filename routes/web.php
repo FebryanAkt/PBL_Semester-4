@@ -15,7 +15,7 @@ Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.post');
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::get('/lapak/{id}', [PenjualController::class, 'lapak'])->name('penjual.lapak');
-Route::get('/barang/{id}', [BarangController::class, 'show'])->name('barang.show');
+Route::get('/barang/{id}', [BarangController::class, 'show'])->whereNumber('id')->name('barang.show');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::get('/riwayat-transaksi', [PaymentController::class, 'history'])->name('transaksi.riwayat');
@@ -46,8 +46,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/barang/jual_simpan', [ItemController::class, 'jual_simpan'])->name('barang.jual_simpan');
     
     // Edit Barang
-    Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->name('barang.edit');
-    Route::put('/barang/{id}', [ItemController::class, 'update'])->name('barang.update');
+    Route::get('/barang/{id}/edit', [ItemController::class, 'edit'])->whereNumber('id')->name('barang.edit');
+    Route::put('/barang/{id}', [ItemController::class, 'update'])->whereNumber('id')->name('barang.update');
 
     // Route Keranjang
     Route::get('/keranjang', [CartController::class, 'index'])->name('cart.index');
