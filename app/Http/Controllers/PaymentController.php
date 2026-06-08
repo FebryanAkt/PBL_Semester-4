@@ -253,6 +253,7 @@ class PaymentController extends Controller
                             }
 
                             $item->save();
+                            event(new TransactionSuccess($transaction));
                         }
                     }
 
