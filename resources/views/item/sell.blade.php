@@ -3,6 +3,27 @@
 @section('content')
 <div class="max-w-5xl mx-auto py-10 px-4">
     <h2 class="text-3xl font-bold text-bekas-dark mb-8">Tambah Barang Yang Ingin Dijual</h2>
+    @if(session('error'))
+    <div class="mb-4 p-4 bg-red-100 text-red-700 rounded">
+        {{ session('error') }}
+    </div>
+    @endif
+
+    @if ($errors->any())
+        <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-r-xl shadow-sm">
+            <div class="flex items-center mb-2">
+                <svg class="w-5 h-5 text-red-500 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                </svg>
+                <h4 class="text-sm font-bold text-red-800">Periksa Kembali Isian Form:</h4>
+            </div>
+            <ul class="list-disc list-inside text-xs text-red-700 space-y-1 ml-1">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
 
     <form action="/item/jual_simpan" method="POST" enctype="multipart/form-data" class="space-y-6">
         @csrf

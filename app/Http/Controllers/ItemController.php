@@ -227,29 +227,51 @@ class ItemController extends Controller
     public function jual_simpan(Request $request)
     {
         if ($response = $this->denyBuyerIfNeeded()) {
-            return $response;
-        }
+        return $response;
+    }
 
-        // Validasi
+    try {
+
         $request->validate([
             'nama_barang' => 'required|min:5',
             'harga'       => 'required|numeric',
             'kategori'    => 'required|exists:categories,id',
-            'stock' => 'required|integer|min:1',
+            'stock'       => 'required|integer|min:1',
             'lokasi'      => 'required',
-            'nomor_telp'  => 'required|string|min:10|max:15', // <--- TAMBAHAN VALIDASI
+            'nomor_telp'  => 'required|string|min:10|max:15',
             'kondisi'     => 'required',
             'foto_utama'  => 'required|image|mimes:jpg,jpeg,png|max:2048',
             'foto_tambahan.*' => 'image|mimes:jpg,jpeg,png|max:2048',
-            // Hapus baris validasi status jika di form tidak ada input status, 
-            // biarkan default database yang bekerja (tersedia)
+        ],[
+            // List pesan kustom agar pop-up di blade jadi rapi dan manusiawi
+            'nama_barang.required' => 'Nama barang tidak boleh kosong.',
+            'nama_barang.min'      => 'Nama barang minimal harus 5 karakter.',
+            'harga.required'       => 'Harga barang wajib diisi.',
+            'harga.numeric'        => 'Harga harus berupa angka.',
+            'kategori.required'    => 'Silakan pilih kategori barang.',
+            'kategori.exists'      => 'Kategori yang dipilih tidak valid.',
+            'stock.required'       => 'Jumlah stok wajib diisi.',
+            'stock.min'            => 'Stok minimal adalah 1 barang.',
+            'lokasi.required'      => 'Lokasi keberadaan barang wajib diisi.',
+            'nomor_telp.required'  => 'Nomor telepon wajib diisi untuk hubungi penjual.',
+            'nomor_telp.min'       => 'Nomor telepon minimal 10 digit.',
+            'kondisi.required'     => 'Pilih kondisi barang bekasmu saat ini.',
+            'foto_utama.required'  => 'Foto utama produk wajib diunggah.',
+            'foto_utama.image'     => 'Berkas utama harus berupa file gambar.',
+            'foto_utama.max'       => 'Ukuran foto utama maksimal adalah 2 MB.',
+            'foto_tambahan.*.image' => 'Semua foto tambahan harus berupa file gambar.',
+            'foto_tambahan.*.max'   => 'Ukuran foto tambahan maksimal adalah 2 MB per file.',
+
         ]);
 
-        // Upload gambar
         $fileName = null;
+
         if ($request->hasFile('foto_utama')) {
             $file = $request->file('foto_utama');
-            $fileName = time() . '_' . str_replace(' ', '_', $file->getClientOriginalName());
+
+            $fileName = time() . '_' .
+                str_replace(' ', '_', $file->getClientOriginalName());
+
             $file->move(public_path('images'), $fileName);
         }
 
@@ -267,23 +289,39 @@ class ItemController extends Controller
             }
         }
 
-        // Simpan data
         Item::create([
             'user_id'     => Auth::id(),
             'name'        => $request->nama_barang,
             'price'       => $request->harga,
-            'stock' => $request->stock,
+            'stock'       => $request->stock,
             'category_id' => $request->kategori,
             'location'    => $request->lokasi,
-            'phone'       => $request->nomor_telp, // <--- SIMPAN KE DATABASE
+            'phone'       => $request->nomor_telp,
             'condition'   => $request->kondisi,
             'description' => $request->deskripsi,
             'image'       => $fileName,
             'images'      => json_encode($additionalImages),
-            'status'      => 'tersedia', // <--- Set default langsung di sini
+            'status'      => 'tersedia',
         ]);
 
         return redirect()
+            ->route('barang.saya')
+            ->with('success', 'Barang berhasil diposting!');
+
+    } catch (\Illuminate\Validation\ValidationException $e) {
+
+        return back()
+            ->withErrors($e->validator)
+            ->withInput();
+
+    } catch (\Exception $e) {
+
+        return back()
+            ->withInput()
+            ->with('error', 'Gagal menambahkan barang: ' . $e->getMessage());
+    }
+
+     return redirect()
             ->route('barang.saya')
             ->with('success', 'Barang berhasil diposting!');
     }
