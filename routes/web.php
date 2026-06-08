@@ -38,9 +38,9 @@ Route::post('/midtrans-callback', [PaymentController::class, 'callback'])->name(
 // SEMUA ROUTE DI BAWAH INI WAJIB LOGIN (AUTH MIDDLEWARE GROUP)
 // ====================================================================
 Route::middleware('auth')->group(function () {
-    // Beranda khusus penjual tetap menggunakan katalog utama.
-    Route::get('/penjual/home', [ItemController::class, 'sellerHome'])->name('penjual.home');
-    Route::redirect('/penjual/dashboard', '/penjual/home')->name('penjual.dashboard');
+    // Penjual langsung diarahkan ke halaman pengelolaan barang.
+    Route::redirect('/penjual/home', '/barang-saya')->name('penjual.home');
+    Route::redirect('/penjual/dashboard', '/barang-saya')->name('penjual.dashboard');
 
     // Barang Saya & Jual Barang
     Route::get('/barang-saya', [ItemController::class, 'myItems'])->name('barang.saya');

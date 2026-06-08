@@ -23,13 +23,17 @@ class ItemController extends Controller
 
     public function landing(Request $request)
     {
+        if (Auth::user()?->isSeller()) {
+            return redirect()->route('barang.saya');
+        }
+
         return $this->renderMarketplace($request);
     }
 
     public function index(Request $request)
     {
-        if (Auth::user()?->isSeller() && $request->routeIs('home')) {
-            return redirect()->route('penjual.home', $request->query());
+        if (Auth::user()?->isSeller()) {
+            return redirect()->route('barang.saya');
         }
 
         return $this->renderMarketplace($request);
@@ -41,7 +45,7 @@ class ItemController extends Controller
             return redirect()->route('home');
         }
 
-        return $this->renderMarketplace($request);
+        return redirect()->route('barang.saya');
     }
 
     private function renderMarketplace(Request $request)
