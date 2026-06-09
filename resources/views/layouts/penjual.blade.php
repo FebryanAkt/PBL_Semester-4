@@ -24,7 +24,7 @@
 
 <body class="flex min-h-screen flex-col bg-bekas-bg font-sans antialiased text-gray-800">
 
-    @include('partials.headerPenjual')
+    @include('partials.header')
 
     <!-- ==================== NOTIFIKASI BELL (UNTUK PENJUAL) ==================== -->
     @auth

@@ -38,9 +38,12 @@
 
     <div class="flex items-center gap-4 md:gap-6 text-sm font-medium">
         
-        @auth
+@auth
             <div class="hidden md:flex items-center gap-6">
+                
+                {{-- KHUSUS PEMBELI (Bukan Penjual): Tampilkan Keranjang & Riwayat Transaksi --}}
                 @unless($isSeller)
+                    {{-- Ikon Keranjang --}}
                     <a href="{{ route('cart.index') }}" class="hover:text-bekas-green transition flex items-center gap-1.5 relative group" title="Keranjang">
                         <div class="relative">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,13 +60,14 @@
                                 </span>
                         </div>
                     </a>
-                @endunless
 
-                <a href="{{ route('transaksi.riwayat') }}" class="hover:text-bekas-green transition flex items-center" title="Riwayat Transaksi">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                    </svg>
-                </a>
+                    {{-- Ikon Riwayat Transaksi (Sekarang diletakkan di dalam @unless) --}}
+                    <a href="{{ route('transaksi.riwayat') }}" class="hover:text-bekas-green transition flex items-center" title="Riwayat Transaksi">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </a>
+                @endunless
 
                 <a href="{{ route('chat.index') }}" class="hover:text-bekas-green transition flex items-center" title="Pesan">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
