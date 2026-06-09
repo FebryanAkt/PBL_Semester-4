@@ -332,4 +332,20 @@ class PaymentController extends Controller
             'notes'            => $transaction->notes ?? null
         ]);
     }
+
+    public function confirmDelivery($id)
+    {
+        // Cari transaksi berdasarkan ID dan pastikan itu milik pembeli yang sedang login
+        $transaction = \App\Models\Transaction::where('user_id', auth()->id())->findOrFail($id);
+
+        // Pastikan statusnya memang sedang "dikirim"
+        if ($transaction->delivery_status == 'dikirim') {
+            $transaction->delivery_status = 'diterima';
+            $transaction->save();
+
+            return redirect()->back()->with('success', 'Hore! Transaksi selesai. Terima kasih telah mengkonfirmasi penerimaan barang!');
+        }
+
+        return redirect()->back()->with('error', 'Status pesanan tidak valid untuk dikonfirmasi.');
+    }
 }

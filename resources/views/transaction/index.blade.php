@@ -52,7 +52,8 @@
                                         {{ $trx->created_at->format('d M Y, H:i') }}
                                     </p>
                                     <h3 class="text-lg font-bold text-gray-800 leading-tight mb-1">
-                                        {{ $trx->item ? $trx->item->name : 'Barang telah dihapus' }}</h3>
+                                        {{ $trx->item ? $trx->item->name : 'Barang telah dihapus' }}
+                                    </h3>
                                     <p class="text-sm font-medium text-gray-500">Order ID: <span
                                             class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">{{ $trx->order_id }}</span>
                                     </p>
@@ -112,11 +113,27 @@
                                             d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
                                     </svg>
                                 </button>
-                           @elseif($trx->status == 'success')
-                                <button onclick="openDetailModal({{ $trx->id }})"
-                                    class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors w-full text-sm">
-                                    Lihat Detail
-                                </button>
+                            @elseif($trx->status == 'success')
+                                <div class="flex flex-col gap-2 w-full">
+                                    <button onclick="openDetailModal({{ $trx->id }})"
+                                        class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors w-full text-sm">
+                                        Lihat Detail
+                                    </button>
+
+                                    {{-- Munculkan tombol ini JIKA status pengirimannya sedang "dikirim" --}}
+                                    @if($trx->delivery_status == 'dikirim')
+                                        {{-- 1. Tambahkan ID unik pada form --}}
+                                        <form id="form-confirm-{{ $trx->id }}" action="{{ route('transaction.confirm-delivery', $trx->id) }}" method="POST" class="w-full">
+                                            @csrf
+                                            {{-- 2. Ubah type="submit" menjadi type="button" dan ganti onclick-nya --}}
+                                            <button type="button" onclick="openConfirmModal('form-confirm-{{ $trx->id }}')"
+                                                class="flex items-center justify-center gap-2 bg-bekas-green text-white px-4 py-2.5 rounded-xl font-bold hover:bg-green-700 transition-colors w-full text-sm shadow-md">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                Pesanan Diterima
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
                             @endif
                         </div>
                     </div>
@@ -144,18 +161,23 @@
     </div>
 
     {{-- MODAL DETAIL TRANSAKSI --}}
-    <div id="detailModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl transform transition-all scale-95 opacity-0" id="modalContent">
+    <div id="detailModal"
+        class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl transform transition-all scale-95 opacity-0"
+            id="modalContent">
             <div class="p-6 border-b border-gray-100 flex justify-between items-center">
                 <h3 class="text-xl font-extrabold text-bekas-dark flex items-center gap-2">
                     <svg class="w-6 h-6 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
                     </svg>
                     Detail Transaksi
                 </h3>
                 <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                        </path>
                     </svg>
                 </button>
             </div>
@@ -170,8 +192,35 @@
                 </div>
             </div>
             <div class="p-6 border-t border-gray-100 flex justify-end">
-                <button onclick="closeDetailModal()" class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors">
+                <button onclick="closeDetailModal()"
+                    class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors">
                     Tutup
+                </button>
+            </div>
+        </div>
+    </div>
+
+    {{-- MODAL KONFIRMASI PENERIMAAN BARANG --}}
+    <div id="confirmModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
+        <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl transform transition-all scale-95 opacity-0 p-6 text-center" id="confirmModalContent">
+            {{-- Ikon Centang Besar --}}
+            <div class="w-20 h-20 bg-green-50 text-bekas-green rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-green-100">
+                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                </svg>
+            </div>
+            
+            <h3 class="text-xl font-extrabold text-gray-900 mb-2">Konfirmasi Penerimaan</h3>
+            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+                Apakah Anda yakin barang sudah diterima dengan baik? Uang akan diteruskan ke penjual dan transaksi tidak dapat dibatalkan.
+            </p>
+            
+            <div class="flex gap-3 justify-center">
+                <button onclick="closeConfirmModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors">
+                    Batal
+                </button>
+                <button onclick="submitConfirmForm()" class="flex-1 bg-bekas-green hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
+                    Ya, Diterima
                 </button>
             </div>
         </div>
@@ -207,10 +256,10 @@
             const modal = document.getElementById('detailModal');
             const modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = `
-                <div class="flex justify-center items-center py-8">
-                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-bekas-green"></div>
-                </div>
-            `;
+                    <div class="flex justify-center items-center py-8">
+                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-bekas-green"></div>
+                    </div>
+                `;
             modal.classList.remove('hidden');
             modal.classList.add('flex');
             // Animasi masuk
@@ -225,7 +274,7 @@
                 });
                 if (!response.ok) throw new Error('Gagal mengambil data');
                 const data = await response.json();
-                
+
                 // Format delivery status badge
                 let deliveryBadge = '';
                 if (data.delivery_status === 'belum_dikirim') {
@@ -237,35 +286,35 @@
                 }
 
                 modalBody.innerHTML = `
-                    <div class="flex gap-4 items-start border-b border-gray-100 pb-4">
-                        <img src="${data.item_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/80'">
-                        <div>
-                            <h4 class="font-bold text-gray-800 text-lg">${data.item_name}</h4>
-                            <p class="text-sm text-gray-500 mt-0.5">Kategori: ${data.category || 'Umum'}</p>
+                        <div class="flex gap-4 items-start border-b border-gray-100 pb-4">
+                            <img src="${data.item_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/80'">
+                            <div>
+                                <h4 class="font-bold text-gray-800 text-lg">${data.item_name}</h4>
+                                <p class="text-sm text-gray-500 mt-0.5">Kategori: ${data.category || 'Umum'}</p>
+                            </div>
                         </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-3 text-sm">
-                        <div class="text-gray-500 font-medium">Tanggal Pembelian</div>
-                        <div class="text-gray-800 font-semibold">${data.created_at}</div>
-                        
-                        <div class="text-gray-500 font-medium">Total Dibayar</div>
-                        <div class="text-gray-800 font-bold text-bekas-green">Rp ${data.price_formatted}</div>
-                        
-                        <div class="text-gray-500 font-medium">Metode Pembayaran</div>
-                        <div class="text-gray-800">${data.payment_method || 'Tidak tersedia'}</div>
-                        
-                        <div class="text-gray-500 font-medium">Status Transaksi</div>
-                        <div>
-                            ${data.status === 'success' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">✔ Lunas</span>' : 
-                              data.status === 'pending' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">⏳ Menunggu</span>' : 
-                              '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">✖ Gagal</span>'}
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div class="text-gray-500 font-medium">Tanggal Pembelian</div>
+                            <div class="text-gray-800 font-semibold">${data.created_at}</div>
+
+                            <div class="text-gray-500 font-medium">Total Dibayar</div>
+                            <div class="text-gray-800 font-bold text-bekas-green">Rp ${data.price_formatted}</div>
+
+                            <div class="text-gray-500 font-medium">Metode Pembayaran</div>
+                            <div class="text-gray-800">${data.payment_method || 'Tidak tersedia'}</div>
+
+                            <div class="text-gray-500 font-medium">Status Transaksi</div>
+                            <div>
+                                ${data.status === 'success' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">✔ Lunas</span>' :
+                        data.status === 'pending' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">⏳ Menunggu</span>' :
+                            '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">✖ Gagal</span>'}
+                            </div>
+
+                            <div class="text-gray-500 font-medium">Status Pengiriman</div>
+                            <div>${deliveryBadge}</div>
                         </div>
-                        
-                        <div class="text-gray-500 font-medium">Status Pengiriman</div>
-                        <div>${deliveryBadge}</div>
-                    </div>
-                    ${data.notes ? `<div class="bg-gray-50 p-3 rounded-xl text-sm text-gray-600 border border-gray-100"><span class="font-bold">Catatan:</span> ${data.notes}</div>` : ''}
-                `;
+                        ${data.notes ? `<div class="bg-gray-50 p-3 rounded-xl text-sm text-gray-600 border border-gray-100"><span class="font-bold">Catatan:</span> ${data.notes}</div>` : ''}
+                    `;
             } catch (error) {
                 modalBody.innerHTML = `<div class="text-red-500 text-center py-6">Gagal memuat detail. Silakan coba lagi.</div>`;
             }
@@ -280,6 +329,46 @@
                 modal.classList.add('hidden');
                 modal.classList.remove('flex');
             }, 200);
+        }
+
+        // ===================== MODAL KONFIRMASI =====================
+        let currentConfirmFormId = null;
+
+        function openConfirmModal(formId) {
+            currentConfirmFormId = formId; // Simpan ID form yang ditekan
+            const modal = document.getElementById('confirmModal');
+            const modalContent = document.getElementById('confirmModalContent');
+            
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            // Animasi masuk
+            setTimeout(() => {
+                modalContent.classList.remove('scale-95', 'opacity-0');
+                modalContent.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirmModal');
+            const modalContent = document.getElementById('confirmModalContent');
+            
+            // Animasi keluar
+            modalContent.classList.remove('scale-100', 'opacity-100');
+            modalContent.classList.add('scale-95', 'opacity-0');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+                currentConfirmFormId = null; // Reset form ID
+            }, 200);
+        }
+
+        function submitConfirmForm() {
+            if (currentConfirmFormId) {
+                // Jika tombol "Ya, Diterima" ditekan, submit formnya secara otomatis
+                document.getElementById(currentConfirmFormId).submit();
+            }
         }
 
         // Animasi Scroll (Sama dengan Home)

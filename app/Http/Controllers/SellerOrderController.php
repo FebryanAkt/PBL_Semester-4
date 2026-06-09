@@ -32,14 +32,14 @@ class SellerOrderController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        $transactions = Transaction::with(['item', 'user'])
+        $transaction = Transaction::with(['item', 'user'])
+            ->where('id', $id)
             ->whereHas('item', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
-            ->orderBy('created_at', 'desc')
-            ->get();
+            ->firstOrFail();
 
-        return view('penjual.orders.index', compact('transactions'));
+        return view('penjual.orders.show', compact('transaction'));
     }
 
     /**
@@ -56,13 +56,13 @@ class SellerOrderController extends Controller
 
         $request->validate([
             'delivery_status' => 'required|in:belum_dikirim,dikirim,diterima',
-            'shipping_code' => 'nullable|string|max=100',
+            'shipping_code' => 'nullable|string|max:100',
         ]);
 
         $transaction->delivery_status = $request->delivery_status;
         if ($request->filled('shipping_code')) {
             // Jika perlu tambahkan kolom shipping_code di migration, opsional
-            // $transaction->shipping_code = $request->shipping_code;
+            $transaction->shipping_code = $request->shipping_code;
         }
         $transaction->save();
 

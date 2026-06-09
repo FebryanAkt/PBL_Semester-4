@@ -71,6 +71,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil', [ProfileController::class, 'update'])->name('profile.update');
     Route::get('/transaction/detail/{id}', [PaymentController::class, 'detail'])->name('transaction.detail');
+    Route::post('/transaction/{id}/confirm-delivery', [PaymentController::class, 'confirmDelivery'])->name('transaction.confirm-delivery');
 
     Route::middleware(['auth'])->prefix('penjual')->name('penjual.')->group(function () {
         Route::get('/orders', [SellerOrderController::class, 'index'])->name('orders.index');
