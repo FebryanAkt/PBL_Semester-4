@@ -114,21 +114,36 @@
                                     </svg>
                                 </button>
                             @elseif($trx->status == 'success')
-                                <div class="flex flex-col gap-2 w-full">
+                                <div class="flex flex-col gap-2.5 w-full mt-1">
+
+                                    {{-- TOMBOL LIHAT DETAIL INTERAKTIF (Hover Full Color) --}}
                                     <button onclick="openDetailModal({{ $trx->id }})"
-                                        class="flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold hover:bg-gray-50 transition-colors w-full text-sm">
+                                        class="group flex items-center justify-center gap-2 bg-white border-2 border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl font-bold shadow-sm transition-all duration-300 w-full text-sm hover:-translate-y-1 hover:bg-bekas-dark hover:border-bekas-dark hover:text-white hover:shadow-lg active:scale-95 focus:outline-none focus:ring-2 focus:ring-gray-400/50">
+
+                                        {{-- Ikon Mata (group-hover: warna putih & scale) --}}
+                                        <svg class="w-4 h-4 text-gray-400 transition-colors duration-300 group-hover:text-white group-hover:scale-110"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                                            </path>
+                                        </svg>
                                         Lihat Detail
                                     </button>
 
                                     {{-- Munculkan tombol ini JIKA status pengirimannya sedang "dikirim" --}}
                                     @if($trx->delivery_status == 'dikirim')
-                                        {{-- 1. Tambahkan ID unik pada form --}}
-                                        <form id="form-confirm-{{ $trx->id }}" action="{{ route('transaction.confirm-delivery', $trx->id) }}" method="POST" class="w-full">
+                                        {{-- PERBAIKAN: id form sudah ditambahkan --}}
+                                        <form id="form-confirm-{{ $trx->id }}" action="{{ route('transaction.confirm-delivery', $trx->id) }}" method="POST"
+                                            class="w-full m-0">
                                             @csrf
-                                            {{-- 2. Ubah type="submit" menjadi type="button" dan ganti onclick-nya --}}
                                             <button type="button" onclick="openConfirmModal('form-confirm-{{ $trx->id }}')"
-                                                class="flex items-center justify-center gap-2 bg-bekas-green text-white px-4 py-2.5 rounded-xl font-bold hover:bg-green-700 transition-colors w-full text-sm shadow-md">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                                                class="flex items-center justify-center gap-2.5 bg-bekas-green text-white px-4 py-2.5 rounded-xl font-bold hover:bg-green-700 transition-all duration-300 w-full text-sm shadow-md active:scale-95">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M5 13l4 4L19 7"></path>
+                                                </svg>
                                                 Pesanan Diterima
                                             </button>
                                         </form>
@@ -148,8 +163,8 @@
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-gray-800 mb-2">Belum Ada Transaksi</h3>
-                        <p class="text-gray-500 mb-6 text-center max-w-sm">Kamu belum melakukan pembelian apapun. Yuk mulai cari
-                            barang incaranmu sekarang!</p>
+                        <p class="text-gray-500 mb-6 text-center max-w-sm">Kamu belum melakukan pembelian apapun. Yuk mulai
+                            cari barang incaranmu sekarang!</p>
                         <a href="{{ route('home') }}"
                             class="bg-bekas-green text-white px-6 py-3 rounded-xl font-bold shadow-md hover:bg-green-700 transition-colors">
                             Mulai Belanja
@@ -158,247 +173,253 @@
                 @endforelse
             </div>
         </div>
-    </div>
 
-    {{-- MODAL DETAIL TRANSAKSI --}}
-    <div id="detailModal"
-        class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl transform transition-all scale-95 opacity-0"
-            id="modalContent">
-            <div class="p-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 class="text-xl font-extrabold text-bekas-dark flex items-center gap-2">
-                    <svg class="w-6 h-6 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                    Detail Transaksi
-                </h3>
-                <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
-                        </path>
-                    </svg>
-                </button>
-            </div>
-            <div class="p-6 space-y-5" id="modalBody">
-                {{-- Data akan diisi via JavaScript --}}
-                <div class="animate-pulse flex space-x-3">
-                    <div class="bg-gray-200 rounded-xl w-20 h-20"></div>
-                    <div class="flex-1 space-y-2">
-                        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
-                        <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+        {{-- MODAL DETAIL TRANSAKSI --}}
+        <div id="detailModal"
+            class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
+            <div class="bg-white rounded-2xl max-w-lg w-full shadow-2xl transform transition-all scale-95 opacity-0"
+                id="modalContent">
+                <div class="p-6 border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="text-xl font-extrabold text-bekas-dark flex items-center gap-2">
+                        <svg class="w-6 h-6 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                        Detail Transaksi
+                    </h3>
+                    <button onclick="closeDetailModal()" class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                            </path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="p-6 space-y-5" id="modalBody">
+                    {{-- Data akan diisi via JavaScript --}}
+                    <div class="animate-pulse flex space-x-3">
+                        <div class="bg-gray-200 rounded-xl w-20 h-20"></div>
+                        <div class="flex-1 space-y-2">
+                            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+                            <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="p-6 border-t border-gray-100 flex justify-end">
-                <button onclick="closeDetailModal()"
-                    class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors">
-                    Tutup
-                </button>
-            </div>
-        </div>
-    </div>
-
-    {{-- MODAL KONFIRMASI PENERIMAAN BARANG --}}
-    <div id="confirmModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
-        <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl transform transition-all scale-95 opacity-0 p-6 text-center" id="confirmModalContent">
-            {{-- Ikon Centang Besar --}}
-            <div class="w-20 h-20 bg-green-50 text-bekas-green rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-green-100">
-                <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
-                </svg>
-            </div>
-            
-            <h3 class="text-xl font-extrabold text-gray-900 mb-2">Konfirmasi Penerimaan</h3>
-            <p class="text-gray-500 text-sm mb-6 leading-relaxed">
-                Apakah Anda yakin barang sudah diterima dengan baik? Uang akan diteruskan ke penjual dan transaksi tidak dapat dibatalkan.
-            </p>
-            
-            <div class="flex gap-3 justify-center">
-                <button onclick="closeConfirmModal()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors">
-                    Batal
-                </button>
-                <button onclick="submitConfirmForm()" class="flex-1 bg-bekas-green hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
-                    Ya, Diterima
-                </button>
+                <div class="p-6 border-t border-gray-100 flex justify-end">
+                    <button onclick="closeDetailModal()"
+                        class="px-5 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl font-bold transition-colors">
+                        Tutup
+                    </button>
+                </div>
             </div>
         </div>
-    </div>
 
-    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
-        data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
+        {{-- MODAL KONFIRMASI PENERIMAAN BARANG --}}
+        <div id="confirmModal"
+            class="fixed inset-0 z-[60] hidden items-center justify-center p-4 bg-black/50 backdrop-blur-sm transition-all duration-300">
+            <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl transform transition-all scale-95 opacity-0 p-6 text-center"
+                id="confirmModalContent">
+                {{-- Ikon Centang Besar --}}
+                <div
+                    class="w-20 h-20 bg-green-50 text-bekas-green rounded-full flex items-center justify-center mx-auto mb-5 border-4 border-green-100">
+                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
 
-    <script>
-        // Fungsi memanggil Midtrans
-        function lanjutkanPembayaran(token) {
-            window.snap.pay(token, {
-                onSuccess: function (result) {
-                    alert("Pembayaran berhasil!");
-                    location.reload();
-                },
-                onPending: function (result) {
-                    alert("Menunggu pembayaran Anda!");
-                },
-                onError: function (result) {
-                    alert("Pembayaran gagal!");
-                    location.reload();
-                },
-                onClose: function () {
-                    console.log('Popup ditutup sebelum pembayaran selesai');
-                }
-            });
-        }
+                <h3 class="text-xl font-extrabold text-gray-900 mb-2">Konfirmasi Penerimaan</h3>
+                <p class="text-gray-500 text-sm mb-6 leading-relaxed">
+                    Apakah Anda yakin barang sudah diterima dengan baik? Uang akan diteruskan ke penjual dan transaksi tidak
+                    dapat dibatalkan.
+                </p>
 
-        // ===================== MODAL DETAIL =====================
-        // Data transaksi akan diambil via AJAX dari endpoint baru
-        async function openDetailModal(transactionId) {
-            const modal = document.getElementById('detailModal');
-            const modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = `
-                    <div class="flex justify-center items-center py-8">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-bekas-green"></div>
-                    </div>
-                `;
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            // Animasi masuk
-            setTimeout(() => {
-                document.getElementById('modalContent').classList.remove('scale-95', 'opacity-0');
-                document.getElementById('modalContent').classList.add('scale-100', 'opacity-100');
-            }, 10);
+                <div class="flex gap-3 justify-center">
+                    <button onclick="closeConfirmModal()"
+                        class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-xl transition-colors">
+                        Batal
+                    </button>
+                    <button onclick="submitConfirmForm()"
+                        class="flex-1 bg-bekas-green hover:bg-green-700 text-white font-bold py-3 rounded-xl transition-colors shadow-md">
+                        Ya, Diterima
+                    </button>
+                </div>
+            </div>
+        </div>
 
-            try {
-                const response = await fetch(`/transaction/detail/${transactionId}`, {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-                });
-                if (!response.ok) throw new Error('Gagal mengambil data');
-                const data = await response.json();
+        <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+            data-client-key="{{ env('MIDTRANS_CLIENT_KEY') }}"></script>
 
-                // Format delivery status badge
-                let deliveryBadge = '';
-                if (data.delivery_status === 'belum_dikirim') {
-                    deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-orange-100 text-orange-700 border border-orange-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Belum Dikirim</span>';
-                } else if (data.delivery_status === 'dikirim') {
-                    deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-100 text-blue-700 border border-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Sedang Dikirim</span>';
-                } else if (data.delivery_status === 'diterima') {
-                    deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-green-100 text-green-700 border border-green-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Sudah Diterima</span>';
-                }
-
-                modalBody.innerHTML = `
-                        <div class="flex gap-4 items-start border-b border-gray-100 pb-4">
-                            <img src="${data.item_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/80'">
-                            <div>
-                                <h4 class="font-bold text-gray-800 text-lg">${data.item_name}</h4>
-                                <p class="text-sm text-gray-500 mt-0.5">Kategori: ${data.category || 'Umum'}</p>
-                            </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3 text-sm">
-                            <div class="text-gray-500 font-medium">Tanggal Pembelian</div>
-                            <div class="text-gray-800 font-semibold">${data.created_at}</div>
-
-                            <div class="text-gray-500 font-medium">Total Dibayar</div>
-                            <div class="text-gray-800 font-bold text-bekas-green">Rp ${data.price_formatted}</div>
-
-                            <div class="text-gray-500 font-medium">Metode Pembayaran</div>
-                            <div class="text-gray-800">${data.payment_method || 'Tidak tersedia'}</div>
-
-                            <div class="text-gray-500 font-medium">Status Transaksi</div>
-                            <div>
-                                ${data.status === 'success' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">✔ Lunas</span>' :
-                        data.status === 'pending' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">⏳ Menunggu</span>' :
-                            '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">✖ Gagal</span>'}
-                            </div>
-
-                            <div class="text-gray-500 font-medium">Status Pengiriman</div>
-                            <div>${deliveryBadge}</div>
-                        </div>
-                        ${data.notes ? `<div class="bg-gray-50 p-3 rounded-xl text-sm text-gray-600 border border-gray-100"><span class="font-bold">Catatan:</span> ${data.notes}</div>` : ''}
-                    `;
-            } catch (error) {
-                modalBody.innerHTML = `<div class="text-red-500 text-center py-6">Gagal memuat detail. Silakan coba lagi.</div>`;
-            }
-        }
-
-        function closeDetailModal() {
-            const modal = document.getElementById('detailModal');
-            const modalContent = document.getElementById('modalContent');
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-            }, 200);
-        }
-
-        // ===================== MODAL KONFIRMASI =====================
-        let currentConfirmFormId = null;
-
-        function openConfirmModal(formId) {
-            currentConfirmFormId = formId; // Simpan ID form yang ditekan
-            const modal = document.getElementById('confirmModal');
-            const modalContent = document.getElementById('confirmModalContent');
-            
-            modal.classList.remove('hidden');
-            modal.classList.add('flex');
-            
-            // Animasi masuk
-            setTimeout(() => {
-                modalContent.classList.remove('scale-95', 'opacity-0');
-                modalContent.classList.add('scale-100', 'opacity-100');
-            }, 10);
-        }
-
-        function closeConfirmModal() {
-            const modal = document.getElementById('confirmModal');
-            const modalContent = document.getElementById('confirmModalContent');
-            
-            // Animasi keluar
-            modalContent.classList.remove('scale-100', 'opacity-100');
-            modalContent.classList.add('scale-95', 'opacity-0');
-            
-            setTimeout(() => {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
-                currentConfirmFormId = null; // Reset form ID
-            }, 200);
-        }
-
-        function submitConfirmForm() {
-            if (currentConfirmFormId) {
-                // Jika tombol "Ya, Diterima" ditekan, submit formnya secara otomatis
-                document.getElementById(currentConfirmFormId).submit();
-            }
-        }
-
-        // Animasi Scroll (Sama dengan Home)
-        document.addEventListener('DOMContentLoaded', function () {
-            const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-            const observer = new IntersectionObserver((entries, observer) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
+        <script>
+            // Fungsi memanggil Midtrans
+            function lanjutkanPembayaran(token) {
+                window.snap.pay(token, {
+                    onSuccess: function (result) {
+                        alert("Pembayaran berhasil!");
+                        location.reload();
+                    },
+                    onPending: function (result) {
+                        alert("Menunggu pembayaran Anda!");
+                    },
+                    onError: function (result) {
+                        alert("Pembayaran gagal!");
+                        location.reload();
+                    },
+                    onClose: function () {
+                        console.log('Popup ditutup sebelum pembayaran selesai');
                     }
                 });
-            }, observerOptions);
+            }
 
-            document.querySelectorAll('.animate-on-scroll').forEach((el) => {
-                observer.observe(el);
+            // ===================== MODAL DETAIL =====================
+            // Data transaksi akan diambil via AJAX dari endpoint baru
+            async function openDetailModal(transactionId) {
+                const modal = document.getElementById('detailModal');
+                const modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = `
+                        <div class="flex justify-center items-center py-8">
+                            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-bekas-green"></div>
+                        </div>
+                    `;
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                // Animasi masuk
+                setTimeout(() => {
+                    document.getElementById('modalContent').classList.remove('scale-95', 'opacity-0');
+                    document.getElementById('modalContent').classList.add('scale-100', 'opacity-100');
+                }, 10);
+
+                try {
+                    const response = await fetch(`/transaction/detail/${transactionId}`, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                    });
+                    if (!response.ok) throw new Error('Gagal mengambil data');
+                    const data = await response.json();
+
+                    // Format delivery status badge
+                    let deliveryBadge = '';
+                    if (data.delivery_status === 'belum_dikirim') {
+                        deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-orange-100 text-orange-700 border border-orange-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Belum Dikirim</span>';
+                    } else if (data.delivery_status === 'dikirim') {
+                        deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-blue-100 text-blue-700 border border-blue-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Sedang Dikirim</span>';
+                    } else if (data.delivery_status === 'diterima') {
+                        deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-green-100 text-green-700 border border-green-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Sudah Diterima</span>';
+                    }
+
+                    modalBody.innerHTML = `
+                            <div class="flex gap-4 items-start border-b border-gray-100 pb-4">
+                                <img src="${data.item_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/80'">
+                                <div>
+                                    <h4 class="font-bold text-gray-800 text-lg">${data.item_name}</h4>
+                                    <p class="text-sm text-gray-500 mt-0.5">Kategori: ${data.category || 'Umum'}</p>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div class="text-gray-500 font-medium">Tanggal Pembelian</div>
+                                <div class="text-gray-800 font-semibold">${data.created_at}</div>
+
+                                <div class="text-gray-500 font-medium">Total Dibayar</div>
+                                <div class="text-gray-800 font-bold text-bekas-green">Rp ${data.price_formatted}</div>
+
+                                <div class="text-gray-500 font-medium">Metode Pembayaran</div>
+                                <div class="text-gray-800">${data.payment_method || 'Tidak tersedia'}</div>
+
+                                <div class="text-gray-500 font-medium">Status Transaksi</div>
+                                <div>
+                                    ${data.status === 'success' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-green-100 text-green-700">✔ Lunas</span>' :
+                            data.status === 'pending' ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-yellow-100 text-yellow-700">⏳ Menunggu</span>' :
+                                '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold bg-red-100 text-red-700">✖ Gagal</span>'}
+                                </div>
+
+                                <div class="text-gray-500 font-medium">Status Pengiriman</div>
+                                <div>${deliveryBadge}</div>
+                            </div>
+                            ${data.notes ? `<div class="bg-gray-50 p-3 rounded-xl text-sm text-gray-600 border border-gray-100"><span class="font-bold">Catatan:</span> ${data.notes}</div>` : ''}
+                        `;
+                } catch (error) {
+                    modalBody.innerHTML = `<div class="text-red-500 text-center py-6">Gagal memuat detail. Silakan coba lagi.</div>`;
+                }
+            }
+
+            function closeDetailModal() {
+                const modal = document.getElementById('detailModal');
+                const modalContent = document.getElementById('modalContent');
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 200);
+            }
+
+            // ===================== MODAL KONFIRMASI =====================
+            let currentConfirmFormId = null;
+
+            function openConfirmModal(formId) {
+                currentConfirmFormId = formId; // Simpan ID form yang ditekan
+                const modal = document.getElementById('confirmModal');
+                const modalContent = document.getElementById('confirmModalContent');
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                // Animasi masuk
+                setTimeout(() => {
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                    modalContent.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            }
+
+            function closeConfirmModal() {
+                const modal = document.getElementById('confirmModal');
+                const modalContent = document.getElementById('confirmModalContent');
+
+                // Animasi keluar
+                modalContent.classList.remove('scale-100', 'opacity-100');
+                modalContent.classList.add('scale-95', 'opacity-0');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                    currentConfirmFormId = null; // Reset form ID
+                }, 200);
+            }
+
+            function submitConfirmForm() {
+                if (currentConfirmFormId) {
+                    // Jika tombol "Ya, Diterima" ditekan, submit formnya secara otomatis
+                    document.getElementById(currentConfirmFormId).submit();
+                }
+            }
+
+            // Animasi Scroll (Sama dengan Home)
+            document.addEventListener('DOMContentLoaded', function () {
+                const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+                const observer = new IntersectionObserver((entries, observer) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('is-visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+                    observer.observe(el);
+                });
             });
-        });
-    </script>
+        </script>
 
-    <style>
-        .animate-on-scroll {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-        }
+        <style>
+            .animate-on-scroll {
+                opacity: 0;
+                transform: translateY(20px);
+                transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            }
 
-        .animate-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    </style>
+            .animate-on-scroll.is-visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        </style>
+    </div>
 @endsection
