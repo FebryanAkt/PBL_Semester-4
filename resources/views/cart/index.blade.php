@@ -13,46 +13,58 @@
 
         <div class="flex flex-col lg:flex-row gap-8">
             <div class="w-full lg:w-2/3 space-y-4">
+                
+                {{-- KOTAK PILIH SEMUA --}}
+                @if($carts->count() > 0)
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 flex items-center gap-4">
+                    <input type="checkbox" id="check-all" class="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer">
+                    <label for="check-all" class="font-bold text-slate-700 cursor-pointer select-none">Pilih Semua Barang</label>
+                </div>
+                @endif
+
                 @forelse($carts as $cart)
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-5 flex items-start sm:items-center gap-4">
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-4 sm:p-5 flex flex-wrap sm:flex-nowrap items-start sm:items-center gap-4">
                     
-                    {{-- PERBAIKAN: Gambar yang sebelumnya rusak --}}
-                    <a href="{{ route('produk.detail', ['id' => $cart->item->id]) }}" class="flex items-start gap-4">
+                    {{-- CHECKBOX ITEM --}}
+                    <input type="checkbox" class="item-checkbox w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500 cursor-pointer mt-2 sm:mt-0" 
+                           value="{{ $cart->id }}" 
+                           data-price="{{ $cart->item->price }}" 
+                           data-qty="{{ $cart->quantity }}">
+
+                    {{-- GAMBAR & JUDUL --}}
+                    <a href="{{ route('produk.detail', ['id' => $cart->item->id]) }}" class="flex flex-1 items-start gap-4">
                         <img src="{{ asset('images/' . $cart->item->image) }}" class="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover border border-gray-200 shrink-0">
-                        
                         <div class="flex-1">
                             <h3 class="font-bold text-slate-800 text-base sm:text-lg line-clamp-2 leading-tight mb-1">{{ $cart->item->name }}</h3>
-                            <p class="text-sm text-emerald-600 font-bold mb-3">Rp{{ number_format($cart->item->price, 0, ',', '.') }}</p>
-                        
-                            {{-- KONTROL KUANTITAS (PLUS MINUS) --}}
-                            <div class="flex items-center gap-4">
-                                <div class="flex items-center border border-gray-300 rounded-lg bg-white w-max h-8">
-                                    {{-- Tombol Minus --}}
-                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="action" value="minus">
-                                        <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-l-lg font-bold transition-colors flex items-center justify-center {{ $cart->quantity <= 1 ? 'opacity-30 cursor-not-allowed' : '' }}" {{ $cart->quantity <= 1 ? 'disabled' : '' }}>-</button>
-                                    </form>
-                                    
-                                    {{-- Angka Kuantitas --}}
-                                    <span class="w-10 text-center text-gray-800 font-bold text-sm border-x border-gray-300 h-full flex items-center justify-center bg-gray-50">{{ $cart->quantity }}</span>
-                                    
-                                    {{-- Tombol Plus --}}
-                                    <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="action" value="plus">
-                                        <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-r-lg font-bold transition-colors flex items-center justify-center">+</button>
-                                    </form>
-                                </div>
-                            </div>
+                            <p class="text-sm text-emerald-600 font-bold mb-0">Rp{{ number_format($cart->item->price, 0, ',', '.') }}</p>
                         </div>
                     </a>
-
-                    {{-- Tombol Hapus (Tong Sampah) --}}
-                    <div class="flex flex-col items-end gap-4 h-full justify-start shrink-0">
-                        <form action="{{ route('cart.remove', $cart->id) }}" method="POST">
+                    
+                    {{-- KONTROL KUANTITAS & HAPUS --}}
+                    <div class="flex items-center gap-4 ml-auto w-full sm:w-auto justify-end sm:justify-start pt-2 sm:pt-0">
+                        <div class="flex items-center border border-gray-300 rounded-lg bg-white w-max h-8">
+                            {{-- Tombol Minus --}}
+                            <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="action" value="minus">
+                                <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-l-lg font-bold transition-colors flex items-center justify-center {{ $cart->quantity <= 1 ? 'opacity-30 cursor-not-allowed' : '' }}" {{ $cart->quantity <= 1 ? 'disabled' : '' }}>-</button>
+                            </form>
+                            
+                            {{-- Angka --}}
+                            <span class="w-10 text-center text-gray-800 font-bold text-sm border-x border-gray-300 h-full flex items-center justify-center bg-gray-50">{{ $cart->quantity }}</span>
+                            
+                            {{-- Tombol Plus --}}
+                            <form action="{{ route('cart.update', $cart->id) }}" method="POST" class="m-0 h-full">
+                                @csrf
+                                @method('PATCH')
+                                <input type="hidden" name="action" value="plus">
+                                <button type="submit" class="px-3 h-full text-gray-600 hover:bg-gray-100 rounded-r-lg font-bold transition-colors flex items-center justify-center">+</button>
+                            </form>
+                        </div>
+                        
+                        {{-- Tombol Hapus --}}
+                        <form action="{{ route('cart.remove', $cart->id) }}" method="POST" class="h-full">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="p-2 text-red-500 hover:bg-red-50 hover:text-red-600 rounded-full transition-colors cursor-pointer" title="Hapus Barang">
@@ -70,35 +82,110 @@
                 @endforelse
             </div>
 
-            {{-- Ringkasan Pesanan (Tetap Sama) --}}
+            {{-- Ringkasan Pesanan --}}
             <div class="w-full lg:w-1/3">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 sticky top-24">
                     <h2 class="text-xl font-bold text-slate-800 mb-6">Ringkasan Pesanan</h2>
                     
                     <div class="space-y-3 mb-6">
                         <div class="flex justify-between text-slate-500">
-                            <span>Subtotal ({{ $carts->sum('quantity') }} Barang)</span>
-                            <span class="font-medium text-slate-700">Rp{{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
+                            <span id="text-subtotal">Subtotal (0 Barang)</span>
+                            <span id="text-harga" class="font-medium text-slate-700">Rp0</span>
                         </div>
                     </div>
 
                     <div class="border-t border-gray-100 pt-4 mb-8 flex justify-between items-center">
                         <span class="font-bold text-slate-800">Total Harga</span>
-                        <span class="text-2xl font-black text-emerald-600">Rp{{ number_format($carts->sum(fn($c) => $c->item->price * $c->quantity), 0, ',', '.') }}</span>
+                        <span id="text-total" class="text-2xl font-black text-emerald-600">Rp0</span>
                     </div>
 
-                    @if($carts->count() > 0)
-                    <a href="{{ route('checkout') }}" class="block w-full bg-slate-900 text-white text-center font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg">
-                        Lanjut ke Pembayaran
-                    </a>
-                    @else
-                    <button disabled class="block w-full bg-gray-200 text-gray-400 text-center font-bold py-4 rounded-xl cursor-not-allowed">
-                        Lanjut ke Pembayaran
+                    {{-- Tombol Beli --}}
+                    <button id="btn-checkout" disabled onclick="submitCheckout()" class="block w-full bg-gray-200 text-gray-400 text-center font-bold py-4 rounded-xl cursor-not-allowed transition shadow-sm">
+                        Beli (<span id="btn-count">0</span>)
                     </button>
-                    @endif
+
+                    {{-- Form Tersembunyi pengirim ID --}}
+                    <form id="checkout-form" action="{{ route('checkout') }}" method="GET" class="hidden"></form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+{{-- SCRIPT PENGHITUNG DINAMIS --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkAll = document.getElementById('check-all');
+        const itemCheckboxes = document.querySelectorAll('.item-checkbox');
+        const btnCheckout = document.getElementById('btn-checkout');
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID').format(angka);
+        }
+
+        function calculateTotal() {
+            let totalHarga = 0;
+            let totalBarang = 0;
+            let checkedCount = 0;
+
+            itemCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    totalHarga += parseInt(cb.dataset.price) * parseInt(cb.dataset.qty);
+                    totalBarang += parseInt(cb.dataset.qty);
+                    checkedCount++;
+                }
+            });
+
+            // Update Teks Ringkasan
+            document.getElementById('text-subtotal').innerText = `Subtotal (${totalBarang} Barang)`;
+            document.getElementById('text-harga').innerText = `Rp${formatRupiah(totalHarga)}`;
+            document.getElementById('text-total').innerText = `Rp${formatRupiah(totalHarga)}`;
+            document.getElementById('btn-count').innerText = totalBarang;
+
+            // Sinkron Pilih Semua
+            if (checkAll) {
+                checkAll.checked = (checkedCount === itemCheckboxes.length) && (itemCheckboxes.length > 0);
+            }
+
+            // Validasi Tombol Beli
+            if (checkedCount > 0) {
+                btnCheckout.disabled = false;
+                btnCheckout.className = "block w-full bg-slate-900 text-white text-center font-bold py-4 rounded-xl hover:bg-slate-800 transition shadow-lg cursor-pointer";
+            } else {
+                btnCheckout.disabled = true;
+                btnCheckout.className = "block w-full bg-gray-200 text-gray-400 text-center font-bold py-4 rounded-xl cursor-not-allowed transition shadow-sm";
+            }
+        }
+
+        if (checkAll) {
+            checkAll.addEventListener('change', function() {
+                itemCheckboxes.forEach(cb => cb.checked = this.checked);
+                calculateTotal();
+            });
+        }
+
+        itemCheckboxes.forEach(cb => cb.addEventListener('change', calculateTotal));
+        calculateTotal();
+
+        // Inject & Submit ke Backend
+        window.submitCheckout = function() {
+            const form = document.getElementById('checkout-form');
+            form.innerHTML = ''; 
+            
+            let hasItems = false;
+            itemCheckboxes.forEach(cb => {
+                if (cb.checked) {
+                    hasItems = true;
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'cart_ids[]'; // Kirim array ID
+                    input.value = cb.value;
+                    form.appendChild(input);
+                }
+            });
+
+            if (hasItems) form.submit();
+        }
+    });
+</script>
 @endsection

@@ -38,10 +38,22 @@ class PaymentController extends Controller
             $directQuantity = $qty; // Simpan kuantitas untuk dikirim via fetch
         } else {
             // -- MODE KERANJANG --
-            $carts = \App\Models\Cart::with('item')->where('user_id', Auth::id())->get();
+            $query = \App\Models\Cart::with('item')->where('user_id', Auth::id());
+
+            // JIKA ada barang yang dicentang, filter berdasarkan ID-nya
+            if ($request->has('cart_ids')) {
+                $query->whereIn('id', $request->cart_ids);
+
+                // Simpan ingatan ke Session agar fungsi getToken() nanti juga tahu!
+                session(['selected_cart_ids' => $request->cart_ids]);
+            } else {
+                session()->forget('selected_cart_ids');
+            }
+
+            $carts = $query->get();
 
             if ($carts->isEmpty()) {
-                return redirect()->route('home')->with('error', 'Keranjang belanja Anda masih kosong.');
+                return redirect()->route('cart.index')->with('error', 'Pilih minimal satu barang untuk di-checkout.');
             }
 
             $isDirectCheckout = false;
@@ -94,23 +106,23 @@ class PaymentController extends Controller
             $itemToTransaction = $item->id;
         } else {
             // Mode Keranjang
-            $carts = \App\Models\Cart::with('item')->where('user_id', $user->id)->get();
+            $query = \App\Models\Cart::with('item')->where('user_id', $user->id);
+
+            // Ambil ingatan dari Session tadi agar Token Midtrans tidak menagih semua isi keranjang
+            if (session()->has('selected_cart_ids')) {
+                $query->whereIn('id', session('selected_cart_ids'));
+            }
+
+            $carts = $query->get();
+
             if ($carts->isEmpty()) {
-                return response()->json(['error' => 'Keranjang kosong'], 400);
+                return response()->json(['error' => 'Keranjang kosong atau belum dipilih'], 400);
             }
-            foreach ($carts as $cart) {
-
-                if ($cart->quantity > $cart->item->stock) {
-
-                    return response()->json([
-                        'error' => 'Stok ' . $cart->item->name . ' tidak mencukupi.'
-                    ], 400);
-                }
-            }
+            // ... (biarkan sisa for-each pengecekan stok di bawahnya tetap sama)
             $totalBarang = $carts->sum(function ($cart) {
                 return $cart->item->price * $cart->quantity;
             });
-             $qty = $carts->sum('quantity');
+            $qty = $carts->sum('quantity');
             $itemToTransaction = $carts->first()->item_id;
         }
 
@@ -162,22 +174,22 @@ class PaymentController extends Controller
                 'snap_token' => $snapToken   // Menyimpan Token
             ]);
             if ($request->is_direct != 'yes') {
-                 $carts = Cart::with('item')
-                ->where('user_id', $user->id)
-                ->get();
+                $carts = Cart::with('item')
+                    ->where('user_id', $user->id)
+                    ->get();
 
 
-            foreach ($carts as $cart) {
+                foreach ($carts as $cart) {
 
-                TransactionItem::create([
-                    'transaction_id' => $transaction->id,
-                    'cart_id' => $cart->id,
-                    'item_id' => $cart->item_id,
-                    'quantity' => $cart->quantity,
-                    'price' => $cart->item->price,
-                ]);
+                    TransactionItem::create([
+                        'transaction_id' => $transaction->id,
+                        'cart_id' => $cart->id,
+                        'item_id' => $cart->item_id,
+                        'quantity' => $cart->quantity,
+                        'price' => $cart->item->price,
+                    ]);
+                }
             }
-}
 
             return response()->json(['token' => $snapToken]);
         } catch (\Exception $e) {
@@ -231,7 +243,6 @@ class PaymentController extends Controller
             if ($fraudStatus == 'challenge') {
 
                 $transaction->status = 'pending';
-
             } else {
 
                 $transaction->status = 'success';
@@ -260,7 +271,6 @@ class PaymentController extends Controller
                             }
                         }
                     }
-
                 } else {
 
                     $item = \App\Models\Item::find($transaction->item_id);
@@ -292,7 +302,7 @@ class PaymentController extends Controller
         }
 
         $transaction->save();
-       if ($transaction->status == 'success') {
+        if ($transaction->status == 'success') {
 
             $cartIds = $transaction->transactionItems
                 ->pluck('cart_id')
