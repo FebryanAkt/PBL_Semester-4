@@ -107,7 +107,7 @@
                 <input type="hidden" name="search" value="{{ request('search') }}">
                 @php
                     $filters = [
-                        ['id' => 'kategori', 'label' => 'Kategori', 'icon' => 'grid', 'options' => ['Semua Kategori', 'Elektronik', 'Furniture', 'Fashion', 'Hobi']],
+                        ['id' => 'kategori', 'label' => 'Kategori', 'icon' => 'grid', 'options' => ['Semua Kategori', 'Elektronik', 'Perabotan', 'Pakaian', 'Hobi']],
                         ['id' => 'kecamatan', 'label' => 'Kecamatan', 'icon' => 'map', 'options' => ['Semua Kecamatan', 'Lowokwaru', 'Klojen', 'Blimbing']],
                         ['id' => 'kondisi', 'label' => 'Kondisi', 'icon' => 'badge', 'options' => ['Semua Kondisi', 'Sangat Baik', 'Baik', 'Minus Pemakaian']],
                         ['id' => 'harga', 'label' => 'Harga', 'icon' => 'money', 'options' => ['Urutkan Harga', 'Termurah', 'Termahal']],

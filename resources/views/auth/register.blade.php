@@ -36,7 +36,7 @@
 
             <!-- Email Mahasiswa -->
             <div>
-                <label for="email" class="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                <label for="email" class="block text-sm font-bold text-gray-700 mb-2">Pos-el</label>
                 <div class="relative">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
@@ -44,7 +44,7 @@
                     <input type="email" id="email" name="email" required placeholder="email@gmail.com" 
                         class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-bekas-green focus:border-transparent transition-all text-sm">
                 </div>
-                <p class="text-xs text-gray-400 mt-1">Disarankan menggunakan email kampus</p>
+                <p class="text-xs text-gray-400 mt-1">Disarankan menggunakan Pos-el kampus</p>
             </div>
 
             <!-- Pilih Jenis Akun -->

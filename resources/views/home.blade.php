@@ -80,9 +80,9 @@
                     <div id="slider-track" class="flex w-full h-full transition-transform duration-700 ease-in-out">
                         @php
                             $banners = [
-                                ['image' => asset('images/hero-kos-meja-belajar.jpg'), 'title' => 'Sudut Belajar Hemat', 'subtitle' => 'Meja, kursi, dan laptop second'],
-                                ['image' => asset('images/hero-kos-peralatan.jpg'), 'title' => 'Peralatan Anak Kos', 'subtitle' => 'Rice cooker, kipas, dan ketel bekas'],
-                                ['image' => asset('images/hero-kos-thrift.jpg'), 'title' => 'Thrift Buat Ngampus', 'subtitle' => 'Pakaian dan tas second yang masih layak'],
+                                ['image' => asset('images/hero-kos-meja-belajar.jpg'), 'title' => 'Sudut Belajar Hemat', 'subtitle' => 'Meja, kursi, dan laptop bekas'],
+                                ['image' => asset('images/hero-kos-peralatan.jpg'), 'title' => 'Peralatan Anak Kos', 'subtitle' => 'Penanak nasi, kipas, dan ketel bekas'],
+                                ['image' => asset('images/hero-kos-thrift.jpg'), 'title' => 'Pakaian Buat Ngampus', 'subtitle' => 'Pakaian dan tas bekas yang masih layak'],
                                 ['image' => asset('images/hero-kos-hobi.jpg'), 'title' => 'Kuliah dan Hobi', 'subtitle' => 'Perlengkapan bekas dengan harga bersahabat']
                             ];
                         @endphp
