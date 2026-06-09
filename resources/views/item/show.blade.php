@@ -224,10 +224,10 @@
                         </a>
                     @endif
 
-                    @if($item->stock > 0)
-                        Tombol Beli
-                    @else
-                        Tombol Stok Habis
+                    @if($item->stock <= 0)
+                        <button class="w-full bg-gray-300 text-gray-500 cursor-not-allowed" disabled>
+                            Stok Habis
+                        </button>
                     @endif
                 </div>
             </div>
