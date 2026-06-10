@@ -11,7 +11,7 @@
             <div class="mb-8 md:mb-10 animate-on-scroll">
                 <div
                     class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bekas-green/10 text-bekas-green text-sm font-bold tracking-wide border border-bekas-green/20 mb-4">
-                    🧾 Catatan Belanjamu
+                    Catatan Belanjamu
                 </div>
                 <h1 class="text-3xl md:text-4xl font-extrabold text-bekas-dark tracking-tight">Riwayat Transaksi</h1>
                 <p class="text-gray-500 mt-2 font-medium">Pantau status pesanan dan lanjutkan pembayaran yang tertunda di

@@ -174,13 +174,7 @@ class PaymentController extends Controller
                 'snap_token' => $snapToken   // Menyimpan Token
             ]);
             if ($request->is_direct != 'yes') {
-                $carts = Cart::with('item')
-                    ->where('user_id', $user->id)
-                    ->get();
-
-
                 foreach ($carts as $cart) {
-
                     TransactionItem::create([
                         'transaction_id' => $transaction->id,
                         'cart_id' => $cart->id,
