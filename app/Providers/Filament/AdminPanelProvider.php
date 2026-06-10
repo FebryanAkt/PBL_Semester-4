@@ -76,7 +76,7 @@ class AdminPanelProvider extends PanelProvider
                         color: white !important;
                     }
                     
-                    .fi-topbar * { 
+                    .fi-topbar  { 
                         color: white !important; 
                     }
                    
