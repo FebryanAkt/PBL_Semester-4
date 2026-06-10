@@ -305,7 +305,10 @@
                                     }
                                 });
                             } else {
-                                alert('Gagal membuat transaksi: ' + data.error);
+                                const validationMessage = data.errors
+                                    ? Object.values(data.errors).flat()[0]
+                                    : null;
+                                alert('Gagal membuat transaksi: ' + (validationMessage || data.error || data.message));
                             }
                         } catch (error) {
                             console.error(error);

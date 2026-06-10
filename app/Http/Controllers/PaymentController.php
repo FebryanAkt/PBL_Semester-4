@@ -8,7 +8,10 @@ use Illuminate\Support\Facades\Log;
 use App\Models\Transaction;
 use App\Models\TransactionItem;
 use App\Models\Cart;
+use App\Models\Item;
 use App\Notifications\NewOrderNotification;
+use Illuminate\Support\Collection;
+use Illuminate\Validation\ValidationException;
 
 class PaymentController extends Controller
 {
@@ -19,10 +22,14 @@ class PaymentController extends Controller
         // CEK MODE: Beli Langsung atau Dari Keranjang?
         if ($request->has('item_id')) {
             // -- MODE BELI LANGSUNG --
-            $item = \App\Models\Item::findOrFail($request->item_id);
+            $validated = $request->validate([
+                'item_id' => ['required', 'integer', 'exists:items,id'],
+                'quantity' => ['sometimes', 'integer', 'min:1'],
+            ], $this->purchaseValidationMessages());
 
-            // Ambil kuantitas dari URL, default ke 1 jika kosong
-            $qty = $request->input('quantity', 1);
+            $item = Item::findOrFail($validated['item_id']);
+            $qty = (int) ($validated['quantity'] ?? 1);
+            $this->ensureItemCanBePurchased($item, $qty);
 
             // Kita buat 'keranjang bohongan' di memori agar file checkout.blade.php 
             // tetap bisa melakukan @foreach tanpa error
@@ -38,14 +45,20 @@ class PaymentController extends Controller
             $directQuantity = $qty; // Simpan kuantitas untuk dikirim via fetch
         } else {
             // -- MODE KERANJANG --
+            $validated = $request->validate([
+                'cart_ids' => ['sometimes', 'array', 'min:1'],
+                'cart_ids.*' => ['integer', 'distinct'],
+            ]);
+
             $query = \App\Models\Cart::with('item')->where('user_id', Auth::id());
 
             // JIKA ada barang yang dicentang, filter berdasarkan ID-nya
-            if ($request->has('cart_ids')) {
-                $query->whereIn('id', $request->cart_ids);
+            if (isset($validated['cart_ids'])) {
+                $selectedCartIds = $validated['cart_ids'];
+                $query->whereIn('id', $selectedCartIds);
 
                 // Simpan ingatan ke Session agar fungsi getToken() nanti juga tahu!
-                session(['selected_cart_ids' => $request->cart_ids]);
+                session(['selected_cart_ids' => $selectedCartIds]);
             } else {
                 session()->forget('selected_cart_ids');
             }
@@ -55,6 +68,14 @@ class PaymentController extends Controller
             if ($carts->isEmpty()) {
                 return redirect()->route('cart.index')->with('error', 'Pilih minimal satu barang untuk di-checkout.');
             }
+
+            if (isset($selectedCartIds) && $carts->count() !== count($selectedCartIds)) {
+                throw ValidationException::withMessages([
+                    'cart_ids' => 'Ada barang keranjang yang tidak valid atau bukan milikmu.',
+                ]);
+            }
+
+            $this->ensureCartsCanBePurchased($carts);
 
             $isDirectCheckout = false;
             $directItemId = null;
@@ -92,16 +113,22 @@ class PaymentController extends Controller
 
         $user = Auth::user();
 
+        $request->validate([
+            'is_direct' => ['required', 'in:yes,no'],
+            'payment_method' => ['required', 'in:gopay,ovo,dana,shopeepay,bca,mandiri,bni'],
+        ]);
+
         // CEK ULANG HARGA DI DATABASE (Sesuai parameter dari frontend)
         if ($request->is_direct == 'yes') {
             // Mode Beli Langsung
-            $item = \App\Models\Item::findOrFail($request->item_id);
-            $qty = $request->input('quantity', 1); // Ambil kuantitas dari fetch JS
-            if ($qty > $item->stock) {
-                return response()->json([
-                    'error' => 'Stok barang tidak mencukupi.'
-                ], 400);
-            }
+            $validated = $request->validate([
+                'item_id' => ['required', 'integer', 'exists:items,id'],
+                'quantity' => ['required', 'integer', 'min:1'],
+            ], $this->purchaseValidationMessages());
+
+            $item = Item::findOrFail($validated['item_id']);
+            $qty = (int) $validated['quantity'];
+            $this->ensureItemCanBePurchased($item, $qty);
             $totalBarang = $item->price * $qty; // <-- Harga dikalikan kuantitas
             $itemToTransaction = $item->id;
         } else {
@@ -118,7 +145,9 @@ class PaymentController extends Controller
             if ($carts->isEmpty()) {
                 return response()->json(['error' => 'Keranjang kosong atau belum dipilih'], 400);
             }
-            // ... (biarkan sisa for-each pengecekan stok di bawahnya tetap sama)
+
+            $this->ensureCartsCanBePurchased($carts);
+
             $totalBarang = $carts->sum(function ($cart) {
                 return $cart->item->price * $cart->quantity;
             });
@@ -351,5 +380,40 @@ class PaymentController extends Controller
         }
 
         return redirect()->back()->with('error', 'Status pesanan tidak valid untuk dikonfirmasi.');
+    }
+
+    private function ensureCartsCanBePurchased(Collection $carts): void
+    {
+        foreach ($carts as $cart) {
+            if (!$cart->item) {
+                throw ValidationException::withMessages([
+                    'cart' => 'Salah satu barang di keranjang sudah tidak ditemukan.',
+                ]);
+            }
+
+            $this->ensureItemCanBePurchased($cart->item, (int) $cart->quantity);
+        }
+    }
+
+    private function ensureItemCanBePurchased(Item $item, int $quantity): void
+    {
+        $message = $item->purchaseValidationMessage((int) Auth::id(), $quantity);
+
+        if ($message) {
+            throw ValidationException::withMessages([
+                'quantity' => $message,
+            ]);
+        }
+    }
+
+    private function purchaseValidationMessages(): array
+    {
+        return [
+            'item_id.required' => 'Barang harus dipilih.',
+            'item_id.exists' => 'Barang tidak ditemukan.',
+            'quantity.required' => 'Jumlah pembelian harus diisi.',
+            'quantity.integer' => 'Jumlah pembelian harus berupa angka.',
+            'quantity.min' => 'Jumlah pembelian minimal 1.',
+        ];
     }
 }

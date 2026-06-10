@@ -182,18 +182,25 @@
                             </button>
                         @endif
 
-                        <a :href="'{{ route('checkout', ['item_id' => $item->id]) }}&quantity=' + qty"
-                            class="w-full sm:w-1/2 bg-bekas-green hover:bg-green-700 text-white text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-md">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
-                            </svg>
-                            Beli Sekarang
-                        </a>
+                        @if($item->status === 'tersedia' && $item->stock > 0 && (!Auth::check() || Auth::id() != $item->user_id))
+                            <a :href="'{{ route('checkout', ['item_id' => $item->id]) }}&quantity=' + qty"
+                                class="w-full sm:w-1/2 bg-bekas-green hover:bg-green-700 text-white text-base font-bold py-3.5 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-md">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                </svg>
+                                Beli Sekarang
+                            </a>
+                        @else
+                            <button type="button" disabled
+                                class="w-full sm:w-1/2 bg-gray-100 border-2 border-gray-200 text-gray-400 text-base font-bold py-3.5 rounded-xl cursor-not-allowed">
+                                Tidak Dapat Dibeli
+                            </button>
+                        @endif
                     </div>
 
                     {{-- Baris Bawah: Tombol Masukkan Keranjang --}}
-                    @if(Auth::check() && $item->user_id && Auth::id() != $item->user_id)
+                    @if(Auth::check() && $item->user_id && Auth::id() != $item->user_id && $item->status === 'tersedia' && $item->stock > 0)
                         <form action="{{ route('cart.add') }}" method="POST" class="w-full">
                             @csrf
 
@@ -222,11 +229,10 @@
                             </svg>
                             Masuk untuk Tambahkan Keranjang
                         </a>
-                    @endif
-
-                    @if($item->stock <= 0)
-                        <button class="w-full bg-gray-300 text-gray-500 cursor-not-allowed" disabled>
-                            Stok Habis
+                    @else
+                        <button type="button" disabled
+                            class="w-full bg-gray-100 border-2 border-gray-200 text-gray-400 text-base font-bold py-3.5 rounded-xl cursor-not-allowed">
+                            Tidak Dapat Ditambahkan ke Keranjang
                         </button>
                     @endif
                 </div>

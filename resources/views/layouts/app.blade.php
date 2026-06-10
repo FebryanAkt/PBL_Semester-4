@@ -82,6 +82,15 @@
     </script>
     @endif
 
+    @if(session('error') || $errors->any())
+    <div id="error-message" class="fixed top-24 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-500 ease-out flex items-center shadow-md bg-red-50 text-red-700 border border-red-200 px-6 py-4 rounded-xl gap-3 min-w-[300px]">
+        <span class="font-medium flex-1">{{ session('error') ?? $errors->first() }}</span>
+        <button onclick="document.getElementById('error-message').style.display='none'" class="text-red-500 hover:text-red-700 focus:outline-none shrink-0 cursor-pointer">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    @endif
+
     <main class="flex-1">
         @yield('content')
     </main>

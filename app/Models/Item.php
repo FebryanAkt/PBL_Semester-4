@@ -51,4 +51,29 @@ class Item extends Model
     {
         return $this->hasMany(Transaction::class);
     }
+
+    public function purchaseValidationMessage(int $buyerId, int $quantity): ?string
+    {
+        if ($quantity < 1) {
+            return 'Jumlah pembelian minimal 1.';
+        }
+
+        if ((int) $this->user_id === $buyerId) {
+            return 'Kamu tidak dapat membeli barang milik sendiri.';
+        }
+
+        if ($this->status !== 'tersedia') {
+            return 'Barang ini sudah tidak tersedia untuk dibeli.';
+        }
+
+        if ((int) $this->stock < 1) {
+            return 'Stok barang sudah habis.';
+        }
+
+        if ($quantity > (int) $this->stock) {
+            return 'Jumlah pembelian melebihi stok yang tersedia.';
+        }
+
+        return null;
+    }
 }
