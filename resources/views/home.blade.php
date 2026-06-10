@@ -73,6 +73,38 @@
         .product-card:has(.btn-buy-now:hover) {
             transform: scale(1);
         }
+
+        .btn-chat {
+            transition: background-color 0.2s ease, border-color 0.2s ease,
+                color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-chat svg {
+            transition: transform 0.2s ease;
+        }
+        .btn-chat:hover {
+            background-color: #166534;
+            border-color: #166534;
+            color: #ffffff;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -6px rgba(22, 101, 52, 0.55);
+        }
+        .btn-chat:hover svg {
+            transform: translateX(2px) scale(1.08);
+        }
+        .btn-chat:active {
+            background-color: #14532d;
+            border-color: #14532d;
+            transform: translateY(0) scale(0.97);
+            box-shadow: 0 2px 5px rgba(20, 83, 45, 0.35);
+        }
+        .btn-chat:focus-visible {
+            outline: 3px solid rgba(34, 197, 94, 0.35);
+            outline-offset: 2px;
+        }
+
+        .product-card:has(.btn-chat:hover) {
+            transform: scale(1);
+        }
     </style>
 
     <div class="relative overflow-hidden bg-gray-50/50">
@@ -359,17 +391,17 @@
                             </div>
 
                             @if(Auth::check() && $item->user_id && Auth::id() !== $item->user_id)
-                                <a href="{{ route('chat.show', ['id' => $item->user_id, 'item_id' => $item->id]) }}" class="relative z-20 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+                                <a href="{{ route('chat.show', ['id' => $item->user_id, 'item_id' => $item->id]) }}" class="btn-chat relative z-20 mt-3 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
                                     Hubungi Penjual
                                 </a>
                             @elseif(Auth::guest())
-                                <a href="{{ route('login') }}" class="relative z-20 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 transition-all duration-300">
+                                <a href="{{ route('login') }}" class="btn-chat relative z-20 mt-3 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
                                     Login untuk Chat
                                 </a>
                             @else
-                                <button disabled class="relative z-20 w-full bg-gray-100 border-2 border-gray-200 text-gray-400 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed">
+                                <button disabled class="relative z-20 mt-3 w-full bg-gray-100 border-2 border-gray-200 text-gray-400 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed">
                                     Barang Anda Sendiri
                                 </button>
                             @endif
