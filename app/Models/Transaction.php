@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Collection;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\TransactionItem;
 
@@ -33,5 +34,66 @@ class Transaction extends Model
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    public function orderLines(): Collection
+    {
+        $this->loadMissing(['transactionItems.item', 'item']);
+
+        if ($this->transactionItems->isNotEmpty()) {
+            return $this->transactionItems;
+        }
+
+        if (!$this->item) {
+            return collect();
+        }
+
+        $legacyLine = new TransactionItem([
+            'item_id' => $this->item_id,
+            'quantity' => $this->quantity,
+            'price' => $this->item->price,
+            'delivery_status' => $this->delivery_status ?? 'belum_dikirim',
+            'shipping_code' => $this->shipping_code,
+        ]);
+        $legacyLine->setRelation('item', $this->item);
+
+        return collect([$legacyLine]);
+    }
+
+    public function orderLinesForSeller(int $sellerId): Collection
+    {
+        return $this->orderLines()
+            ->filter(fn (TransactionItem $line) => (int) $line->item?->user_id === $sellerId)
+            ->values();
+    }
+
+    public function deliveryStatusSummary(?int $sellerId = null): string
+    {
+        $lines = $sellerId
+            ? $this->orderLinesForSeller($sellerId)
+            : $this->orderLines();
+
+        if ($lines->isEmpty()) {
+            return $this->delivery_status ?? 'belum_dikirim';
+        }
+
+        $statuses = $lines
+            ->pluck('delivery_status')
+            ->filter()
+            ->unique();
+
+        if ($statuses->count() === 1) {
+            return $statuses->first();
+        }
+
+        if ($statuses->contains('belum_dikirim')) {
+            return 'belum_dikirim';
+        }
+
+        if ($statuses->contains('dikirim')) {
+            return 'dikirim';
+        }
+
+        return 'diterima';
     }
 }

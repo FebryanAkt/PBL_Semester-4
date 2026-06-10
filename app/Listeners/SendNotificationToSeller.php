@@ -17,10 +17,17 @@ class SendNotificationToSeller implements ShouldQueue
     public function handle(TransactionSuccess $event): void
     {
         $transaction = $event->transaction;
-        $seller = $transaction->item->user; // Penjual
+        $transaction->loadMissing(['transactionItems.item.user', 'item.user']);
 
-        if ($seller && $seller->isSeller()) {
-            $seller->notify(new NewOrderNotification($transaction));
+        $sellers = $transaction->orderLines()
+            ->map(fn ($line) => $line->item?->user)
+            ->filter()
+            ->unique('id');
+
+        foreach ($sellers as $seller) {
+            if ($seller->isSeller()) {
+                $seller->notify(new NewOrderNotification($transaction));
+            }
         }
     }
 }

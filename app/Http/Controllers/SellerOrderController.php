@@ -16,14 +16,18 @@ class SellerOrderController extends Controller
         $user = Auth::user();
         if (!$user->isSeller()) abort(403);
 
-        $transactions = Transaction::with(['item', 'user'])
-            ->whereHas('item', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        $transactions = Transaction::with(['item', 'user', 'transactionItems.item'])
+            ->where(function ($query) use ($user) {
+                $query
+                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
+                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
             })
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('penjual.orders.index', compact('transactions'));
+        $sellerId = (int) $user->id;
+
+        return view('penjual.orders.index', compact('transactions', 'sellerId'));
     }
 
     /**
@@ -32,14 +36,21 @@ class SellerOrderController extends Controller
     public function show($id)
     {
         $user = Auth::user();
-        $transaction = Transaction::with(['item', 'user'])
+        if (!$user->isSeller()) abort(403);
+
+        $transaction = Transaction::with(['item', 'user', 'transactionItems.item'])
             ->where('id', $id)
-            ->whereHas('item', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+            ->where(function ($query) use ($user) {
+                $query
+                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
+                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
             })
             ->firstOrFail();
 
-        return view('penjual.orders.show', compact('transaction'));
+        $sellerId = (int) $user->id;
+        $sellerItems = $transaction->orderLinesForSeller($sellerId);
+
+        return view('penjual.orders.show', compact('transaction', 'sellerId', 'sellerItems'));
     }
 
     /**
@@ -48,23 +59,37 @@ class SellerOrderController extends Controller
     public function updateDelivery(Request $request, $id)
     {
         $user = Auth::user();
-        $transaction = Transaction::where('id', $id)
-            ->whereHas('item', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
+        if (!$user->isSeller()) abort(403);
+
+        $transaction = Transaction::with(['item', 'transactionItems.item'])
+            ->where('id', $id)
+            ->where(function ($query) use ($user) {
+                $query
+                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
+                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
             })
             ->firstOrFail();
 
-        $request->validate([
+        $validated = $request->validate([
             'delivery_status' => 'required|in:belum_dikirim,dikirim,diterima',
             'shipping_code' => 'nullable|string|max:100',
         ]);
 
-        $transaction->delivery_status = $request->delivery_status;
-        if ($request->filled('shipping_code')) {
-            // Jika perlu tambahkan kolom shipping_code di migration, opsional
-            $transaction->shipping_code = $request->shipping_code;
+        $sellerItems = $transaction->transactionItems
+            ->filter(fn ($line) => (int) $line->item?->user_id === (int) $user->id);
+
+        if ($sellerItems->isNotEmpty()) {
+            foreach ($sellerItems as $sellerItem) {
+                $sellerItem->update([
+                    'delivery_status' => $validated['delivery_status'],
+                    'shipping_code' => $validated['shipping_code'] ?? null,
+                ]);
+            }
+        } else {
+            $transaction->delivery_status = $validated['delivery_status'];
+            $transaction->shipping_code = $validated['shipping_code'] ?? null;
+            $transaction->save();
         }
-        $transaction->save();
 
         return redirect()->route('penjual.orders.show', $transaction->id)
             ->with('success', 'Status pengiriman berhasil diperbarui.');

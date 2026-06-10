@@ -20,6 +20,11 @@
 
             <div class="space-y-6">
                 @forelse ($transactions as $trx)
+                    @php
+                        $orderLines = $trx->orderLines();
+                        $primaryItem = $orderLines->first()?->item;
+                        $deliveryStatus = $trx->deliveryStatusSummary();
+                    @endphp
                     <div
                         class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex flex-col md:flex-row animate-on-scroll">
 
@@ -27,8 +32,8 @@
                             class="p-5 md:p-6 flex-grow flex gap-4 md:gap-6 items-start border-b md:border-b-0 md:border-r border-gray-100">
                             <div
                                 class="w-24 h-24 sm:w-32 sm:h-32 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0 relative">
-                                @if($trx->item && $trx->item->image)
-                                    <img src="{{ asset('images/' . $trx->item->image) }}" alt="Barang"
+                                @if($primaryItem?->image)
+                                    <img src="{{ asset('images/' . $primaryItem->image) }}" alt="Barang"
                                         class="w-full h-full object-cover">
                                 @else
                                     <div class="w-full h-full flex items-center justify-center text-gray-300">
@@ -52,8 +57,9 @@
                                         {{ $trx->created_at->format('d M Y, H:i') }}
                                     </p>
                                     <h3 class="text-lg font-bold text-gray-800 leading-tight mb-1">
-                                        {{ $trx->item ? $trx->item->name : 'Barang telah dihapus' }}
+                                        {{ $orderLines->pluck('item.name')->filter()->join(', ') ?: 'Barang telah dihapus' }}
                                     </h3>
+                                    <p class="text-xs text-gray-400 mb-1">{{ $orderLines->count() }} jenis barang, {{ $orderLines->sum('quantity') }} barang</p>
                                     <p class="text-sm font-medium text-gray-500">Order ID: <span
                                             class="font-mono bg-gray-100 px-1.5 py-0.5 rounded text-gray-700">{{ $trx->order_id }}</span>
                                     </p>
@@ -62,7 +68,7 @@
                                 <div class="mt-4">
                                     <span
                                         class="text-[10px] font-bold text-bekas-green uppercase tracking-wider bg-bekas-green/10 px-2.5 py-1 rounded-md">
-                                        {{ optional($trx->item)->category ?: 'UMUM' }}
+                                        {{ $orderLines->count() > 1 ? 'MULTI ITEM' : ($primaryItem?->category_name ?? 'UMUM') }}
                                     </span>
                                 </div>
                             </div>
@@ -133,7 +139,7 @@
                                     </button>
 
                                     {{-- Munculkan tombol ini JIKA status pengirimannya sedang "dikirim" --}}
-                                    @if($trx->delivery_status == 'dikirim')
+                                    @if($deliveryStatus == 'dikirim')
                                         {{-- PERBAIKAN: id form sudah ditambahkan --}}
                                         <form id="form-confirm-{{ $trx->id }}" action="{{ route('transaction.confirm-delivery', $trx->id) }}" method="POST"
                                             class="w-full m-0">
@@ -305,20 +311,28 @@
                         deliveryBadge = '<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-bold bg-green-100 text-green-700 border border-green-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> Sudah Diterima</span>';
                     }
 
+                    const itemsHtml = (data.items || []).map(item => `
+                        <div class="flex gap-3 rounded-xl border border-gray-100 p-3">
+                            <img src="${item.image || 'https://via.placeholder.com/64'}" class="w-16 h-16 rounded-lg object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/64'">
+                            <div class="flex-1">
+                                <h4 class="font-bold text-gray-800">${item.name}</h4>
+                                <p class="text-xs text-gray-500">${item.quantity} x ${item.price_formatted}</p>
+                                <p class="text-sm font-bold text-bekas-green">${item.subtotal_formatted}</p>
+                                ${item.shipping_code ? `<p class="text-xs text-gray-500 mt-1">Resi: ${item.shipping_code}</p>` : ''}
+                            </div>
+                        </div>
+                    `).join('');
+
                     modalBody.innerHTML = `
-                            <div class="flex gap-4 items-start border-b border-gray-100 pb-4">
-                                <img src="${data.item_image || 'https://via.placeholder.com/80'}" class="w-20 h-20 rounded-xl object-cover border border-gray-100" onerror="this.src='https://via.placeholder.com/80'">
-                                <div>
-                                    <h4 class="font-bold text-gray-800 text-lg">${data.item_name}</h4>
-                                    <p class="text-sm text-gray-500 mt-0.5">Kategori: ${data.category || 'Umum'}</p>
-                                </div>
+                            <div class="space-y-3 border-b border-gray-100 pb-4">
+                                ${itemsHtml}
                             </div>
                             <div class="grid grid-cols-2 gap-3 text-sm">
                                 <div class="text-gray-500 font-medium">Tanggal Pembelian</div>
                                 <div class="text-gray-800 font-semibold">${data.created_at}</div>
 
                                 <div class="text-gray-500 font-medium">Total Dibayar</div>
-                                <div class="text-gray-800 font-bold text-bekas-green">Rp ${data.price_formatted}</div>
+                                <div class="text-gray-800 font-bold text-bekas-green">${data.price_formatted}</div>
 
                                 <div class="text-gray-500 font-medium">Metode Pembayaran</div>
                                 <div class="text-gray-800">${data.payment_method || 'Tidak tersedia'}</div>

@@ -38,13 +38,26 @@ class NewOrderNotification extends Notification
      */
     public function toArray(object $notifiable): array
     {
+        $orderLines = $this->transaction->orderLinesForSeller((int) $notifiable->id);
+        $itemNames = $orderLines
+            ->map(fn ($line) => $line->item?->name)
+            ->filter()
+            ->values();
+        $itemLabel = $itemNames->isNotEmpty()
+            ? $itemNames->join(', ')
+            : 'Barang';
+        $sellerTotal = $orderLines->sum(
+            fn ($line) => (float) $line->price * (int) $line->quantity
+        );
+
         return [
             'transaction_id' => $this->transaction->id,
             'order_id' => $this->transaction->order_id,
-            'item_name' => $this->transaction->item->name ?? 'Barang',
+            'item_name' => $itemLabel,
+            'item_count' => $orderLines->count(),
             'buyer_name' => $this->transaction->user->name ?? 'Pembeli',
-            'total_price' => $this->transaction->price,
-            'message' => 'Ada pesanan baru untuk barang "' . ($this->transaction->item->name ?? 'unknown') . '" dari ' . ($this->transaction->user->name ?? 'pembeli'),
+            'total_price' => $sellerTotal ?: $this->transaction->price,
+            'message' => 'Ada pesanan baru untuk "' . $itemLabel . '" dari ' . ($this->transaction->user->name ?? 'pembeli'),
             'url' => route('penjual.orders.show', $this->transaction->id),
         ];
     }

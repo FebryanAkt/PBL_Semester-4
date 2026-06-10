@@ -270,7 +270,7 @@ class PaymentController extends Controller
 
                 $transaction->status = 'success';
 
-                $transaction->load('transactionItems.item');
+                $transaction->load(['transactionItems.item.user', 'item.user', 'user']);
 
                 if ($transaction->transactionItems->count() > 0) {
 
@@ -288,11 +288,16 @@ class PaymentController extends Controller
                             }
 
                             $item->save();
-                            $penjual = $item->user;
-                            if ($penjual) {
-                                $penjual->notify(new NewOrderNotification($transaction));
-                            }
                         }
+                    }
+
+                    $sellers = $transaction->transactionItems
+                        ->map(fn ($detail) => $detail->item?->user)
+                        ->filter()
+                        ->unique('id');
+
+                    foreach ($sellers as $seller) {
+                        $seller->notify(new NewOrderNotification($transaction));
                     }
                 } else {
 
@@ -340,27 +345,44 @@ class PaymentController extends Controller
 
     public function history()
     {
-        // Mengambil transaksi milik user yang sedang login beserta relasi item-nya
-        $transactions = \App\Models\Transaction::with('item')
+        $transactions = Transaction::with(['item', 'transactionItems.item'])
             ->where('user_id', auth()->id())
             ->orderBy('created_at', 'desc')
             ->get();
+
         return view('transaction.index', compact('transactions'));
     }
 
     public function detail($id)
     {
-        $transaction = Transaction::with('item')->where('user_id', auth()->id())->findOrFail($id);
+        $transaction = Transaction::with(['item', 'transactionItems.item'])
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
+        $orderLines = $transaction->orderLines();
+        $primaryItem = $orderLines->first()?->item;
 
-        // Data yang akan dikirim ke modal
         return response()->json([
-            'item_name'        => $transaction->item?->name ?? 'Barang tidak tersedia',
-            'item_image'       => $transaction->item?->image ? asset('images/' . $transaction->item->image) : null,
-            'category'         => $transaction->item?->category,
+            'item_name'        => $orderLines
+                ->map(fn ($line) => $line->item?->name)
+                ->filter()
+                ->join(', ') ?: 'Barang tidak tersedia',
+            'item_image'       => $primaryItem?->image ? asset('images/' . $primaryItem->image) : null,
+            'category'         => $orderLines->count() > 1 ? 'Beberapa kategori' : $primaryItem?->category_name,
+            'items'            => $orderLines->map(fn ($line) => [
+                'id' => $line->item_id,
+                'name' => $line->item?->name ?? 'Barang tidak tersedia',
+                'image' => $line->item?->image ? asset('images/' . $line->item->image) : null,
+                'category' => $line->item?->category_name ?? 'Umum',
+                'quantity' => (int) $line->quantity,
+                'price_formatted' => 'Rp ' . number_format($line->price, 0, ',', '.'),
+                'subtotal_formatted' => 'Rp ' . number_format($line->price * $line->quantity, 0, ',', '.'),
+                'delivery_status' => $line->delivery_status ?? 'belum_dikirim',
+                'shipping_code' => $line->shipping_code,
+            ])->values(),
             'created_at'       => $transaction->created_at->format('d M Y, H:i'),
             'price_formatted'  => 'Rp ' . number_format($transaction->price, 0, ',', '.'),
             'status'           => $transaction->status,
-            'delivery_status'  => $transaction->delivery_status ?? 'belum_dikirim',
+            'delivery_status'  => $transaction->deliveryStatusSummary(),
             'payment_method'   => $transaction->payment_method ?? 'Belum tersedia', // optional nanti
             'notes'            => $transaction->notes ?? null
         ]);
@@ -368,11 +390,23 @@ class PaymentController extends Controller
 
     public function confirmDelivery($id)
     {
-        // Cari transaksi berdasarkan ID dan pastikan itu milik pembeli yang sedang login
-        $transaction = \App\Models\Transaction::where('user_id', auth()->id())->findOrFail($id);
+        $transaction = Transaction::with('transactionItems')
+            ->where('user_id', auth()->id())
+            ->findOrFail($id);
 
-        // Pastikan statusnya memang sedang "dikirim"
-        if ($transaction->delivery_status == 'dikirim') {
+        if ($transaction->transactionItems->isNotEmpty()) {
+            if ($transaction->deliveryStatusSummary() !== 'dikirim') {
+                return redirect()->back()->with('error', 'Semua pesanan harus sudah dikirim sebelum dikonfirmasi.');
+            }
+
+            $transaction->transactionItems()
+                ->where('delivery_status', 'dikirim')
+                ->update(['delivery_status' => 'diterima']);
+
+            return redirect()->back()->with('success', 'Hore! Semua barang telah dikonfirmasi diterima.');
+        }
+
+        if ($transaction->delivery_status === 'dikirim') {
             $transaction->delivery_status = 'diterima';
             $transaction->save();
 

@@ -3,6 +3,11 @@
 @section('title', 'Bekaswit - Detail Pesanan')
 
 @section('content')
+@php
+    $deliveryStatus = $transaction->deliveryStatusSummary($sellerId);
+    $shippingCode = $sellerItems->pluck('shipping_code')->filter()->first();
+    $sellerSubtotal = $sellerItems->sum(fn ($line) => $line->price * $line->quantity);
+@endphp
 <div class="bg-gray-50/50 min-h-screen py-8 relative overflow-hidden">
     <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
         style="background-image: radial-gradient(#1f2937 1px, transparent 1px); background-size: 32px 32px;"></div>
@@ -37,21 +42,26 @@
                         <svg class="w-5 h-5 text-bekas-green" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                         Informasi Barang
                     </h2>
-                    <div class="flex gap-4">
-                        <div class="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0">
-                            @if($transaction->item && $transaction->item->image)
-                                <img src="{{ asset('images/' . $transaction->item->image) }}" class="w-full h-full object-cover">
-                            @else
-                                <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <div class="space-y-3">
+                        @foreach($sellerItems as $line)
+                            <div class="flex gap-4 rounded-xl border border-gray-100 p-3">
+                                <div class="w-20 h-20 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0">
+                                    @if($line->item?->image)
+                                        <img src="{{ asset('images/' . $line->item->image) }}" class="w-full h-full object-cover">
+                                    @else
+                                        <div class="w-full h-full flex items-center justify-center text-gray-300">
+                                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        </div>
+                                    @endif
                                 </div>
-                            @endif
-                        </div>
-                        <div>
-                            <p class="font-bold text-gray-800">{{ $transaction->item->name ?? 'Barang dihapus' }}</p>
-                            <p class="text-sm text-gray-500">Harga: Rp {{ number_format($transaction->item->price ?? 0, 0, ',', '.') }}</p>
-                            <p class="text-sm text-gray-500">Kategori: {{ $transaction->item->category ?? '-' }}</p>
-                        </div>
+                                <div>
+                                    <p class="font-bold text-gray-800">{{ $line->item?->name ?? 'Barang dihapus' }}</p>
+                                    <p class="text-sm text-gray-500">{{ $line->quantity }} x Rp {{ number_format($line->price, 0, ',', '.') }}</p>
+                                    <p class="text-sm font-bold text-bekas-green">Subtotal: Rp {{ number_format($line->price * $line->quantity, 0, ',', '.') }}</p>
+                                </div>
+                            </div>
+                        @endforeach
+                        <p class="text-right font-bold text-gray-800">Total barangmu: Rp {{ number_format($sellerSubtotal, 0, ',', '.') }}</p>
                     </div>
                 </div>
 
@@ -83,14 +93,14 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Status Kirim</label>
                         <select name="delivery_status" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-bekas-green focus:ring focus:ring-bekas-green/20 p-3">
-                            <option value="belum_dikirim" {{ $transaction->delivery_status == 'belum_dikirim' ? 'selected' : '' }}>📦 Belum Dikirim</option>
-                            <option value="dikirim" {{ $transaction->delivery_status == 'dikirim' ? 'selected' : '' }}>🚚 Sedang Dikirim</option>
-                            <option value="diterima" {{ $transaction->delivery_status == 'diterima' ? 'selected' : '' }}>✅ Sudah Diterima</option>
+                            <option value="belum_dikirim" {{ $deliveryStatus == 'belum_dikirim' ? 'selected' : '' }}>Belum Dikirim</option>
+                            <option value="dikirim" {{ $deliveryStatus == 'dikirim' ? 'selected' : '' }}>Sedang Dikirim</option>
+                            <option value="diterima" {{ $deliveryStatus == 'diterima' ? 'selected' : '' }}>Sudah Diterima</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-1">Nomor Resi (Opsional)</label>
-                        <input type="text" name="shipping_code" value="{{ $transaction->shipping_code ?? '' }}" placeholder="Contoh: JNE-1234567890" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-bekas-green focus:ring focus:ring-bekas-green/20 p-3">
+                        <input type="text" name="shipping_code" value="{{ $shippingCode }}" placeholder="Contoh: JNE-1234567890" class="w-full border-gray-200 rounded-xl shadow-sm focus:border-bekas-green focus:ring focus:ring-bekas-green/20 p-3">
                     </div>
                     <button type="submit" class="bg-bekas-green hover:bg-green-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
