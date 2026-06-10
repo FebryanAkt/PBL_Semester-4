@@ -113,6 +113,18 @@ class MarketplaceFilterTest extends TestCase
             ->assertSee('value="Termurah"', false);
     }
 
+    public function test_marketplace_card_has_direct_checkout_button(): void
+    {
+        $item = Item::where('name', 'Laptop Filter')->firstOrFail();
+
+        $response = $this->get(route('home'));
+
+        $response
+            ->assertOk()
+            ->assertSee('Beli Sekarang')
+            ->assertSee(route('checkout', ['item_id' => $item->id, 'quantity' => 1]));
+    }
+
     public function test_editing_an_item_updates_the_category_relationship(): void
     {
         $item = Item::where('name', 'Laptop Filter')->firstOrFail();

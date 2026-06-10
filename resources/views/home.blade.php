@@ -42,6 +42,37 @@
             transform: scale(1);
             box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
         }
+
+        .btn-buy-now {
+            transition: background-color 0.2s ease, border-color 0.2s ease,
+                transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .btn-buy-now svg {
+            transition: transform 0.2s ease;
+        }
+        .btn-buy-now:hover {
+            background-color: #166534;
+            border-color: #166534;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px -6px rgba(22, 101, 52, 0.55);
+        }
+        .btn-buy-now:hover svg {
+            transform: translateY(-2px) scale(1.08);
+        }
+        .btn-buy-now:active {
+            background-color: #14532d;
+            border-color: #14532d;
+            transform: translateY(0) scale(0.97);
+            box-shadow: 0 2px 5px rgba(20, 83, 45, 0.35);
+        }
+        .btn-buy-now:focus-visible {
+            outline: 3px solid rgba(34, 197, 94, 0.35);
+            outline-offset: 2px;
+        }
+
+        .product-card:has(.btn-buy-now:hover) {
+            transform: scale(1);
+        }
     </style>
 
     <div class="relative overflow-hidden bg-gray-50/50">
@@ -309,6 +340,22 @@
                                         +Keranjang
                                     </button>
                                 </form>
+
+                                @if($item->status === 'tersedia' && $item->stock > 0 && (!Auth::check() || Auth::id() !== $item->user_id))
+                                    <a href="{{ route('checkout', ['item_id' => $item->id, 'quantity' => 1]) }}"
+                                        class="btn-buy-now relative z-20 w-full bg-bekas-green border-2 border-bekas-green text-white text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 shadow-sm">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                                        </svg>
+                                        Beli Sekarang
+                                    </a>
+                                @else
+                                    <button type="button" disabled
+                                        class="relative z-20 w-full bg-gray-100 border-2 border-gray-200 text-gray-400 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed">
+                                        Beli Sekarang
+                                    </button>
+                                @endif
                             </div>
 
                             @if(Auth::check() && $item->user_id && Auth::id() !== $item->user_id)
