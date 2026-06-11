@@ -17,10 +17,11 @@ return new class extends Migration
             $table->string('name');
             $table->string('category')->nullable();
             $table->text('description')->nullable();
-            $table->string('tags')->nullable(); // simpan comma
+            $table->string('tags')->nullable(); 
             $table->string('image')->nullable();
             $table->integer('price');
             $table->string('location');
+            $table->string('phone');
             $table->string('condition')->default('Bekas');
 
             //STATUS: tersedia, terjual, atau disewa

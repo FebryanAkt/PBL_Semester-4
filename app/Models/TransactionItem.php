@@ -1,0 +1,28 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class TransactionItem extends Model
+{
+    protected $fillable = [
+        'transaction_id',
+        'cart_id',
+        'item_id',
+        'quantity',
+        'price',
+        'delivery_status',
+        'shipping_code',
+    ];
+
+    public function transaction()
+    {
+        return $this->belongsTo(Transaction::class);
+    }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class);
+    }
+}

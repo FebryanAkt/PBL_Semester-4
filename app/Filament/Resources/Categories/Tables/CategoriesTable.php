@@ -11,7 +11,8 @@ class CategoriesTable
     {
         return $table->columns([
             Tables\Columns\TextColumn::make('name')
-                ->searchable(),
+            ->label('Nama')    
+            ->searchable(),
 
             Tables\Columns\TextColumn::make('slug'),
         ]);
