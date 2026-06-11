@@ -152,8 +152,7 @@ class ItemController extends Controller
         $total = (clone $query)->count();
         $tersedia = (clone $query)->where('status', 'tersedia')->count();
         $pesanan = Transaction::query()
-            ->successful()
-            ->forSeller((int) Auth::id())
+            ->activeForSeller((int) Auth::id())
             ->count();
         $terjual = (clone $query)->where('status', 'terjual')->count();
 

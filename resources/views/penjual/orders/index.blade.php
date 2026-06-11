@@ -1,117 +1,126 @@
-@extends('layouts.penjual')  {{-- atau 'layouts.app' jika pakai header penjual --}}
+@extends('layouts.app')
 
-@section('title', 'Bekaswit - Pesanan Masuk')
+@section('title', 'Kelola Pesanan')
 
 @section('content')
-<div class="bg-gray-50/50 min-h-screen py-8 relative overflow-hidden">
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none"
-        style="background-image: radial-gradient(#1f2937 1px, transparent 1px); background-size: 32px 32px;"></div>
-
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
-        {{-- Header --}}
-        <div class="mb-8 animate-on-scroll">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-bekas-green/10 text-bekas-green text-sm font-bold tracking-wide border border-bekas-green/20 mb-4">
-                📦 Pesanan Masuk
-            </div>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-bekas-dark tracking-tight">Kelola Pesanan</h1>
-            <p class="text-gray-500 mt-2 font-medium">Barang yang sudah dibeli pelanggan. Segera proses pengiriman.</p>
+<div class="max-w-6xl mx-auto px-4 sm:px-6 py-10">
+    <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between mb-8">
+        <div>
+            <h1 class="text-3xl font-extrabold text-bekas-dark">Kelola Pesanan</h1>
+            <p class="text-gray-500 mt-1">Proses pesanan yang sudah dibayar dan pantau pengirimannya.</p>
         </div>
+        <a href="{{ route('barang.saya') }}"
+           class="inline-flex items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 transition hover:border-bekas-dark hover:bg-bekas-dark hover:text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+            </svg>
+            Barang Saya
+        </a>
+    </div>
 
-        @if($transactions->isEmpty())
-            <div class="bg-white rounded-2xl p-12 text-center shadow-sm border border-gray-100">
-                <svg class="w-24 h-24 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
-                </svg>
-                <p class="text-gray-500 text-lg">Belum ada pesanan masuk.</p>
-                <p class="text-gray-400 text-sm mt-1">Pelanggan akan muncul di sini setelah melakukan pembayaran.</p>
+    <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 mb-8">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="p-5 rounded-xl text-center border-2 border-amber-500 bg-amber-500 text-white shadow-md">
+                <p class="text-xs uppercase tracking-widest font-bold mb-1 text-amber-100">Pesanan Aktif</p>
+                <p class="text-3xl font-black">{{ $pesanan }}</p>
             </div>
-        @else
-            <div class="space-y-5">
-                @foreach($transactions as $trx)
-                @php
-                    $sellerItems = $trx->orderLinesForSeller($sellerId);
-                    $primaryItem = $sellerItems->first()?->item;
-                    $sellerSubtotal = $sellerItems->sum(fn ($line) => $line->price * $line->quantity);
-                    $deliveryStatus = $trx->deliveryStatusSummary($sellerId);
-                @endphp
-                <div class="bg-white rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 overflow-hidden transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] flex flex-col md:flex-row">
-                    {{-- Bagian kiri: info barang & pembeli --}}
-                    <div class="p-5 md:p-6 flex-grow flex gap-4 md:gap-6 items-start border-b md:border-b-0 md:border-r border-gray-100">
-                        <div class="w-24 h-24 bg-gray-50 rounded-xl overflow-hidden border border-gray-100 shrink-0">
+            <div class="p-5 rounded-xl text-center border-2 border-orange-200 bg-white text-orange-600">
+                <p class="text-xs uppercase tracking-widest font-bold mb-1 opacity-70">Belum Dikirim</p>
+                <p class="text-3xl font-black">{{ $belumDikirim }}</p>
+            </div>
+            <div class="p-5 rounded-xl text-center border-2 border-blue-200 bg-white text-blue-600">
+                <p class="text-xs uppercase tracking-widest font-bold mb-1 opacity-70">Sedang Dikirim</p>
+                <p class="text-3xl font-black">{{ $sedangDikirim }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Pesanan Masuk</h2>
+        <p class="text-sm text-gray-500">Pesanan yang diterima otomatis keluar dari daftar.</p>
+    </div>
+
+    <div class="space-y-5">
+        @forelse($transactions as $trx)
+            @php
+                $sellerItems = $trx->orderLinesForSeller($sellerId);
+                $primaryItem = $sellerItems->first()?->item;
+                $sellerSubtotal = $sellerItems->sum(fn ($line) => $line->price * $line->quantity);
+                $deliveryStatus = $trx->deliveryStatusSummary($sellerId);
+            @endphp
+
+            <article class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition hover:shadow-lg">
+                <div class="p-5 md:p-6 flex flex-col lg:flex-row lg:items-center gap-5">
+                    <div class="flex flex-1 gap-4 min-w-0">
+                        <div class="w-24 h-24 bg-gray-100 rounded-xl overflow-hidden border border-gray-100 shrink-0">
                             @if($primaryItem?->image)
-                                <img src="{{ asset('images/' . $primaryItem->image) }}" alt="{{ $primaryItem->name }}" class="w-full h-full object-cover">
+                                <img src="{{ asset('images/' . $primaryItem->image) }}"
+                                     alt="{{ $primaryItem->name }}"
+                                     class="w-full h-full object-cover">
                             @else
                                 <div class="w-full h-full flex items-center justify-center text-gray-300">
-                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                    <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                                    </svg>
                                 </div>
                             @endif
                         </div>
-                        <div class="flex-1">
-                            <p class="text-xs font-bold text-gray-400 mb-1">{{ $trx->created_at->format('d M Y, H:i') }}</p>
+
+                        <div class="min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-2">
+                                <span class="text-xs font-bold text-gray-400">{{ $trx->created_at->format('d M Y, H:i') }}</span>
+                                <span class="text-xs font-mono rounded-md bg-gray-100 px-2 py-1 text-gray-500">
+                                    {{ $trx->order_id ?: 'TRX-' . $trx->id }}
+                                </span>
+                            </div>
                             <h3 class="text-lg font-bold text-gray-800 leading-tight">
-                                {{ $sellerItems->pluck('item.name')->filter()->join(', ') ?: 'Barang dihapus' }}
+                                {{ $sellerItems->pluck('item.name')->filter()->join(', ') ?: 'Barang tidak tersedia' }}
                             </h3>
-                            <p class="text-xs text-gray-400 mt-1">{{ $sellerItems->count() }} jenis barang dalam pesanan ini</p>
-                            <p class="text-sm text-gray-500 mt-1">Pembeli: <span class="font-medium">{{ $trx->user->name }}</span></p>
-                            <p class="text-sm text-gray-500">Subtotal barangmu: <span class="font-bold text-bekas-green">Rp {{ number_format($sellerSubtotal, 0, ',', '.') }}</span></p>
+                            <p class="text-sm text-gray-500 mt-2">
+                                Pembeli: <span class="font-semibold text-gray-700">{{ $trx->user->name }}</span>
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                {{ $sellerItems->sum('quantity') }} barang
+                                <span class="mx-1">|</span>
+                                <span class="font-bold text-bekas-green">Rp {{ number_format($sellerSubtotal, 0, ',', '.') }}</span>
+                            </p>
                         </div>
                     </div>
-                    {{-- Bagian kanan: status & aksi --}}
-                    <div class="p-5 md:p-6 w-full md:w-64 flex flex-col justify-center bg-gray-50/50 shrink-0">
-                        <div class="mb-3">
-                            @if($deliveryStatus == 'belum_dikirim')
-                                <span class="inline-flex items-center gap-1.5 text-orange-600 bg-orange-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-orange-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Belum Dikirim
-                                </span>
-                            @elseif($deliveryStatus == 'dikirim')
-                                <span class="inline-flex items-center gap-1.5 text-blue-600 bg-blue-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-blue-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                                    Sedang Dikirim
-                                </span>
-                            @else
-                                <span class="inline-flex items-center gap-1.5 text-green-600 bg-green-50 px-3 py-1.5 rounded-lg text-sm font-bold border border-green-200">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                    Sudah Diterima
-                                </span>
-                            @endif
-                        </div>
-                        <a href="{{ route('penjual.orders.show', $trx->id) }}" 
-                            class="group flex items-center justify-center gap-2 bg-bekas-dark text-white px-4 py-2.5 rounded-xl font-bold transition-all duration-300 shadow-md hover:bg-gray-800 hover:shadow-lg w-full text-sm">
-                            Detail Pesanan
-                            <svg class="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+
+                    <div class="flex flex-col sm:flex-row lg:flex-col gap-3 lg:w-56 shrink-0">
+                        @if($deliveryStatus === 'belum_dikirim')
+                            <span class="inline-flex items-center justify-center gap-2 rounded-xl border border-orange-200 bg-orange-50 px-4 py-2.5 text-sm font-bold text-orange-600">
+                                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                                Belum Dikirim
+                            </span>
+                        @else
+                            <span class="inline-flex items-center justify-center gap-2 rounded-xl border border-blue-200 bg-blue-50 px-4 py-2.5 text-sm font-bold text-blue-600">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                Sedang Dikirim
+                            </span>
+                        @endif
+
+                        <a href="{{ route('penjual.orders.show', $trx->id) }}"
+                           class="inline-flex items-center justify-center gap-2 rounded-xl bg-bekas-dark px-4 py-2.5 text-sm font-bold text-white transition hover:bg-slate-700">
+                            Kelola Pesanan
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                            </svg>
                         </a>
                     </div>
                 </div>
-                @endforeach
+            </article>
+        @empty
+            <div class="py-16 flex flex-col items-center justify-center text-center bg-white rounded-2xl border-2 border-dashed border-gray-200">
+                <div class="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center text-gray-300 mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                </div>
+                <p class="text-xl font-bold text-gray-600">Tidak ada pesanan aktif</p>
+                <p class="text-sm text-gray-400 mt-1">Pesanan baru akan muncul setelah pembayaran berhasil.</p>
             </div>
-        @endif
+        @endforelse
     </div>
 </div>
-
-<style>
-    .animate-on-scroll {
-        opacity: 0;
-        transform: translateY(20px);
-        transition: opacity 0.6s ease-out, transform 0.6s ease-out;
-    }
-    .animate-on-scroll.is-visible {
-        opacity: 1;
-        transform: translateY(0);
-    }
-</style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('is-visible');
-                    observer.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
-    });
-</script>
 @endsection

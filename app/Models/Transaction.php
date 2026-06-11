@@ -54,6 +54,32 @@ class Transaction extends Model
         });
     }
 
+    public function scopeActiveForSeller(Builder $query, int $sellerId): Builder
+    {
+        return $query
+            ->successful()
+            ->where(function (Builder $query) use ($sellerId) {
+                $query
+                    ->whereHas('transactionItems', function (Builder $lineQuery) use ($sellerId) {
+                        $lineQuery
+                            ->where('delivery_status', '!=', 'diterima')
+                            ->whereHas(
+                                'item',
+                                fn (Builder $itemQuery) => $itemQuery->where('user_id', $sellerId)
+                            );
+                    })
+                    ->orWhere(function (Builder $legacyQuery) use ($sellerId) {
+                        $legacyQuery
+                            ->whereDoesntHave('transactionItems')
+                            ->where('delivery_status', '!=', 'diterima')
+                            ->whereHas(
+                                'item',
+                                fn (Builder $itemQuery) => $itemQuery->where('user_id', $sellerId)
+                            );
+                    });
+            });
+    }
+
     public function orderLines(): Collection
     {
         $this->loadMissing(['transactionItems.item', 'item']);

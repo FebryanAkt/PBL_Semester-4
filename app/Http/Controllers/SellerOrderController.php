@@ -17,14 +17,23 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transactions = Transaction::with(['item', 'user', 'transactionItems.item'])
-            ->successful()
-            ->forSeller((int) $user->id)
+            ->activeForSeller((int) $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
         $sellerId = (int) $user->id;
+        $pesanan = $transactions->count();
+        $belumDikirim = $transactions
+            ->filter(fn (Transaction $transaction) => $transaction->deliveryStatusSummary($sellerId) === 'belum_dikirim')
+            ->count();
+        $sedangDikirim = $transactions
+            ->filter(fn (Transaction $transaction) => $transaction->deliveryStatusSummary($sellerId) === 'dikirim')
+            ->count();
 
-        return view('penjual.orders.index', compact('transactions', 'sellerId'));
+        return view(
+            'penjual.orders.index',
+            compact('transactions', 'sellerId', 'pesanan', 'belumDikirim', 'sedangDikirim')
+        );
     }
 
     /**
@@ -36,8 +45,7 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transaction = Transaction::with(['item', 'user', 'transactionItems.item'])
-            ->successful()
-            ->forSeller((int) $user->id)
+            ->activeForSeller((int) $user->id)
             ->where('id', $id)
             ->firstOrFail();
 
@@ -56,8 +64,7 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transaction = Transaction::with(['item', 'transactionItems.item'])
-            ->successful()
-            ->forSeller((int) $user->id)
+            ->activeForSeller((int) $user->id)
             ->where('id', $id)
             ->firstOrFail();
 
@@ -80,6 +87,11 @@ class SellerOrderController extends Controller
             $transaction->delivery_status = $validated['delivery_status'];
             $transaction->shipping_code = $validated['shipping_code'] ?? null;
             $transaction->save();
+        }
+
+        if ($validated['delivery_status'] === 'diterima') {
+            return redirect()->route('penjual.orders.index')
+                ->with('success', 'Pesanan selesai dan telah dihapus dari daftar pesanan aktif.');
         }
 
         return redirect()->route('penjual.orders.show', $transaction->id)
