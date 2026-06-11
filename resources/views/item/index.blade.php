@@ -53,7 +53,7 @@
                     ? 'bg-amber-500 border-amber-500 text-white shadow-md scale-[1.02]' 
                     : 'bg-white border-amber-200 text-amber-600 hover:border-amber-500 hover:text-amber-700 hover:bg-amber-50' }}">
                 <p class="text-xs uppercase tracking-widest font-bold mb-1 {{ request()->routeIs('penjual.orders.index') ? 'text-amber-100' : 'opacity-70' }}">Pesanan</p>
-                <h2 class="text-3xl font-black">{{ $booking ?? 0 }}</h2>
+                <h2 class="text-3xl font-black">{{ $pesanan }}</h2>
             </a>
 
             {{-- 4. Filter: Terjual --}}

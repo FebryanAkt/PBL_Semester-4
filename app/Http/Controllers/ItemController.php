@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Category;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -150,7 +151,10 @@ class ItemController extends Controller
 
         $total = (clone $query)->count();
         $tersedia = (clone $query)->where('status', 'tersedia')->count();
-        $booking = (clone $query)->where('status', 'booking')->count();
+        $pesanan = Transaction::query()
+            ->successful()
+            ->forSeller((int) Auth::id())
+            ->count();
         $terjual = (clone $query)->where('status', 'terjual')->count();
 
         switch ($filter) {
@@ -175,7 +179,7 @@ class ItemController extends Controller
                 'items',
                 'total',
                 'tersedia',
-                'booking',
+                'pesanan',
                 'terjual',
                 'filter'
             )

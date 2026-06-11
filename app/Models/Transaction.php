@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Support\Collection;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\TransactionItem;
 
@@ -34,6 +35,23 @@ class Transaction extends Model
     public function transactionItems()
     {
         return $this->hasMany(TransactionItem::class);
+    }
+
+    public function scopeSuccessful(Builder $query): Builder
+    {
+        return $query->where('status', 'success');
+    }
+
+    public function scopeForSeller(Builder $query, int $sellerId): Builder
+    {
+        return $query->where(function (Builder $query) use ($sellerId) {
+            $query
+                ->whereHas('item', fn (Builder $itemQuery) => $itemQuery->where('user_id', $sellerId))
+                ->orWhereHas(
+                    'transactionItems.item',
+                    fn (Builder $itemQuery) => $itemQuery->where('user_id', $sellerId)
+                );
+        });
     }
 
     public function orderLines(): Collection

@@ -17,11 +17,8 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transactions = Transaction::with(['item', 'user', 'transactionItems.item'])
-            ->where(function ($query) use ($user) {
-                $query
-                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
-                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
-            })
+            ->successful()
+            ->forSeller((int) $user->id)
             ->orderBy('created_at', 'desc')
             ->get();
 
@@ -39,12 +36,9 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transaction = Transaction::with(['item', 'user', 'transactionItems.item'])
+            ->successful()
+            ->forSeller((int) $user->id)
             ->where('id', $id)
-            ->where(function ($query) use ($user) {
-                $query
-                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
-                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
-            })
             ->firstOrFail();
 
         $sellerId = (int) $user->id;
@@ -62,12 +56,9 @@ class SellerOrderController extends Controller
         if (!$user->isSeller()) abort(403);
 
         $transaction = Transaction::with(['item', 'transactionItems.item'])
+            ->successful()
+            ->forSeller((int) $user->id)
             ->where('id', $id)
-            ->where(function ($query) use ($user) {
-                $query
-                    ->whereHas('item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id))
-                    ->orWhereHas('transactionItems.item', fn ($itemQuery) => $itemQuery->where('user_id', $user->id));
-            })
             ->firstOrFail();
 
         $validated = $request->validate([
