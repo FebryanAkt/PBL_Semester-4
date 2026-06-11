@@ -47,7 +47,7 @@ class ItemSeeder extends Seeder
             ],
             [
                 'name' => 'Jaket Bomber Techwear WOLV American Canvas',
-                'category' => 'Fashion',
+                'category' => 'Pakaian',
                 'price' => 185000,
                 'location' => 'Klojen',
                 'phone' => '081234567002',
@@ -71,7 +71,7 @@ class ItemSeeder extends Seeder
             ],
             [
                 'name' => 'Jacket Bomber',
-                'category' => 'Fashion',
+                'category' => 'Pakaian',
                 'price' => 100000,
                 'location' => 'Blimbing',
                 'phone' => '081234567004',
@@ -83,7 +83,7 @@ class ItemSeeder extends Seeder
             ],
             [
                 'name' => 'Meja Belajar Kayu Minimalis',
-                'category' => 'Furniture',
+                'category' => 'Perabotan',
                 'price' => 175000,
                 'location' => 'Lowokwaru',
                 'phone' => '081234567005',
@@ -95,7 +95,7 @@ class ItemSeeder extends Seeder
             ],
             [
                 'name' => 'Sepatu Sneakers Putih',
-                'category' => 'Fashion',
+                'category' => 'Pakaian',
                 'price' => 95000,
                 'location' => 'Klojen',
                 'phone' => '081234567006',
