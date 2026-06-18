@@ -398,7 +398,7 @@
                             @elseif(Auth::guest())
                                 <a href="{{ route('login') }}" class="btn-chat relative z-20 mt-3 w-full bg-white border-2 border-gray-200 text-gray-700 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2">
                                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"></path></svg>
-                                    Login untuk Chat
+                                    Chat Penjual
                                 </a>
                             @else
                                 <button disabled class="relative z-20 mt-3 w-full bg-gray-100 border-2 border-gray-200 text-gray-400 text-sm font-bold py-2.5 rounded-xl flex items-center justify-center gap-2 cursor-not-allowed">

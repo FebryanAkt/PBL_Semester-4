@@ -142,7 +142,7 @@
                     </div>
 
                     <div class="md:col-span-2">
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi Pengiriman/COD</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Lokasi Pengiriman</label>
                         <select name="lokasi"
                             class="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-bekas-green focus:border-bekas-green outline-none bg-white text-gray-600">
                             <option value="Lowokwaru" {{ old('lokasi') == 'Lowokwaru' ? 'selected' : '' }}>Lowokwaru</option>
